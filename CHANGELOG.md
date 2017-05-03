@@ -1,4 +1,7 @@
 # Changelog
+v1.3.2a (Prerelease)
+- Fixed bug where toggle button would hide all torrents when clicked, when no illegal tags were found
+
 v1.3.1
 - Added matching of both .me and .sx domains
 - Created GitHub repository for project
@@ -19,4 +22,3 @@ v1.2.6
 v1.2.5
 - The script now also matches HTTPS, in case Emp ever implements SSL
 - Toggle button will now show "torrent" instead of "torrents" when there's only one hidden element
-- Starting with v1.2.5, changelog will be included with script

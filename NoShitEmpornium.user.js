@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.3.1
+// @version      1.3.2a
 // @description  Hides torrents with specified tags on Empornium
 // @author       ceodoe
 // @match        *://*.empornium.me/torrents.php*
@@ -76,7 +76,7 @@ toggleSpanNode.onclick = (function() { toggleTorrents(); });
 
 if(count === 0) {
     innerHTMLText = "NoShitEmpornium";
-    toggleSpanNode.onclickl = null;
+    toggleSpanNode.onclick = null;
 } else if(count > 1) {
     innerHTMLText = innerHTMLText + "s";
 }
