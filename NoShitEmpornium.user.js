@@ -68,10 +68,20 @@ if(str_contains("top10.php", window.location.href) === true) {
 }
 
 var toggleDivNode = document.createElement("div");
-toggleDivNode.setAttribute("style", "color: #FFF; background-color: #00A; cursor: pointer; padding: 5px; border: 1px solid blue; border-radius: 10px; text-align: center; width: 100%; float: right; margin-bottom: 10px !important;");
+toggleDivNode.setAttribute("style",
+                           "color: #FFF;"
+                         + "background-color: #009;"
+                         + "padding: 5px;"
+                         + "border: 1px solid blue;"
+                         + "border-radius: 10px;"
+                         + "text-align: center;"
+                         + "margin-bottom: 5px !important;"
+                         + "margin-top: 5px !important;"
+                         + "margin: auto;");
 
 var toggleSpanNode = document.createElement("span");
 var innerHTMLText = "Toggle " + count + " hidden torrent";
+toggleSpanNode.setAttribute("style","cursor: pointer;");
 toggleSpanNode.onclick = (function() { toggleTorrents(); });
 
 if(count === 0) {
@@ -93,9 +103,10 @@ var taglistSaveNode = document.createElement("input");
 taglistSaveNode.type = "button";
 taglistSaveNode.value = "Save tags and reload";
 
-var toggleOptionsNode = document.createElement("sup");
-toggleOptionsNode.innerHTML = "[Options]";
-toggleOptionsNode.setAttribute("style","margin-left: 5px;");
+var toggleOptionsNode = document.createElement("input");
+toggleOptionsNode.type = "button";
+toggleOptionsNode.value = "Options";
+toggleOptionsNode.setAttribute("style","margin-left: 5px !important;");
 
 taglistTextAreaNode.innerHTML = illegalTaglist;
 
