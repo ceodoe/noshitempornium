@@ -1,6 +1,9 @@
 # Changelog
-v1.3.2a (Prerelease)
+v1.3.3
 - Fixed bug where toggle button would hide all torrents when clicked, when no illegal tags were found
+- Slightly changed field design to be more fitting with default emp theme
+- Made the Options button into an actual button
+- Made code for button design more legible
 
 v1.3.1
 - Added matching of both .me and .sx domains
