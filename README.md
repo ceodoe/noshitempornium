@@ -1,5 +1,5 @@
 # NoShitEmpornium
-Script to hide torrents with unwanted tags on Empornium
+Script to hide torrents with unwanted tags or by unwanted uploaders on Empornium
 
 # Prerequisites
 NSE is a JavaScript user script. In order to use it, you'll need to install an extension/addon in your browser that can handle and execute user scripts.
@@ -17,10 +17,10 @@ NSE is developed and tested using Vivaldi, and should therefore work flawlessly 
 * Install NSE by clicking [here](https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js)
 * Follow the instructions given by Tampermonkey/Greasemonkey to install the script
 * Once the script is installed, visit an applicable page on Emp (Torrents, Top 10, Collages)
-* Click "[Options]" in the new, blue area below the search center
-* Add your list of space-separated tags in the newly revealed text area
-* Click "Save tags and reload" to save your tags and reload the page
-* Torrents containing the entered tags will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button
+* Click the Options button in the new, blue area below the search center
+* Add your list of space-separated tags or uploaders in the newly revealed text areas
+* Click "Save and reload page" to save your options and reload the page
+* Torrents containing the entered tags or by entered usernames will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button
 
 # Important note
 If you:

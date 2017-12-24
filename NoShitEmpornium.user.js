@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.3.3
-// @description  Hides torrents with specified tags on Empornium
+// @version      1.4
+// @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @match        *://*.empornium.me/torrents.php*
 // @match        *://*.empornium.me/top10.php*
@@ -22,11 +22,21 @@
 var illegalTaglist = GM_getValue("nseTaglist","!notags!");
 var illegalTags;
 
+var illegalUploadersList = GM_getValue("nseUploaders","!nouploaders!");
+var illegalUploaders;
+
 if(illegalTaglist == "!notags!") {
     illegalTaglist = "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood";
     illegalTags = new Array("enter.illegal.tags.here", "separated.by.spaces.only", "no.newlines", "scat", "puke", "blood");
 } else {
     illegalTags = illegalTaglist.split(" ");
+}
+
+if(illegalUploadersList == "!nouploaders!") {
+    illegalUploadersList = "putusernameshere separatedbyspacesonly nonewlines";
+    illegalUploaders = new Array("putusernameshere", "separatedbyspacesonly", "nonewlines");
+} else {
+    illegalUploaders = illegalUploadersList.split(" ");
 }
 
 var count = 0;
@@ -35,7 +45,24 @@ var torrents = document.querySelectorAll("tr.torrent");
 // For every torrent
 for(var i = 0; i < torrents.length; i++) {
     var tagElement = torrents[i].querySelector("td > div.tags");
+    var uploaderElement = torrents[i].querySelector("td.user > a");
+
+    if(str_contains("top10.php", window.location.href) === true) {
+        uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
+    }
+
     var currentHidden = false;
+
+    if(uploaderElement !== null) {
+        // For every illegal uploader
+        for(var l = 0; l < illegalUploaders.length; l++) {
+            var uploader = uploaderElement.innerHTML;
+            if(uploader == illegalUploaders[l]) {
+                currentHidden = true;
+                uploaderElement.setAttribute("style","color: #F00 !important; font-weight: bold !important;");
+            }
+        }
+    }
 
     // For every illegal tag
     for(var j = 0; j < illegalTags.length; j++) {
@@ -93,15 +120,28 @@ if(count === 0) {
 
 toggleSpanNode.innerHTML = innerHTMLText;
 
+
+var taglistTextAreaExplanationNode = document.createElement("span");
+taglistTextAreaExplanationNode.innerHTML = "Specify illegal tags here, space separated (example: big.tits scat puke water.sports):";
+taglistTextAreaExplanationNode.setAttribute("style","font-weight: bold;");
+
 var taglistTextAreaNode = document.createElement("textarea");
-taglistTextAreaNode.setAttribute("style","margin-top: 10px;");
 taglistTextAreaNode.rows = 10;
 taglistTextAreaNode.cols = 100;
 taglistTextAreaNode.id = "nseTaglistArea";
 
+var uploaderTextAreaExplanationNode = document.createElement("span");
+uploaderTextAreaExplanationNode.innerHTML = "Specify illegal uploader names here, space separated, case sensitive (example: SuperUploader2017 m3gad1ckZ):";
+uploaderTextAreaExplanationNode.setAttribute("style","font-weight: bold;");
+
+var uploaderTextAreaNode = document.createElement("textarea");
+uploaderTextAreaNode.rows = 5;
+uploaderTextAreaNode.cols = 100;
+uploaderTextAreaNode.id = "nseUploaderArea";
+
 var taglistSaveNode = document.createElement("input");
 taglistSaveNode.type = "button";
-taglistSaveNode.value = "Save tags and reload";
+taglistSaveNode.value = "Save and reload page";
 
 var toggleOptionsNode = document.createElement("input");
 toggleOptionsNode.type = "button";
@@ -109,6 +149,7 @@ toggleOptionsNode.value = "Options";
 toggleOptionsNode.setAttribute("style","margin-left: 5px !important;");
 
 taglistTextAreaNode.innerHTML = illegalTaglist;
+uploaderTextAreaNode.innerHTML = illegalUploadersList;
 
 var optionsWrapperNode = document.createElement("div");
 optionsWrapperNode.setAttribute("style","padding: 5px;");
@@ -117,7 +158,14 @@ optionsWrapperNode.classList.toggle("hidden");
 toggleDivNode.appendChild(toggleSpanNode);
 toggleDivNode.appendChild(toggleOptionsNode);
 toggleDivNode.appendChild(optionsWrapperNode);
+optionsWrapperNode.appendChild(taglistTextAreaExplanationNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(taglistTextAreaNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(uploaderTextAreaExplanationNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(uploaderTextAreaNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(taglistSaveNode);
 
@@ -129,6 +177,7 @@ toggleOptionsNode.onclick = (function() {
 
 taglistSaveNode.onclick = (function() {
     GM_setValue("nseTaglist", document.getElementById("nseTaglistArea").value);
+    GM_setValue("nseUploaders", document.getElementById("nseUploaderArea").value);
     location.reload();
 });
 
