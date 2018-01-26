@@ -8,7 +8,7 @@
 // @include      /^https?://www\.empornium\.(me|sx)/collages\.php\?id=*/
 // @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
 // @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?id=*/
-// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?type=(seeding|leeching)*/
+// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?type=(seeding|leeching)/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
