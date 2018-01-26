@@ -4,16 +4,11 @@
 // @version      1.4
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
-// @match        *://*.empornium.me/torrents.php*
-// @match        *://*.empornium.me/top10.php*
-// @match        *://*.empornium.me/collages.php*
-// @match        *://*.empornium.sx/torrents.php*
-// @match        *://*.empornium.sx/top10.php*
-// @match        *://*.empornium.sx/collages.php*
-// @exclude      *://*.empornium.me/torrents.php?id=*
-// @exclude      *://*.empornium.me/torrents.php?type=uploaded*
-// @exclude      *://*.empornium.sx/torrents.php?id=*
-// @exclude      *://*.empornium.sx/torrents.php?type=uploaded*
+// @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
+// @include      /^https?://www\.empornium\.(me|sx)/collages\.php\?id=*/
+// @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
+// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?id=*/
+// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?type=(seeding|leeching)*/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
