@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.4
+// @version      1.4.1
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
