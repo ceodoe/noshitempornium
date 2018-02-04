@@ -10,8 +10,6 @@ NSE is a JavaScript user script. In order to use it, you'll need to install an e
 * Safari - [Tampermonkey](https://tampermonkey.net/?browser=safari)
 * Edge - [Tampermonkey](https://tampermonkey.net/?browser=edge)
 
-NSE is developed and tested using Vivaldi, and should therefore work flawlessly in Vivaldi, Chrome, and Opera (they all use the same engine).
-
 # How to use
 * Install Tampermonkey/Greasemonkey using the appropriate link above
 * Install NSE by clicking [here](https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js)
