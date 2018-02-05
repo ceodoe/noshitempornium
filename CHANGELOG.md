@@ -1,4 +1,8 @@
 # Changelog
+v1.4.3
+- More include/exclude changes, script should now run correctly on applicable collage pages whilst ignoring 
+  torrent-pages with id or type parameters (torrent details, user seeding/leeching pages)
+  
 v1.4.2
 - Fix bug where script didn't run on collage subpages
 
