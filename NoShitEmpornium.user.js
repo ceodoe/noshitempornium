@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.4.1
+// @version      1.4.2
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
-// @include      /^https?://www\.empornium\.(me|sx)/collages\.php\?id=*/
+// @include      /^https?://www\.empornium\.(me|sx)/collages\.php\?(id|page)/
 // @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
 // @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?id=*/
 // @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?type=(seeding|leeching)/
@@ -85,7 +85,7 @@ if(str_contains("top10.php", window.location.href) === true) {
     referenceNode = document.querySelector("#content > div > form");
 } else if(str_contains("?action=notify", window.location.href) === true) {
     referenceNode = document.querySelector("#content > div > h2");
-} else if(str_contains("collages.php?id=", window.location.href) === true) {
+} else if(str_contains("collages.php?", window.location.href) === true) {
     referenceNode = document.querySelector("#content > div > div.main_column > div:nth-child(7)");
 }
 
