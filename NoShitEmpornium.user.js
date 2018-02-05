@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.4.2
+// @version      1.4.3
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
-// @include      /^https?://www\.empornium\.(me|sx)/collages\.php\?(id|page)/
+// @include      /^https?://www\.empornium\.(me|sx)/collages\.php.*id=*/
 // @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
-// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?id=*/
-// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php\?type=(seeding|leeching)/
+// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php.*(type=|id=)/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
