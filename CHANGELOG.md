@@ -3,7 +3,7 @@ v1.4.2
 - Fix bug where script didn't run on collage subpages
 
 v1.4.1
-- Convert includes to regex (pull request #1)
+- Convert includes to regex (PR [#1](https://github.com/ceodoe/noshitempornium/pull/1))
 
 v1.4
 - New feature: Hide by uploader name. This new feature allows you to specify usernames you want to hide 
