@@ -1,4 +1,10 @@
 # Changelog
+v1.4.2
+- Fix bug where script didn't run on collage subpages
+
+v1.4.1
+- Convert includes to regex (pull request #1)
+
 v1.4
 - New feature: Hide by uploader name. This new feature allows you to specify usernames you want to hide 
   all uploaded torrents from, on all torrent browsing pages, and the Top 10 list. Collages are unaffected, 
