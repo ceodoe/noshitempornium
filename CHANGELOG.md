@@ -1,4 +1,8 @@
 # Changelog
+v1.4.4
+- Fixed bug where script didn't hide uploaders on top10
+- Fixed bug where script wouldn't run on tag searches
+
 v1.4.3
 - More include/exclude changes, script should now run correctly on applicable collage pages whilst ignoring 
   torrent-pages with id or type parameters (torrent details, user seeding/leeching pages)
