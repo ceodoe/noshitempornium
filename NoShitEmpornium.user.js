@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.4.3
+// @version      1.4.4
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
 // @include      /^https?://www\.empornium\.(me|sx)/collages\.php.*id=*/
 // @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
-// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php.*(type=|id=)/
+// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php.*(\?|&)(type=|id=)/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -51,7 +51,7 @@ for(var i = 0; i < torrents.length; i++) {
         // For every illegal uploader
         for(var l = 0; l < illegalUploaders.length; l++) {
             var uploader = uploaderElement.innerHTML;
-            if(uploader == illegalUploaders[l]) {
+            if(uploader.trim() == illegalUploaders[l].trim()) {
                 currentHidden = true;
                 uploaderElement.setAttribute("style","color: #F00 !important; font-weight: bold !important;");
             }
