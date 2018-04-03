@@ -74,15 +74,15 @@ for(var i = 0; i < torrents.length; i++) {
 
         // For every tag in the current torrent
         for(var k = 0; k < tagList.length; k++) {
-			if(tagList[k].innerHTML == illegalTags[j]) {
+            if(tagList[k].innerHTML == illegalTags[j]) {
                 currentHidden = true;
                 tagList[k].setAttribute("style","color: #F00 !important; font-weight: bold !important;");
             } 
-			
-			if(whitelist.includes(tagList[k].innerHTML) === true) {
-				currentHidden = false;
-				tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important;");
-			} 
+            
+            if(whitelist.includes(tagList[k].innerHTML) === true) {
+                currentHidden = false;
+                tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important;");
+            } 
         }
     }
 
@@ -91,8 +91,8 @@ for(var i = 0; i < torrents.length; i++) {
         torrents[i].classList.add("hidden");
         count += 1;
     } else {
-		torrents[i].classList.remove("hidden");
-	}
+        torrents[i].classList.remove("hidden");
+    }
 }
 
 var referenceNode = document.querySelector("div#filter_slidetoggle");
