@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.4.4
+// @version      1.5.0
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
@@ -19,6 +19,9 @@ var illegalTags;
 var illegalUploadersList = GM_getValue("nseUploaders","!nouploaders!");
 var illegalUploaders;
 
+var whitelistList = GM_getValue("nseWhitelist","!nowhitelist!");
+var whitelist
+
 if(illegalTaglist == "!notags!") {
     illegalTaglist = "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood";
     illegalTags = new Array("enter.illegal.tags.here", "separated.by.spaces.only", "no.newlines", "scat", "puke", "blood");
@@ -31,6 +34,13 @@ if(illegalUploadersList == "!nouploaders!") {
     illegalUploaders = new Array("putusernameshere", "separatedbyspacesonly", "nonewlines");
 } else {
     illegalUploaders = illegalUploadersList.split(" ");
+}
+
+if(whitelistList == "!nowhitelist!") {
+    whitelistList = "whitelist.tags go.here";
+    whitelist = new Array("whitelist.tags", "go.here");
+} else {
+    whitelist = whitelistList.split(" ");
 }
 
 var count = 0;
@@ -64,10 +74,15 @@ for(var i = 0; i < torrents.length; i++) {
 
         // For every tag in the current torrent
         for(var k = 0; k < tagList.length; k++) {
-            if(tagList[k].innerHTML == illegalTags[j]) {
+			if(tagList[k].innerHTML == illegalTags[j]) {
                 currentHidden = true;
                 tagList[k].setAttribute("style","color: #F00 !important; font-weight: bold !important;");
-            }
+            } 
+			
+			if(whitelist.includes(tagList[k].innerHTML) === true) {
+				currentHidden = false;
+				tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important;");
+			} 
         }
     }
 
@@ -75,7 +90,9 @@ for(var i = 0; i < torrents.length; i++) {
         torrents[i].style.backgroundColor = "#AAF";
         torrents[i].classList.add("hidden");
         count += 1;
-    }
+    } else {
+		torrents[i].classList.remove("hidden");
+	}
 }
 
 var referenceNode = document.querySelector("div#filter_slidetoggle");
@@ -133,6 +150,15 @@ uploaderTextAreaNode.rows = 5;
 uploaderTextAreaNode.cols = 100;
 uploaderTextAreaNode.id = "nseUploaderArea";
 
+var whitelistTextAreaExplanationNode = document.createElement("span");
+whitelistTextAreaExplanationNode.innerHTML = "Specify whitelist tags here, torrents with whitelisted tags will ignore the above rules:";
+whitelistTextAreaExplanationNode.setAttribute("style","font-weight: bold;");
+
+var whitelistTextAreaNode = document.createElement("textarea");
+whitelistTextAreaNode.rows = 5;
+whitelistTextAreaNode.cols = 100;
+whitelistTextAreaNode.id = "nseWhitelistArea";
+
 var taglistSaveNode = document.createElement("input");
 taglistSaveNode.type = "button";
 taglistSaveNode.value = "Save and reload page";
@@ -144,6 +170,7 @@ toggleOptionsNode.setAttribute("style","margin-left: 5px !important;");
 
 taglistTextAreaNode.innerHTML = illegalTaglist;
 uploaderTextAreaNode.innerHTML = illegalUploadersList;
+whitelistTextAreaNode.innerHTML = whitelistList;
 
 var optionsWrapperNode = document.createElement("div");
 optionsWrapperNode.setAttribute("style","padding: 5px;");
@@ -152,14 +179,24 @@ optionsWrapperNode.classList.toggle("hidden");
 toggleDivNode.appendChild(toggleSpanNode);
 toggleDivNode.appendChild(toggleOptionsNode);
 toggleDivNode.appendChild(optionsWrapperNode);
+
 optionsWrapperNode.appendChild(taglistTextAreaExplanationNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(taglistTextAreaNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
+
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(uploaderTextAreaExplanationNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(uploaderTextAreaNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
+
+optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(whitelistTextAreaExplanationNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(whitelistTextAreaNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
+
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(taglistSaveNode);
 
@@ -172,6 +209,7 @@ toggleOptionsNode.onclick = (function() {
 taglistSaveNode.onclick = (function() {
     GM_setValue("nseTaglist", document.getElementById("nseTaglistArea").value);
     GM_setValue("nseUploaders", document.getElementById("nseUploaderArea").value);
+    GM_setValue("nseWhitelist", document.getElementById("nseWhitelistArea").value);
     location.reload();
 });
 
