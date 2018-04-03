@@ -1,4 +1,7 @@
-# Changelog
+# Changelogv
+v1.5
+- Added whitelist feature
+
 v1.4.4
 - Fixed bug where script didn't hide uploaders on top10
 - Fixed bug where script wouldn't run on tag searches
