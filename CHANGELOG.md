@@ -1,4 +1,4 @@
-# Changelogv
+# Changelog
 v1.5
 - Added whitelist feature
 
