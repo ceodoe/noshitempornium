@@ -1,4 +1,7 @@
 # Changelog
+v1.5.1
+- Fixed bug where a torrent would be hidden if an illegal tag was found after a whitelisted tag in the tag order
+
 v1.5
 - Added whitelist feature
 
