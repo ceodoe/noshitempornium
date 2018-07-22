@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.5.1
+// @version      1.5.2
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
@@ -20,7 +20,7 @@ var illegalUploadersList = GM_getValue("nseUploaders","!nouploaders!");
 var illegalUploaders;
 
 var whitelistList = GM_getValue("nseWhitelist","!nowhitelist!");
-var whitelist
+var whitelist;
 
 if(illegalTaglist == "!notags!") {
     illegalTaglist = "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood";
@@ -134,8 +134,12 @@ toggleSpanNode.innerHTML = innerHTMLText;
 
 
 var taglistTextAreaExplanationNode = document.createElement("span");
-taglistTextAreaExplanationNode.innerHTML = "Specify illegal tags here, space separated (example: big.tits scat puke water.sports):";
+taglistTextAreaExplanationNode.innerHTML = "Tag blacklist";
 taglistTextAreaExplanationNode.setAttribute("style","font-weight: bold;");
+
+var taglistTextAreaExampleNode = document.createElement("span");
+taglistTextAreaExampleNode.innerHTML = "Space separated, example: big.tits scat puke water.sports";
+taglistTextAreaExampleNode.setAttribute("style","font-style: italic; font-size: 12px;");
 
 var taglistTextAreaNode = document.createElement("textarea");
 taglistTextAreaNode.rows = 10;
@@ -143,8 +147,12 @@ taglistTextAreaNode.cols = 100;
 taglistTextAreaNode.id = "nseTaglistArea";
 
 var uploaderTextAreaExplanationNode = document.createElement("span");
-uploaderTextAreaExplanationNode.innerHTML = "Specify illegal uploader names here, space separated, case sensitive (example: SuperUploader2017 m3gad1ckZ):";
+uploaderTextAreaExplanationNode.innerHTML = "Uploader blacklist";
 uploaderTextAreaExplanationNode.setAttribute("style","font-weight: bold;");
+
+var uploaderTextAreaExampleNode = document.createElement("span");
+uploaderTextAreaExampleNode.innerHTML = "Space separated, case sensitive, example: SuperUploader2017 m3gad1ckZ";
+uploaderTextAreaExampleNode.setAttribute("style","font-style: italic; font-size: 12px;");
 
 var uploaderTextAreaNode = document.createElement("textarea");
 uploaderTextAreaNode.rows = 5;
@@ -152,8 +160,12 @@ uploaderTextAreaNode.cols = 100;
 uploaderTextAreaNode.id = "nseUploaderArea";
 
 var whitelistTextAreaExplanationNode = document.createElement("span");
-whitelistTextAreaExplanationNode.innerHTML = "Specify whitelist tags here, torrents with whitelisted tags will ignore the above rules:";
+whitelistTextAreaExplanationNode.innerHTML = "Tag whitelist";
 whitelistTextAreaExplanationNode.setAttribute("style","font-weight: bold;");
+
+var whitelistTextAreaExampleNode = document.createElement("span");
+whitelistTextAreaExampleNode.innerHTML = "Space separated, torrents with whitelisted tags will ignore the above rules";
+whitelistTextAreaExampleNode.setAttribute("style","font-style: italic; font-size: 12px;");
 
 var whitelistTextAreaNode = document.createElement("textarea");
 whitelistTextAreaNode.rows = 5;
@@ -183,17 +195,23 @@ toggleDivNode.appendChild(optionsWrapperNode);
 
 optionsWrapperNode.appendChild(taglistTextAreaExplanationNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(taglistTextAreaExampleNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(taglistTextAreaNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
 
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(uploaderTextAreaExplanationNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(uploaderTextAreaExampleNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(uploaderTextAreaNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
 
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(whitelistTextAreaExplanationNode);
+optionsWrapperNode.appendChild(document.createElement("br"));
+optionsWrapperNode.appendChild(whitelistTextAreaExampleNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
 optionsWrapperNode.appendChild(whitelistTextAreaNode);
 optionsWrapperNode.appendChild(document.createElement("br"));
