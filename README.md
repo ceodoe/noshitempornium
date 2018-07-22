@@ -1,6 +1,12 @@
 # NoShitEmpornium
 Script to hide torrents with unwanted tags or by unwanted uploaders on Empornium
 
+# Features
+- Blacklist tags and uploaders
+- Whitelist tags to ignore blacklist rules
+- Tag highlighting based on blacklist/whitelist
+- Neat toggle button and GUI to manage taglists
+
 # Prerequisites
 NSE is a JavaScript user script. In order to use it, you'll need to install an extension/addon in your browser that can handle and execute user scripts.
 
@@ -15,11 +21,11 @@ NSE is a JavaScript user script. In order to use it, you'll need to install an e
 * Install Tampermonkey/Greasemonkey using the appropriate link above
 * Install NSE by clicking [here](https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js)
 * Follow the instructions given by Tampermonkey/Greasemonkey to install the script
-* Once the script is installed, visit an applicable page on Emp (Torrents, Top 10, Collages)
-* Click the Options button in the new, blue area below the search center
-* Add your list of space-separated tags or uploaders in the newly revealed text areas
+* Once the script is installed, visit an applicable page on Emp (Torrents, Top 10, Collages, Notifications)
+* Click the Options button in the new, blue NSE area placed below the search center
+* Add your lists of space-separated tags or uploaders in the newly revealed text areas
 * Click "Save and reload page" to save your options and reload the page
-* Torrents containing the entered tags or by entered usernames will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button
+* Torrents containing the entered tags or by entered usernames will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button. Torrents containing any tag in the whitelist will be shown regardless of blacklist rules.
 
 # Important note
 If you:
@@ -32,4 +38,4 @@ If you:
 
 ...your saved taglist will be deleted. If you're planning to do any of these things, make sure you back up your taglist first.
 
-# [Click for changelog](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md)
+# [Click here for changelog](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md)
