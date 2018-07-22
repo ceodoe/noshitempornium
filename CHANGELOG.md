@@ -1,4 +1,7 @@
 # Changelog
+v1.5.2
+- Clarified the explanations and reformatted the text in the management area
+
 v1.5.1
 - Fixed bug where a torrent would be hidden if an illegal tag was found after a whitelisted tag in the tag order
 
