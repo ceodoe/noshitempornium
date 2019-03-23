@@ -1,4 +1,7 @@
 # Changelog
+v1.5.3
+- Fixed a bug where NSE wouldn't work on torrents.php after a server-side HTML change
+
 v1.5.2
 - Clarified the explanations and reformatted the text in the management area
 
