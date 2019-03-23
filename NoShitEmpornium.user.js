@@ -86,7 +86,7 @@ for(var i = 0; i < torrents.length; i++) {
 
             if(whitelist.includes(tagList[k].innerHTML) === true) {
                 currentWhitelisted = true;
-                tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important;");
+                tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important; display: inline-block;");
             }
         }
     }
