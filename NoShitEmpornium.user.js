@@ -64,7 +64,7 @@ for(var i = 0; i < torrents.length; i++) {
             var uploader = uploaderElement.innerHTML;
             if(uploader.trim() == illegalUploaders[l].trim()) {
                 currentHidden = true;
-                uploaderElement.setAttribute("style","color: #F00 !important; font-weight: bold !important;");
+                uploaderElement.setAttribute("style","color: #F00 !important; font-weight: bold !important; ");
             }
         }
     }
@@ -81,7 +81,7 @@ for(var i = 0; i < torrents.length; i++) {
         for(var k = 0; k < tagList.length; k++) {
             if(tagList[k].innerHTML == illegalTags[j]) {
                 currentHidden = true;
-                tagList[k].setAttribute("style","color: #F00 !important; font-weight: bold !important;");
+                tagList[k].setAttribute("style","color: #F00 !important; font-weight: bold !important; display: inline-block;");
             }
 
             if(whitelist.includes(tagList[k].innerHTML) === true) {
