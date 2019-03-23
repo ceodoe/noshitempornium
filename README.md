@@ -17,7 +17,7 @@ NSE is a JavaScript user script. In order to use it, you'll need to install an e
 * Edge - [Tampermonkey](https://tampermonkey.net/?browser=edge)
 
 # How to use
-* Make sure the checkbox for "Hide tags in lists" is **unchecked** in your user settings on Emp, the script won't be able to access tags if they're hidden (hover over your username at the top right of any page and click Settings). In addition, it is recommended that you increase the value of "Max Tags in lists" to a high number such as 1000, so that torrents with a lot of tags will correctly handled.
+* Make sure the checkbox for "Hide tags in lists" is **unchecked** in your user settings on Emp, the script won't be able to access tags if they're hidden (hover over your username at the top right of any page and click Settings). In addition, it is recommended that you increase the value of "Max Tags in lists" to a high number such as 1000, so that torrents with a lot of tags will be correctly handled.
 * Install Tampermonkey/Greasemonkey using the appropriate link above
 * Install NSE by clicking [here](https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js)
 * Follow the instructions given by Tampermonkey/Greasemonkey to install the script
