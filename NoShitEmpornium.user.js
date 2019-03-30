@@ -111,7 +111,7 @@ if(str_contains("top10.php", window.location.href) === true) {
 } else if(str_contains("?action=notify", window.location.href) === true) {
     referenceNode = document.querySelector("#content > div > h2");
 } else if(str_contains("collages.php?", window.location.href) === true) {
-    referenceNode = document.querySelector("#content > div > div.main_column > div:nth-child(7)");
+    referenceNode = document.querySelector("div.clear:nth-child(6)");
 }
 
 var toggleDivNode = document.createElement("div");
