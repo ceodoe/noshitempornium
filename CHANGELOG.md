@@ -1,4 +1,7 @@
 # Changelog
+v1.5.4
+- Fixed bug where script would not filter torrents on notifications page
+
 v1.5.3
 - Fixed a bug where NSE wouldn't work on torrents.php after a server-side HTML change
 
