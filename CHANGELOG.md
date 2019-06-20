@@ -1,4 +1,8 @@
 # Changelog
+v1.5.5
+- Fixed bug where NSE would not work on torrents.php after site update
+- Fixed tag misalignment when using tag highlighter
+
 v1.5.4
 - Fixed bug where script would not filter torrents on notifications page
 - Fixed bug where options area would not appear in collages
