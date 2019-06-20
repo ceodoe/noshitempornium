@@ -2,6 +2,7 @@
 v1.5.5
 - Fixed bug where NSE would not work on torrents.php after site update
 - Fixed tag misalignment when using tag highlighter
+- Add @downloadURL for automatic updates
 
 v1.5.4
 - Fixed bug where script would not filter torrents on notifications page
