@@ -3,6 +3,7 @@
 // @namespace    http://www.empornium.me/
 // @version      1.5.5
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
+// @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
 // @include      /^https?://www\.empornium\.(me|sx)/collages\.php.*id=*/
