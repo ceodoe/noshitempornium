@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      1.5.4
+// @version      1.5.5
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
@@ -73,24 +73,16 @@ for(var i = 0; i < torrents.length; i++) {
     for(var j = 0; j < illegalTags.length; j++) {
         var tagList = tagElement.querySelectorAll("a");
 
-        if(str_contains("torrents.php", window.location.href) === true) {
-            if(str_contains("action=notify", window.location.href) === true) {
-                tagList = tagElement.querySelectorAll("a");
-            } else {
-                tagList = tagElement.querySelectorAll("a > div");
-            }
-        }
-
         // For every tag in the current torrent
         for(var k = 0; k < tagList.length; k++) {
             if(tagList[k].innerHTML == illegalTags[j]) {
                 currentHidden = true;
-                tagList[k].setAttribute("style","color: #F00 !important; font-weight: bold !important; display: inline-block;");
+                tagList[k].setAttribute("style","color: #F00 !important; font-weight: bold !important; display: inline;");
             }
 
             if(whitelist.includes(tagList[k].innerHTML) === true) {
                 currentWhitelisted = true;
-                tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important; display: inline-block;");
+                tagList[k].setAttribute("style","color: #0F0 !important; font-weight: bold !important; display: inline;");
             }
         }
     }
