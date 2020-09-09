@@ -1,4 +1,14 @@
 # Changelog
+v2.0a
+- All new design and color scheme
+- Added toggleable help boxes for each list
+- Added blacklist/whitelist based on words in torrent title
+- Added whitelist for uploaders
+- Character case in uploader blacklist no longer matters
+- Split save and reload into two separate buttons
+- Many more improvements under the hood
+- Please report any bugs on GitHub or Emp!
+
 v1.5.5
 - Fixed bug where NSE would not work on torrents.php after site update
 - Fixed tag misalignment when using tag highlighter
