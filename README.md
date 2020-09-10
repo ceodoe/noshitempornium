@@ -8,7 +8,7 @@ Script to hide torrents with unwanted tags, titles, or by unwanted uploaders on 
 - Neat toggle button and GUI to manage taglists
 
 # Prerequisites
-NSE is a JavaScript user script. In order to use it, you'll need to install an extension/addon in your browser that can handle and execute user scripts.
+NSE is a JavaScript user script. In order to use it, you'll need to install Tampermonkey in your browser to handle and execute user scripts.
 
 * Chrome/Vivaldi - [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)
 * Opera - [Tampermonkey](https://addons.opera.com/en/extensions/details/tampermonkey-beta/)
@@ -16,20 +16,21 @@ NSE is a JavaScript user script. In order to use it, you'll need to install an e
 * Safari - [Tampermonkey](https://tampermonkey.net/?browser=safari)
 * Edge - [Tampermonkey](https://tampermonkey.net/?browser=edge)
 
-Note that Tampermonkey is the only supported userscript engine.
+Note that Tampermonkey is only tested with Tampermonkey, and thus it is the only "officially" supported userscript engine.
 
 # How to use
 * Make sure the checkbox for "Hide tags in lists" is **unchecked** in your user settings on Emp, the script won't be able to access tags if they're hidden (hover over your username at the top right of any page and click Settings). In addition, it is recommended that you increase the value of "Max Tags in lists" to a high number such as 1000, so that torrents with a lot of tags will be correctly handled.
-* Install Tampermonkey/Greasemonkey using the appropriate link above
+* Install Tampermonkey using the appropriate link above
 * Install NSE by clicking [here](https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js)
-* Follow the instructions given by Tampermonkey/Greasemonkey to install the script
+* Follow the instructions given by Tampermonkey to install the script
 * Once the script is installed, visit an applicable page on Emp (Torrents, Top 10, Collages, Notifications)
-* Click the Options button in the new, blue NSE area placed below the search center
-* Add your lists of space-separated tags or uploaders in the newly revealed text areas
-* Click "Save and reload page" to save your options and reload the page
-* Torrents containing the entered tags or by entered usernames will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button. Torrents containing any tag in the whitelist will be shown regardless of blacklist rules.
+* Click the Options button in the new NSE configuration area placed below the search center
+* Add your lists of tags, title words or uploaders in the newly revealed areas
+* Click the question mark next to each list for an explanation of what it does
+* Click "Save" then "Reload page" to save your options and reload the page
+* Torrents matching your blacklist rules will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button. Torrents matching whitelist rules will be shown regardless of blacklist rules.
 
-# Important note
+# Important note / Backups
 If you:
 
 * Use incognito mode
@@ -38,6 +39,13 @@ If you:
 * Reinstall the same version of the script
 * Uninstall then reinstall the script
 
-...your saved taglist will be deleted. If you're planning to do any of these things, make sure you back up your taglist first!
+...your saved taglist will be deleted. If you're planning to do any of these things, make sure you back up your lists first! 
+
+How to back up all your NSE settings:
+* Enter the Tampermonkey dashboard by clicking its icon on your browser toolbar and selecting "Dashboard"
+* Click the "Settings" tab, and set "Config mode" to "Advanced"
+* Go back to the "Installed Userscripts" list, and click on NoShitEmpornium
+* Select the "Storage" tab, and copy-paste all that text into a file, save it to your computer or on cloud storage
+* You have now backed up your settings. To restore them, paste your your settings back into the Storage text box and click "Save"
 
 # [Click here for changelog](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md)
