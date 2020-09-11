@@ -314,8 +314,8 @@ htmlContent.innerHTML = `
 	</section>
 	
 	<div style="text-align: center;">
-		<span id="nseSaveButton" class="nseNiceButton">Save</span> 
-		<span id="nseReloadButton" class="nseNiceButton">Reload page and apply changes</span> 
+		<span id="nseSaveButton" class="nseNiceButton">💾 Save</span> 
+		<span id="nseReloadButton" class="nseNiceButton">🔃 Reload page and apply changes</span> 
 	</div>
 	
 	<div style="text-align: center;" id="nseSaveDiv" class="hidden">
