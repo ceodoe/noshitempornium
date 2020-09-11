@@ -1,4 +1,8 @@
 # Changelog
+v2.0.1a
+- Added option to hide torrent tag lists, for a cleaner look
+- More code optimizations
+
 v2.0a
 - All new design and color scheme
 - Added toggleable help boxes for each list
