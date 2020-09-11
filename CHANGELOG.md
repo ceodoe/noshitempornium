@@ -1,4 +1,12 @@
 # Changelog
+v2.0.2a
+- Smaller toggle/options box
+- Smaller font sizes
+- Changed font to Helvetica
+- Removed broken external font, replaced icons with emojis
+- Added padding and margins to tabs and main expanded box
+- Adjusted text area and explanation to fit better within parent
+
 v2.0.1a
 - Added option to hide torrent tag lists, for a cleaner look
 - More code optimizations
