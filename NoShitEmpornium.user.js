@@ -430,7 +430,7 @@ document.getElementById("nseUBLE").innerHTML = `
 <div class="nseExplanationNode">This is where you specify the names of uploaders you want to hide all uploads from, unless overriden by a whitelist rule. Uploader names will be highlighted in <span style="color:#f00"><b>red</b></span> when viewing hidden torrents. Character case does not matter.
 </div>
 
-<div class="nseExplanationNode">Example:<br /><pre>SuperUploader2007 LowQualityUploadsIncorporated whyevenexpendtheeffort</pre></div>
+<div class="nseExplanationNode">Example:<br /><pre>SuperUploader2007 LowQualityUploadsIncorporated</pre></div>
 `;
 
 document.getElementById("nseUWLE").innerHTML = `
