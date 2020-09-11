@@ -375,7 +375,7 @@ htmlContent.innerHTML = `
 			<option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
 			<option value="nseThemeBaked" ${nseSelectedTheme=="nseThemeBaked" ? "selected='selected'" : ''}>Baked</option>
 			<option value="nseThemeCustom" ${nseSelectedTheme=="nseThemeCustom" ? "selected='selected'" : ''}>Custom</option>
-          </select> <span id="nseThemeDescription" class="explanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a black background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
+          </select> <span id="nseThemeDescription" class="explanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a blue background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
           
           <div id="nseCustomThemeDiv" ${nseSelectedTheme=="nseThemeCustom" ? '' : 'class="hidden"'}>
             <p>
@@ -462,7 +462,7 @@ document.getElementById("nseThemeDropdown").onchange = (function() {
     if(selectedTheme == "nseThemeDefault") {
         descriptionNode.innerHTML = "White background with black text and blue accents";
     } else if(selectedTheme == "nseThemeLegacy") {
-        descriptionNode.innerHTML = "Ye Olde Theme with a black background and white text";
+        descriptionNode.innerHTML = "Ye Olde Theme with a blue background and white text";
     } else if(selectedTheme == "nseThemeEdgy") {
         descriptionNode.innerHTML = "For the edgelord in all of us, red text on a black background";
     } else if(selectedTheme == "nseThemeBaked") {
