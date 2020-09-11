@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.0.2a
+// @version      2.1a
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.0.2a"
+var nseVersion = "v2.1a"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -36,7 +36,8 @@ var nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders","");
 var nseWhitelistUploaders;
 
 var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
-
+var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
+var nseCustomTheme = GM_getValue("nseCustomTheme","");
 
 // Initialize lists and options
 
@@ -92,7 +93,66 @@ if(nseObliviousModeEnabled == "") {
     nseObliviousModeEnabled = false; // Defaults to disabled
 }
 
+if(nseSelectedTheme == "") {
+    nseSelectedTheme = "nseThemeDefault";
+}
+
+if(nseCustomTheme == "") {
+    nseCustomTheme = {
+        backgroundColor: "#fff",
+        backgroundHighlightColor: "#cfe7ff",
+        foregroundColor: "#000",
+        accentColor: "#0af",
+        highlightColor: "#0071b0"
+    }
+}
+
 // End of initialization
+
+
+// Define themes;
+var themes = {
+    nseThemeDefault:
+        { 
+            backgroundColor: "#fff",
+            backgroundHighlightColor: "#cfe7ff",
+            foregroundColor: "#000",
+            accentColor: "#0af",
+            highlightColor: "#0071b0"
+        },
+    nseThemeLegacy:
+        { 
+            backgroundColor: "#00f",
+            backgroundHighlightColor: "#44f",
+            foregroundColor: "#fff",
+            accentColor: "#ddd",
+            highlightColor: "#fff"
+        },
+    nseThemeEdgy:
+        { 
+            backgroundColor: "#000",
+            backgroundHighlightColor: "#333",
+            foregroundColor: "#f00",
+            accentColor: "#f22",
+            highlightColor: "#f22"
+        },
+    nseThemeBaked: 
+        { 
+            backgroundColor: "#8300ff",
+            backgroundHighlightColor: "#087300",
+            foregroundColor: "#0a8700",
+            accentColor: "#b669ff",
+            highlightColor: "#b669ff"
+        },
+    nseThemeCustom: 
+        {
+        backgroundColor: nseCustomTheme["backgroundColor"],
+        backgroundHighlightColor: nseCustomTheme["backgroundHighlightColor"],
+        foregroundColor: nseCustomTheme["foregroundColor"],
+        accentColor: nseCustomTheme["accentColor"],
+        highlightColor: nseCustomTheme["highlightColor"]
+        }
+};
 
 
 // Main loop - for every torrent:
@@ -101,6 +161,12 @@ var torrents = document.querySelectorAll("tr.torrent");
 
 for(var i = 0; i < torrents.length; i++) {
     var tagElement = torrents[i].querySelector("td > div.tags");
+    
+    if(tagElement === null) {
+        continue; // skip to next iteration if we can't get taglist,
+                  // I've seen rows break on rare occasions in the source HTML
+    }
+    
     var uploaderElement = torrents[i].querySelector("td.user > a");
     var titleElement;
     
@@ -301,15 +367,55 @@ htmlContent.innerHTML = `
         </label>
             <span class="explanationSpan">(Hide torrent tag lists)</span>
         </p>
+        
+        <p>Theme:<br />	
+		  <select name="nseThemeDropdown" id="nseThemeDropdown">
+			<option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
+			<option value="nseThemeLegacy" ${nseSelectedTheme=="nseThemeLegacy" ? "selected='selected'" : ''}>Legacy</option>
+			<option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
+			<option value="nseThemeBaked" ${nseSelectedTheme=="nseThemeBaked" ? "selected='selected'" : ''}>Baked</option>
+			<option value="nseThemeCustom" ${nseSelectedTheme=="nseThemeCustom" ? "selected='selected'" : ''}>Custom</option>
+          </select> <span id="nseThemeDescription" class="explanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a black background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
+          
+          <div id="nseCustomThemeDiv" ${nseSelectedTheme=="nseThemeCustom" ? '' : 'class="hidden"'}>
+            <p>
+                You can use any <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value" target="_blank">CSS color notation</a> here.<br />
+                Examples: <span style="font-family: Courier New;">#ffffff &mdash; rgb(0,0,255) &mdash; aquamarine</span>
+            </p>
+            
+            <p>
+                Background color:<br />
+                <input type="text" id="nseCustomThemeBgCol" value='${nseCustomTheme['backgroundColor']}' />
+            </p>
+            <p>
+                Background highlight color:<br />
+                <input type="text" id="nseCustomThemeBgHighCol" value='${nseCustomTheme['backgroundHighlightColor']}' />
+            </p>
+            <p>
+                Foreground color:<br />
+                <input type="text" id="nseCustomThemeForeCol" value='${nseCustomTheme['foregroundColor']}' />
+            </p>
+            <p>
+                Accent color:<br />
+                <input type="text" id="nseCustomThemeAccentCol" value='${nseCustomTheme['accentColor']}' />
+            </p>
+            <p>
+                Highlight color:<br />
+                <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme['highlightColor']}' />
+            </p>
+            
+            <p>Remember to click "Save" to save your changes!</p>
+          </div>
+        </p>
         <p>More options coming soon!</p>
     <h3>About</h3>
 	  <p>
-		  NoShitEmpornium ${nseVersion} was made with 💕 by <a href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
+		  NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
 	  </p>
 	  <p>
-	    <span class="nseImageButton" id="nseGithub"> <a href="https://github.com/ceodoe/noshitempornium" target="_blank">Visit the project's GitHub page</a></span><br />
-	    <span class="nseImageButton" id="nseChangelog"> <a href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">See the changelog</a></span><br />
-	    <span class="nseImageButton" id="nseEmpoThread"> <a href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread</a></span><br />
+	    <span class="nseImageButton" id="nseGithub"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">Visit the project's GitHub page</a></span><br />
+	    <span class="nseImageButton" id="nseChangelog"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">See the changelog</a></span><br />
+	    <span class="nseImageButton" id="nseEmpoThread"> <a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread</a></span><br />
 	  </p>
 	</section>
 	
@@ -343,6 +449,29 @@ document.getElementById("nseToggleOptionsNode").onclick = (function() {
     document.getElementById("nseMainDiv").classList.toggle("hidden");
 });
 
+document.getElementById("nseThemeDropdown").onchange = (function() {
+    var selectedTheme = this.options[this.selectedIndex].value;
+    var descriptionNode = document.getElementById("nseThemeDescription");
+    
+    if(selectedTheme == "nseThemeCustom") {
+        document.getElementById("nseCustomThemeDiv").classList.remove("hidden");
+    } else {
+        document.getElementById("nseCustomThemeDiv").classList.add("hidden");
+    }
+    
+    if(selectedTheme == "nseThemeDefault") {
+        descriptionNode.innerHTML = "White background with black text and blue accents";
+    } else if(selectedTheme == "nseThemeLegacy") {
+        descriptionNode.innerHTML = "Ye Olde Theme with a black background and white text";
+    } else if(selectedTheme == "nseThemeEdgy") {
+        descriptionNode.innerHTML = "For the edgelord in all of us, red text on a black background";
+    } else if(selectedTheme == "nseThemeBaked") {
+        descriptionNode.innerHTML = "Ayyyy 420 blaze it &mdash; Green and purple";
+    } else if(selectedTheme == "nseThemeCustom") {
+        descriptionNode.innerHTML = "Define your own colors using the text boxes below";
+    }
+});
+
 // Save function
 document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseTaglist", document.getElementById("nseBlacklistTaglistArea").value); // Legacy name for BC
@@ -355,6 +484,22 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseWhitelistUploaders", document.getElementById("nseWhitelistUploadersArea").value);
     
     GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
+    
+    var nseThemeDropdown = document.getElementById("nseThemeDropdown");
+    GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
+    
+    if(nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value == "nseThemeCustom") {
+        // save custom colors
+        nseCustomTheme = {
+            backgroundColor: document.getElementById("nseCustomThemeBgCol").value,
+            backgroundHighlightColor: document.getElementById("nseCustomThemeBgHighCol").value,
+            foregroundColor: document.getElementById("nseCustomThemeForeCol").value,
+            accentColor: document.getElementById("nseCustomThemeAccentCol").value,
+            highlightColor: document.getElementById("nseCustomThemeHighCol").value
+        };
+        
+        GM_setValue("nseCustomTheme", nseCustomTheme);
+    }
 
     var time = new Date().toLocaleTimeString();
     document.getElementById("nseSaveDiv").innerHTML = "Saved at " + time + "!";
@@ -462,12 +607,12 @@ addGlobalStyle(`
 .nseOuterDiv {
     font-family: Helvetica;
     margin:auto;
-    color:#345;
+    color: ${themes[nseSelectedTheme]["foregroundColor"]};
     width: 600px;
     padding: 10px;
-    border: 1px solid rgba(0,0,0,.2);
+    border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     box-shadow: 0 1px 3px rgba(0,0,0,.1);
-    background-color: #FFF !important;
+    background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
     border-radius: 20px;
 }
 
@@ -478,7 +623,7 @@ p:not(:last-child) {
 section {
      display: none;
      padding: 20px 0 0;
-     border-top: 1px solid #abc;
+     border-top: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
 }
 
 .nseRadioButton {
@@ -491,9 +636,9 @@ section {
      padding: 15px 25px;
      font-weight: 600;
      text-align: center;
-     color: #abc;
-     background-color: #fff !important;
-     border: 1px solid blue;
+     color: ${themes[nseSelectedTheme]["accentColor"]};
+     background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
+     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
      margin-right: 5px;
 }
 
@@ -527,16 +672,21 @@ section {
     margin-right: 5px;
 }
 
+a.nseLink, a.nseLink:visited {
+    color: ${themes[nseSelectedTheme]["accentColor"]};
+}
+
 .nseLabel:hover {
-     color: #789;
+     color: ${themes[nseSelectedTheme]["highlightColor"]};
+     background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
      cursor: pointer;
 }
 
 .nseRadioButton:checked + .nseLabel {
-     color: #0af;
-     border: 1px solid #abc;
-     border-top: 2px solid #0af;
-     border-bottom: 1px solid #fff;
+     color: ${themes[nseSelectedTheme]["accentColor"]};
+     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
+     border-top: 2px solid ${themes[nseSelectedTheme]["accentColor"]};
+     border-bottom: 1px solid ${themes[nseSelectedTheme]["backgroundColor"]};
 }
 
 #nseTab1:checked ~ #nseContent1,#nseTab2:checked ~ #nseContent2,#nseTab3:checked ~ #nseContent3,#nseTab4:checked ~ #nseContent4 {
@@ -554,7 +704,7 @@ section {
 
 .explanationSpan {
      font-size: 14px !important;
-     color: #AAA;
+     color: ${themes[nseSelectedTheme]["accentColor"]};
 }
 
 .nseListHeader {
@@ -563,12 +713,12 @@ section {
 
 .nseImageButton {
        position: relative;
-       color: #000;
+       color: ${themes[nseSelectedTheme]["foregroundColor"]};
        font-weight: bold;
 }
 
 .nseImageButton > a, .nseImageButton  > a:visited {
-     color: #000;
+     color: ${themes[nseSelectedTheme]["foregroundColor"]};
      text-decoration: none;
      border: 0;
 }
@@ -614,11 +764,11 @@ section {
      content: "👍";
 }
 
-.nseExplanationBox {
+.nseExplanationBox, #nseCustomThemeDiv {
     width: 97%;
     margin-top: 10px;
     margin-bottom: 10px;
-    border: 1px solid black;
+    border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     padding: 10px;
     border-radius: 10px;
 }
@@ -663,15 +813,19 @@ section {
 }
 
 .nseNiceButton {
-    background-color: #fff !important;
-    color: #000 !important;
-    border: 1px solid gray;
+    background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
+    color: ${themes[nseSelectedTheme]["foregroundColor"]} !important;
+    border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     border-radius: 10px;
     cursor: pointer;
     padding: 5px;
     margin-left: 5px;
     margin-right: 5px;
     font-size: 16px;
+}
+
+.nseNiceButton:hover {
+    background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
 }
 
 #nseSaveDiv {
@@ -681,6 +835,10 @@ section {
 
 #nseMainDiv {
     margin-top: 10px;
+}
+
+h3 {
+    color: ${themes[nseSelectedTheme]["foregroundColor"]} !important;
 }
 
 `);
