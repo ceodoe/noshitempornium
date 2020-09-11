@@ -6,6 +6,7 @@ v2.0.2a
 - Removed broken external font, replaced icons with emojis
 - Added padding and margins to tabs and main expanded box
 - Adjusted text area and explanation to fit better within parent
+- Removed NSE tag on toggle button
 
 v2.0.1a
 - Added option to hide torrent tag lists, for a cleaner look
