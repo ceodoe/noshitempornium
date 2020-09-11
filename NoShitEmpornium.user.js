@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.0a
+// @version      2.0.1a
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -16,35 +16,39 @@
 // ==/UserScript==
 
 
-// Load saved lists
-var nseBlacklistTaglist = GM_getValue("nseTaglist","!notags!"); // 3 unchanged names to allow backwards comp
+// Load saved lists and options
+var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
 var nseBlacklistTags;
 
-var nseWhitelistTaglist = GM_getValue("nseWhitelist","!nowhitelist!"); // ^
+var nseWhitelistTaglist = GM_getValue("nseWhitelist",""); // ^
 var nseWhitelistTags;
 
-var nseBlacklistTitleList = GM_getValue("nseBlacklistTitles","!noTitleBL!");
+var nseBlacklistTitleList = GM_getValue("nseBlacklistTitles","");
 var nseBlacklistTitleWords;
 
-var nseWhitelistTitleList = GM_getValue("nseWhitelistTitles","!noTitleWL!");
+var nseWhitelistTitleList = GM_getValue("nseWhitelistTitles","");
 var nseWhitelistTitleWords;
 
-var nseBlacklistUploadersList = GM_getValue("nseUploaders","!nouploaders!"); // ^
+var nseBlacklistUploadersList = GM_getValue("nseUploaders",""); // ^
 var nseBlacklistUploaders;
 
-var nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders","!noUploadersWL!");
+var nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders","");
 var nseWhitelistUploaders;
 
+var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
+
+
+// Initialize lists and options
 
 // Initialize tag lists
-if(nseBlacklistTaglist == "!notags!" || nseBlacklistTaglist.trim() == "") {
+if(nseBlacklistTaglist.trim() == "") {
     nseBlacklistTaglist = "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood";
     nseBlacklistTags = new Array("enter.illegal.tags.here", "separated.by.spaces.only", "no.newlines", "scat", "puke", "blood");
 } else {
     nseBlacklistTags = nseBlacklistTaglist.split(" ");
 }
 
-if(nseWhitelistTaglist == "!nowhitelist!" || nseWhitelistTaglist.trim() == "") {
+if(nseWhitelistTaglist.trim() == "") {
     nseWhitelistTaglist = "whitelist.tags go.here";
     nseWhitelistTags = new Array("whitelist.tags", "go.here");
 } else {
@@ -53,14 +57,14 @@ if(nseWhitelistTaglist == "!nowhitelist!" || nseWhitelistTaglist.trim() == "") {
 
 
 // Initialize title lists
-if(nseBlacklistTitleList == "!noTitleBL!" || nseBlacklistTitleList.trim() == "") {
+if(nseBlacklistTitleList.trim() == "") {
     nseBlacklistTitleList = "fillerword titleblacklist";
     nseBlacklistTitleWords = new Array("fillerword", "titleblacklist");
 } else {
     nseBlacklistTitleWords = nseBlacklistTitleList.split(" ");
 }
 
-if(nseWhitelistTitleList == "!noTitleWL!" || nseWhitelistTitleList.trim() == "") {
+if(nseWhitelistTitleList.trim() == "") {
     nseWhitelistTitleList = "fillerword titlewhitelist";
     nseWhitelistTitleWords = new Array("fillerword", "titlewhitelist");
 } else {
@@ -69,27 +73,32 @@ if(nseWhitelistTitleList == "!noTitleWL!" || nseWhitelistTitleList.trim() == "")
 
 
 // Initialize uploader lists
-if(nseBlacklistUploadersList == "!nouploaders!" || nseBlacklistUploadersList.trim() == "") {
+if(nseBlacklistUploadersList.trim() == "") {
     nseBlacklistUploadersList = "putusernameshere separatedbyspacesonly nonewlines";
     nseBlacklistUploaders = new Array("putusernameshere", "separatedbyspacesonly", "nonewlines");
 } else {
     nseBlacklistUploaders = nseBlacklistUploadersList.split(" ");
 }
 
-if(nseWhitelistUploadersList == "!noUploadersWL!" || nseWhitelistUploadersList.trim() == "") {
+if(nseWhitelistUploadersList.trim() == "") {
     nseWhitelistUploadersList = "putusernameshere separatedbyspacesonly nonewlines";
     nseWhitelistUploaders = new Array("putusernameshere", "separatedbyspacesonly", "nonewlines");
 } else {
     nseWhitelistUploaders = nseWhitelistUploadersList.split(" ");
 }
 
+// Initialize options
+if(nseObliviousModeEnabled == "") {
+    nseObliviousModeEnabled = false; // Defaults to disabled
+}
+
 // End of initialization
 
 
+// Main loop - for every torrent:
 var count = 0;
 var torrents = document.querySelectorAll("tr.torrent");
 
-// Main loop - for every torrent:
 for(var i = 0; i < torrents.length; i++) {
     var tagElement = torrents[i].querySelector("td > div.tags");
     var uploaderElement = torrents[i].querySelector("td.user > a");
@@ -104,12 +113,16 @@ for(var i = 0; i < torrents.length; i++) {
     if(str_contains("top10.php", window.location.href) === true) {
         uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
     }
+    
+    if(nseObliviousModeEnabled == true) {
+        tagElement.classList.add("hidden");
+    }
 
     var currentHidden = false;
     var currentWhitelisted = false;
 
-    // Check uploaders first
-    if(uploaderElement !== null) {
+    // Check uploaders
+    if(uploaderElement !== null) { // If it is null, it's an anon upload
         var uploader = uploaderElement.innerHTML.trim().toLowerCase();
         
         for(var l = 0; l < nseBlacklistUploaders.length; l++) {
@@ -120,6 +133,7 @@ for(var i = 0; i < torrents.length; i++) {
         }
         
         // If currentHidden is still false, that means no blacklisted uploader was found, check whitelist
+        // If currentHidden is true, blacklisted uploader was found, and since usernames are unique, skip check
         if(currentHidden === false) {
             for(var m = 0; m < nseWhitelistUploaders.length; m++) {
                 if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
@@ -170,12 +184,12 @@ for(var i = 0; i < torrents.length; i++) {
         }
     }
 
-    if(currentHidden === true && currentWhitelisted === false) {
+    if(currentWhitelisted === true) {
+        torrents[i].classList.remove("hidden");
+        } else if(currentHidden === true) {
         torrents[i].style.backgroundColor = "#AAF";
         torrents[i].classList.add("hidden");
         count += 1;
-    } else if(currentWhitelisted === true) {
-        torrents[i].classList.remove("hidden");
     }
 }
 // End of main filtering loop
@@ -233,14 +247,14 @@ htmlContent.innerHTML = `
 	  <div id="nseBLE" class="nseExplanationBox hidden">
 		  
 	  </div>
-		<textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10></textarea>
+		<textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
 	</div>
     <div class="nseFieldDiv">
       <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">Tag whitelist</span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
       <div id="nseWLE" class="nseExplanationBox hidden">
 		  
 	  </div>
-		<textarea class="nseTextArea" id="nseWhitelistTaglistArea" rows=10></textarea>
+		<textarea class="nseTextArea" id="nseWhitelistTaglistArea" rows=10>${nseWhitelistTaglist}</textarea>
     </div>
   </section>
 
@@ -250,14 +264,14 @@ htmlContent.innerHTML = `
 	  <div id="nseTitleBLE" class="nseExplanationBox hidden">
         
 	  </div>
-		<textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10></textarea>
+		<textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
 	</div>
     <div class="nseFieldDiv">
       <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">Title whitelist</span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
       <div id="nseTitleWLE" class="nseExplanationBox hidden">
 		 
 	  </div>
-		<textarea class="nseTextArea" id="nseWhitelistTitleListArea" rows=10></textarea>
+		<textarea class="nseTextArea" id="nseWhitelistTitleListArea" rows=10>${nseWhitelistTitleList}</textarea>
     </div>
   </section>
 
@@ -267,19 +281,27 @@ htmlContent.innerHTML = `
 	  <div id="nseUBLE" class="nseExplanationBox hidden">
 		  
 	  </div>
-		<textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10></textarea>
+		<textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
 	</div>
     <div class="nseFieldDiv">
       <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">Uploader whitelist</span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
       <div id="nseUWLE" class="nseExplanationBox hidden">
 		  
 	  </div>
-		<textarea class="nseTextArea" id="nseWhitelistUploadersArea" rows=10></textarea>
+		<textarea class="nseTextArea" id="nseWhitelistUploadersArea" rows=10>${nseWhitelistUploadersList}</textarea>
     </div>
   </section>
 
   <section id="nseContent4">
-    <p>Coming soon!</p>
+    <h3>Cosmetic</h3>
+        <p>
+        <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
+        <label for="nseCheckObliviousMode" class="settingsCheckbox">
+            Oblivious 
+        </label>
+            <span class="explanationSpan">(Hide torrent tag lists)</span>
+        </p>
+        <p>More options coming soon!</p>
     <h3>About</h3>
 	  <p>
 		  NoShitEmpornium was made with <span style="color: #F00;">❤</span> by <a href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
@@ -305,16 +327,6 @@ htmlContent.innerHTML = `
 // Perform actual insertion of our HTML UI element
 referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
 
-// Populate text areas with saved data
-document.getElementById("nseBlacklistTaglistArea").innerHTML = nseBlacklistTaglist;
-document.getElementById("nseWhitelistTaglistArea").innerHTML = nseWhitelistTaglist;
-
-document.getElementById("nseBlacklistTitleListArea").innerHTML = nseBlacklistTitleList;
-document.getElementById("nseWhitelistTitleListArea").innerHTML = nseWhitelistTitleList;
-
-document.getElementById("nseBlacklistUploadersArea").innerHTML = nseBlacklistUploadersList;
-document.getElementById("nseWhitelistUploadersArea").innerHTML = nseWhitelistUploadersList;
-
 // Assign event handlers
 var headerNode = document.getElementById("nseHeaderText");
 headerNode.innerHTML = "<sup><small>[NSE]</small></sup> Toggle " + count + " hidden torrent";
@@ -331,6 +343,7 @@ document.getElementById("nseToggleOptionsNode").onclick = (function() {
     document.getElementById("nseMainDiv").classList.toggle("hidden");
 });
 
+// Save function
 document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseTaglist", document.getElementById("nseBlacklistTaglistArea").value); // Legacy name for BC
     GM_setValue("nseWhitelist", document.getElementById("nseWhitelistTaglistArea").value); // ^
@@ -340,6 +353,8 @@ document.getElementById("nseSaveButton").onclick = (function() {
     
     GM_setValue("nseUploaders", document.getElementById("nseBlacklistUploadersArea").value); // ^
     GM_setValue("nseWhitelistUploaders", document.getElementById("nseWhitelistUploadersArea").value);
+    
+    GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
 
     var time = new Date().toLocaleTimeString();
     document.getElementById("nseSaveDiv").innerHTML = "Saved at " + time + "!";
