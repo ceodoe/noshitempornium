@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-
+var nseVersion = "v2.0.1a"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -304,12 +304,12 @@ htmlContent.innerHTML = `
         <p>More options coming soon!</p>
     <h3>About</h3>
 	  <p>
-		  NoShitEmpornium was made with <span style="color: #F00;">❤</span> by <a href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
+		  NoShitEmpornium ${nseVersion} was made with 💕 by <a href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
 	  </p>
 	  <p>
 	    <span class="nseImageButton" id="nseGithub"> <a href="https://github.com/ceodoe/noshitempornium" target="_blank">Visit the project's GitHub page</a></span><br />
 	    <span class="nseImageButton" id="nseChangelog"> <a href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">See the changelog</a></span><br />
-	    <span class="nseImageButton" id="nseEmpoThread"> <a href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Official forum thread</a></span><br />
+	    <span class="nseImageButton" id="nseEmpoThread"> <a href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread</a></span><br />
 	  </p>
 	</section>
 	
@@ -329,7 +329,7 @@ referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
 
 // Assign event handlers
 var headerNode = document.getElementById("nseHeaderText");
-headerNode.innerHTML = "<sup><small>[NSE]</small></sup> Toggle " + count + " hidden torrent";
+headerNode.innerHTML = "Toggle " + count + " hidden torrent";
 headerNode.onclick = (function() { toggleTorrents(); });
 
 if(count === 0) {
@@ -458,16 +458,17 @@ function addGlobalStyle(css) {
 };
 
 addGlobalStyle(`
-@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
 .nseOuterDiv {
-    font:14px/1.5,sans-serif;
+    font-family: Helvetica;
+    margin:auto;
     color:#345;
-    max-width: 800px;
-    padding: 20px;
+    width: 600px;
+    padding: 10px;
     border: 1px solid rgba(0,0,0,.2);
-    background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    background-color: #FFF !important;
+    border-radius: 20px;
 }
 
 p:not(:last-child) {
@@ -501,26 +502,29 @@ section {
 }
 
 .nseLabel:before {
-     font-family: fontawesome;
      font-weight: normal;
      margin-right: 10px;
      margin-left: 10px;
 }
 
 .nseLabel[for*='1']:before {
-    content: '\\f02c';
+    content: '🏷️';
+    margin-right: 5px;
 }
 
 .nseLabel[for*='2']:before {
-    content: '\\f02d';
+    content: '📚';
+    margin-right: 5px;
 }
 
 .nseLabel[for*='3']:before {
-    content: '\\f007';
+    content: '👥';
+    margin-right: 5px;
 }
 
 .nseLabel[for*='4']:before {
-    content: '\\f013';
+    content: '⚙️';
+    margin-right: 5px;
 }
 
 .nseLabel:hover {
@@ -554,7 +558,7 @@ section {
 }
 
 .nseListHeader {
-     font-size: 20px;
+     font-size: 18px;
 }
 
 .nseImageButton {
@@ -570,49 +574,48 @@ section {
 }
 
 .nseImageButton:before {
-     font-family: fontawesome;
      font-weight: normal;
      margin-right: 5px;
  }
 
 #nseGithub:before {
-     content: "\\f09b";
+     content: "🐙";
  }
 
 #nseEmpoThread:before {
-     content: "\\f0e6";
+     content: "🧵";
  }
 
 #nseChangelog:before {
-     content: "\\f1ea";
+     content: "📋";
 }
 
 #nseTagBlacklistHeader:before {
-     content: "\\f165";
+     content: "👎";
 }
 
 #nseTagWhitelistHeader:before {
-     content: "\\f164";
+     content: "👍";
 }
 
 #nseTitleBlacklistHeader:before {
-     content: "\\f165";
+     content: "👎";
 }
 
 #nseTitleWhitelistHeader:before {
-     content: "\\f164";
+     content: "👍";
 }
 
 #nseUploaderBlacklistHeader:before {
-     content: "\\f165";
+     content: "👎";
 }
 
 #nseUploaderWhitelistHeader:before {
-     content: "\\f164";
+     content: "👍";
 }
 
 .nseExplanationBox {
-    width: 100%;
+    width: 97%;
     margin-top: 10px;
     margin-bottom: 10px;
     border: 1px solid black;
@@ -624,16 +627,8 @@ section {
    width: 100%;
     margin: auto;
     text-align: center;
-    font-size: 22px;
+    font-size: 18px;
     cursor: pointer;
-}
-
-.nseOuterDiv {
-    margin:auto;
-    padding:20px;
-    background-color: #FFF !important;
-    border: 1px solid gray;
-    border-radius: 20px;
 }
 
 .nseExplanationToggler {
@@ -641,8 +636,8 @@ section {
 }
 
 .nseTextArea {
-   width: 100%;
-    max-width: 100%;
+   width: 99%;
+    max-width: 99%;
 }
 
 .nseFieldDiv {
@@ -682,6 +677,10 @@ section {
 #nseSaveDiv {
     margin-top: 20px;
     font-weight: bold;
+}
+
+#nseMainDiv {
+    margin-top: 10px;
 }
 
 `);
