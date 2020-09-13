@@ -1,4 +1,13 @@
 # Changelog
+v2.1.1a
+- Added Russian Roulette mode
+- Optimized tag filtering loop
+- Added icons to Oblivious and Russian Roulette options
+- Added margins to the main box to put some air between elements on topX/collage pages
+
+v2.1a
+- Added theming support
+
 v2.0.2a
 - Smaller toggle/options box
 - Smaller font sizes
