@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.1a
+// @version      2.1.1a
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.1a"
+var nseVersion = "v2.1.1a"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -36,6 +36,7 @@ var nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders","");
 var nseWhitelistUploaders;
 
 var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
+var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled","");
 var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
 var nseCustomTheme = GM_getValue("nseCustomTheme","");
 
@@ -90,7 +91,11 @@ if(nseWhitelistUploadersList.trim() == "") {
 
 // Initialize options
 if(nseObliviousModeEnabled == "") {
-    nseObliviousModeEnabled = false; // Defaults to disabled
+    nseObliviousModeEnabled = false;
+}
+
+if(nseRussianRouletteEnabled == "") {
+    nseRussianRouletteEnabled = false;
 }
 
 if(nseSelectedTheme == "") {
@@ -106,6 +111,7 @@ if(nseCustomTheme == "") {
         highlightColor: "#0071b0"
     }
 }
+
 
 // End of initialization
 
@@ -146,11 +152,11 @@ var themes = {
         },
     nseThemeCustom: 
         {
-        backgroundColor: nseCustomTheme["backgroundColor"],
-        backgroundHighlightColor: nseCustomTheme["backgroundHighlightColor"],
-        foregroundColor: nseCustomTheme["foregroundColor"],
-        accentColor: nseCustomTheme["accentColor"],
-        highlightColor: nseCustomTheme["highlightColor"]
+            backgroundColor: nseCustomTheme["backgroundColor"],
+            backgroundHighlightColor: nseCustomTheme["backgroundHighlightColor"],
+            foregroundColor: nseCustomTheme["foregroundColor"],
+            accentColor: nseCustomTheme["accentColor"],
+            highlightColor: nseCustomTheme["highlightColor"]
         }
 };
 
@@ -165,6 +171,14 @@ for(var i = 0; i < torrents.length; i++) {
     if(tagElement === null) {
         continue; // skip to next iteration if we can't get taglist,
                   // I've seen rows break on rare occasions in the source HTML
+    }
+    
+    var russianRouletteBulletInChamber = false;
+    if(nseRussianRouletteEnabled == true) {
+        var randNum = Math.floor(Math.random() * 6) + 1; // 1/6 chance to fire
+        if(randNum == 6) {
+            russianRouletteBulletInChamber = true;
+        }
     }
     
     var uploaderElement = torrents[i].querySelector("td.user > a");
@@ -194,7 +208,7 @@ for(var i = 0; i < torrents.length; i++) {
         for(var l = 0; l < nseBlacklistUploaders.length; l++) {
             if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
                 currentHidden = true;
-                uploaderElement.classList.add("nseHiddenUploader");
+                if(russianRouletteBulletInChamber == false) { uploaderElement.classList.add("nseHiddenUploader"); }
             }
         }
         
@@ -217,7 +231,7 @@ for(var i = 0; i < torrents.length; i++) {
         var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
         if(torrentTitle.includes(currentTBLWord)) {
             currentHidden = true;
-            titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLWord})</color>`;
+            if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLWord})</color>`; }
         }
     }
     
@@ -231,31 +245,30 @@ for(var i = 0; i < torrents.length; i++) {
             titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLWord})</color>`;
         }
     }
+    
+    var tagList = tagElement.querySelectorAll("a");
 
-    // For every illegal tag
-    for(var j = 0; j < nseBlacklistTags.length; j++) {
-        var tagList = tagElement.querySelectorAll("a");
-
-        // For every tag in the current torrent
-        for(var k = 0; k < tagList.length; k++) {
-            if(tagList[k].innerHTML == nseBlacklistTags[j]) {
+    // For every tag in the current torrent
+    for(var k = 0; k < tagList.length; k++) {
+        if(nseBlacklistTags.includes(tagList[k].innerHTML) === true) {
                 currentHidden = true;
-                tagList[k].classList.add("nseHiddenTag");
-            }
+                if(russianRouletteBulletInChamber == false) { tagList[k].classList.add("nseHiddenTag"); }
+        }
 
-            if(nseWhitelistTags.includes(tagList[k].innerHTML) === true) {
-                currentWhitelisted = true;
-                tagList[k].classList.add("nseWhitelistedTag");
-            }
+        if(nseWhitelistTags.includes(tagList[k].innerHTML) === true) {
+            currentWhitelisted = true;
+            tagList[k].classList.add("nseWhitelistedTag");
         }
     }
 
     if(currentWhitelisted === true) {
         torrents[i].classList.remove("hidden");
-        } else if(currentHidden === true) {
-        torrents[i].style.backgroundColor = "#AAF";
-        torrents[i].classList.add("hidden");
-        count += 1;
+    } else if(currentHidden === true) {
+        if(russianRouletteBulletInChamber == false) {
+            torrents[i].style.backgroundColor = "#AAF";
+            torrents[i].classList.add("hidden");
+            count += 1;
+        }
     }
 }
 // End of main filtering loop
@@ -363,7 +376,7 @@ htmlContent.innerHTML = `
         <p>
         <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
         <label for="nseCheckObliviousMode" class="settingsCheckbox">
-            Oblivious 
+            ❓ Oblivious 
         </label>
             <span class="explanationSpan">(Hide torrent tag lists)</span>
         </p>
@@ -407,7 +420,14 @@ htmlContent.innerHTML = `
             <p>Remember to click "Save" to save your changes!</p>
           </div>
         </p>
-        <p>More options coming soon!</p>
+    <h3>Fun</h3>
+      <p>
+        <input type="checkbox" id="nseCheckRussianRouletteMode"${nseRussianRouletteEnabled ? ' checked' : ''} />
+        <label for="nseCheckRussianRouletteMode" class="settingsCheckbox">
+            🎲 Russian Roulette	
+        </label>
+		<span class="explanationSpan">(Randomly and silently show filtered torrents)</span>
+      </p>
     <h3>About</h3>
 	  <p>
 		  NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
@@ -484,9 +504,11 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseWhitelistUploaders", document.getElementById("nseWhitelistUploadersArea").value);
     
     GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
+    GM_setValue("nseRussianRouletteEnabled", document.getElementById("nseCheckRussianRouletteMode").checked);
     
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
+    
     
     if(nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value == "nseThemeCustom") {
         // save custom colors
@@ -614,6 +636,8 @@ addGlobalStyle(`
     box-shadow: 0 1px 3px rgba(0,0,0,.1);
     background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
     border-radius: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 p:not(:last-child) {
