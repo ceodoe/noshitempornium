@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.1.1a
+// @version      2.2
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.1.1a"
+var nseVersion = "v2.2"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -39,6 +39,9 @@ var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
 var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled","");
 var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
 var nseCustomTheme = GM_getValue("nseCustomTheme","");
+
+var nseCustomCSSEnabled = GM_getValue("nseCustomCSSEnabled","");
+var nseCustomCSS = GM_getValue("nseCustomCSS","");
 
 // Initialize lists and options
 
@@ -112,6 +115,9 @@ if(nseCustomTheme == "") {
     }
 }
 
+if(nseCustomCSSEnabled == "") {
+    nseCustomCSSEnabled = false;
+}
 
 // End of initialization
 
@@ -303,150 +309,162 @@ function str_contains(needle, haystack) {
 var htmlContent = document.createElement("div");
 htmlContent.innerHTML = `
 <div id="nseOuter" class="nseOuterDiv">
-  <div id="nseHeader">
-    <span id="nseHeaderText">NoShitEmpornium</span>
-    <span id="nseToggleOptionsNode" class="nseNiceButton">Options</span>
-  </div>
-<div id="nseMainDiv" class="nseMainBox hidden">
-  <input class="nseRadioButton" id="nseTab1" type="radio" name="tabs" checked>
-  <label class="nseLabel" for="nseTab1">Tags</label>
-
-  <input class="nseRadioButton" id="nseTab2" type="radio" name="tabs">
-  <label class="nseLabel" for="nseTab2">Titles</label>
-
-  <input class="nseRadioButton" id="nseTab3" type="radio" name="tabs">
-  <label class="nseLabel" for="nseTab3">Uploaders</label>
-  
-  <input class="nseRadioButton" id="nseTab4" type="radio" name="tabs">
-  <label class="nseLabel" for="nseTab4">Options</label>
-
-  <section id="nseContent1">
-    <div class="nseFieldDiv">
-	  <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">Tag blacklist</span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
-	  <div id="nseBLE" class="nseExplanationBox hidden">
-		  
-	  </div>
-		<textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
-	</div>
-    <div class="nseFieldDiv">
-      <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">Tag whitelist</span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
-      <div id="nseWLE" class="nseExplanationBox hidden">
-		  
-	  </div>
-		<textarea class="nseTextArea" id="nseWhitelistTaglistArea" rows=10>${nseWhitelistTaglist}</textarea>
+    <div id="nseHeader">
+        <span id="nseHeaderText">NoShitEmpornium</span>
+        <span id="nseToggleOptionsNode" class="nseNiceButton">Options</span>
     </div>
-  </section>
+    <div id="nseMainDiv" class="nseMainBox hidden">
+        <input class="nseRadioButton" id="nseTab1" type="radio" name="tabs" checked>
+        <label class="nseLabel" for="nseTab1">Tags</label>
 
-  <section id="nseContent2">
-    <div class="nseFieldDiv">
-	  <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">Title blacklist</span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
-	  <div id="nseTitleBLE" class="nseExplanationBox hidden">
-        
-	  </div>
-		<textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
-	</div>
-    <div class="nseFieldDiv">
-      <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">Title whitelist</span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
-      <div id="nseTitleWLE" class="nseExplanationBox hidden">
-		 
-	  </div>
-		<textarea class="nseTextArea" id="nseWhitelistTitleListArea" rows=10>${nseWhitelistTitleList}</textarea>
-    </div>
-  </section>
+        <input class="nseRadioButton" id="nseTab2" type="radio" name="tabs">
+        <label class="nseLabel" for="nseTab2">Titles</label>
 
-  <section id="nseContent3">
-    <div class="nseFieldDiv">
-	  <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">Uploader blacklist</span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
-	  <div id="nseUBLE" class="nseExplanationBox hidden">
-		  
-	  </div>
-		<textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
-	</div>
-    <div class="nseFieldDiv">
-      <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">Uploader whitelist</span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
-      <div id="nseUWLE" class="nseExplanationBox hidden">
-		  
-	  </div>
-		<textarea class="nseTextArea" id="nseWhitelistUploadersArea" rows=10>${nseWhitelistUploadersList}</textarea>
-    </div>
-  </section>
+        <input class="nseRadioButton" id="nseTab3" type="radio" name="tabs">
+        <label class="nseLabel" for="nseTab3">Uploaders</label>
 
-  <section id="nseContent4">
-    <h3>Cosmetic</h3>
-        <p>
-        <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
-        <label for="nseCheckObliviousMode" class="settingsCheckbox">
-            ❓ Oblivious 
-        </label>
-            <span class="explanationSpan">(Hide torrent tag lists)</span>
-        </p>
-        
-        <p>Theme:<br />	
-		  <select name="nseThemeDropdown" id="nseThemeDropdown">
-			<option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
-			<option value="nseThemeLegacy" ${nseSelectedTheme=="nseThemeLegacy" ? "selected='selected'" : ''}>Legacy</option>
-			<option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
-			<option value="nseThemeBaked" ${nseSelectedTheme=="nseThemeBaked" ? "selected='selected'" : ''}>Baked</option>
-			<option value="nseThemeCustom" ${nseSelectedTheme=="nseThemeCustom" ? "selected='selected'" : ''}>Custom</option>
-          </select> <span id="nseThemeDescription" class="explanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a blue background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
-          
-          <div id="nseCustomThemeDiv" ${nseSelectedTheme=="nseThemeCustom" ? '' : 'class="hidden"'}>
+        <input class="nseRadioButton" id="nseTab4" type="radio" name="tabs">
+        <label class="nseLabel" for="nseTab4">Options</label>
+
+        <section id="nseContent1">
+            <div class="nseFieldDiv">
+                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">Tag blacklist</span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
+                <div id="nseBLE" class="nseExplanationBox hidden">
+                    
+                </div>
+                <textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
+            </div>
+            <div class="nseFieldDiv">
+                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">Tag whitelist</span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
+                <div id="nseWLE" class="nseExplanationBox hidden">
+                    
+                </div>
+                <textarea class="nseTextArea" id="nseWhitelistTaglistArea" rows=10>${nseWhitelistTaglist}</textarea>
+            </div>
+        </section>
+
+        <section id="nseContent2">
+            <div class="nseFieldDiv">
+                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">Title blacklist</span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
+                <div id="nseTitleBLE" class="nseExplanationBox hidden">
+                
+                </div>
+                <textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
+            </div>
+            <div class="nseFieldDiv">
+                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">Title whitelist</span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
+                <div id="nseTitleWLE" class="nseExplanationBox hidden">
+                    
+                </div>
+                <textarea class="nseTextArea" id="nseWhitelistTitleListArea" rows=10>${nseWhitelistTitleList}</textarea>
+            </div>
+        </section>
+
+        <section id="nseContent3">
+            <div class="nseFieldDiv">
+                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">Uploader blacklist</span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
+                <div id="nseUBLE" class="nseExplanationBox hidden">
+                    
+                </div>
+                <textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
+            </div>
+            <div class="nseFieldDiv">
+                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">Uploader whitelist</span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
+                <div id="nseUWLE" class="nseExplanationBox hidden">
+                    
+                </div>
+                <textarea class="nseTextArea" id="nseWhitelistUploadersArea" rows=10>${nseWhitelistUploadersList}</textarea>
+            </div>
+        </section>
+
+        <section id="nseContent4">
+            <h3>Cosmetic</h3>
             <p>
-                You can use any <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value" target="_blank">CSS color notation</a> here.<br />
-                Examples: <span style="font-family: Courier New;">#ffffff &mdash; rgb(0,0,255) &mdash; aquamarine</span>
+                <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
+                <label for="nseCheckObliviousMode" class="settingsCheckbox">
+                    ❓ Oblivious 
+                </label>
+                <span class="explanationSpan">(Hide torrent tag lists)</span><br />
+                <input type="checkbox" id="nseCheckCustomCSS"${nseCustomCSSEnabled ? ' checked' : ''} />
+                <label for="nseCheckCustomCSS" class="settingsCheckbox">
+                    📜 Custom CSS
+                </label>
+                <span class="explanationSpan">(Define your own CSS rules)</span>
+                <div id="nseCustomCSSDiv" ${nseCustomCSSEnabled ? '' : 'class="hidden"'}>
+                    Define your custom CSS below. Note that this code is injected at the very end of the built-in CSS, so use the !important tag liberally to overwrite existing rules. Do not escape backslashes, it will be done automatically.
+                    <textarea class="nseTextArea" id="nseCustomCSSArea" rows=10>${nseCustomCSS.replace(/\\\\/gi,"\\")}</textarea>
+                </div>
             </p>
+            <p>
+                Theme:<br />	
+                <select name="nseThemeDropdown" id="nseThemeDropdown">
+                    <option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
+                    <option value="nseThemeLegacy" ${nseSelectedTheme=="nseThemeLegacy" ? "selected='selected'" : ''}>Legacy</option>
+                    <option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
+                    <option value="nseThemeBaked" ${nseSelectedTheme=="nseThemeBaked" ? "selected='selected'" : ''}>Baked</option>
+                    <option value="nseThemeCustom" ${nseSelectedTheme=="nseThemeCustom" ? "selected='selected'" : ''}>Custom</option>
+                </select> 
+                <span id="nseThemeDescription" class="explanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a blue background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
+                
+                <div id="nseCustomThemeDiv" ${nseSelectedTheme=="nseThemeCustom" ? '' : 'class="hidden"'}>
+                    <p>
+                        You can use any <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value" target="_blank">CSS color notation</a> here.<br />
+                        Examples: <span style="font-family: Courier New;">#ffffff &mdash; rgb(0,0,255) &mdash; aquamarine</span>
+                    </p>
+                    <p>
+                        Background color:<br />
+                        <input type="text" id="nseCustomThemeBgCol" value='${nseCustomTheme['backgroundColor']}' />
+                    </p>
+                    <p>
+                        Background highlight color:<br />
+                        <input type="text" id="nseCustomThemeBgHighCol" value='${nseCustomTheme['backgroundHighlightColor']}' />
+                    </p>
+                    <p>
+                        Foreground color:<br />
+                        <input type="text" id="nseCustomThemeForeCol" value='${nseCustomTheme['foregroundColor']}' />
+                    </p>
+                    <p>
+                        Accent color:<br />
+                        <input type="text" id="nseCustomThemeAccentCol" value='${nseCustomTheme['accentColor']}' />
+                    </p>
+                    <p>
+                        Highlight color:<br />
+                        <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme['highlightColor']}' />
+                    </p>
+                
+                    <p>Remember to click "Save" to save your changes!</p>
+                </div>
+            </p>
+
+            <h3>Fun</h3>
+                <p>
+                    <input type="checkbox" id="nseCheckRussianRouletteMode"${nseRussianRouletteEnabled ? ' checked' : ''} />
+                    <label for="nseCheckRussianRouletteMode" class="settingsCheckbox">
+                        🎲 Russian Roulette	
+                    </label>
+                    <span class="explanationSpan">(Randomly and silently show filtered torrents)</span>
+                </p>
+
+            <h3>About</h3>
+                <p>
+                    NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
+                </p>
+                <p>
+                    <span class="nseImageButton" id="nseGithub"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">Visit the project's GitHub page</a></span><br />
+                    <span class="nseImageButton" id="nseChangelog"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">See the changelog</a></span><br />
+                    <span class="nseImageButton" id="nseEmpoThread"> <a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread</a></span>
+                </p>
+        </section>
+
+        <div style="text-align: center;">
+            <span id="nseSaveButton" class="nseNiceButton">💾 Save</span> 
+            <span id="nseReloadButton" class="nseNiceButton">🔃 Reload page and apply changes</span> 
+        </div>
+
+        <div style="text-align: center;" id="nseSaveDiv" class="hidden">
             
-            <p>
-                Background color:<br />
-                <input type="text" id="nseCustomThemeBgCol" value='${nseCustomTheme['backgroundColor']}' />
-            </p>
-            <p>
-                Background highlight color:<br />
-                <input type="text" id="nseCustomThemeBgHighCol" value='${nseCustomTheme['backgroundHighlightColor']}' />
-            </p>
-            <p>
-                Foreground color:<br />
-                <input type="text" id="nseCustomThemeForeCol" value='${nseCustomTheme['foregroundColor']}' />
-            </p>
-            <p>
-                Accent color:<br />
-                <input type="text" id="nseCustomThemeAccentCol" value='${nseCustomTheme['accentColor']}' />
-            </p>
-            <p>
-                Highlight color:<br />
-                <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme['highlightColor']}' />
-            </p>
-            
-            <p>Remember to click "Save" to save your changes!</p>
-          </div>
-        </p>
-    <h3>Fun</h3>
-      <p>
-        <input type="checkbox" id="nseCheckRussianRouletteMode"${nseRussianRouletteEnabled ? ' checked' : ''} />
-        <label for="nseCheckRussianRouletteMode" class="settingsCheckbox">
-            🎲 Russian Roulette	
-        </label>
-		<span class="explanationSpan">(Randomly and silently show filtered torrents)</span>
-      </p>
-    <h3>About</h3>
-	  <p>
-		  NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
-	  </p>
-	  <p>
-	    <span class="nseImageButton" id="nseGithub"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">Visit the project's GitHub page</a></span><br />
-	    <span class="nseImageButton" id="nseChangelog"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">See the changelog</a></span><br />
-	    <span class="nseImageButton" id="nseEmpoThread"> <a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread</a></span><br />
-	  </p>
-	</section>
-	
-	<div style="text-align: center;">
-		<span id="nseSaveButton" class="nseNiceButton">💾 Save</span> 
-		<span id="nseReloadButton" class="nseNiceButton">🔃 Reload page and apply changes</span> 
-	</div>
-	
-	<div style="text-align: center;" id="nseSaveDiv" class="hidden">
-		
-	</div>
+        </div>
+    </div>
 </div>
 `
 
@@ -467,6 +485,14 @@ if(count === 0) {
 
 document.getElementById("nseToggleOptionsNode").onclick = (function() {
     document.getElementById("nseMainDiv").classList.toggle("hidden");
+});
+
+document.getElementById("nseCheckCustomCSS").onclick = (function() {
+    if(this.checked) {
+        document.getElementById("nseCustomCSSDiv").classList.remove("hidden");
+    } else {
+        document.getElementById("nseCustomCSSDiv").classList.add("hidden");
+    }
 });
 
 document.getElementById("nseThemeDropdown").onchange = (function() {
@@ -522,6 +548,12 @@ document.getElementById("nseSaveButton").onclick = (function() {
         
         GM_setValue("nseCustomTheme", nseCustomTheme);
     }
+    
+    // We need to escape backslashes in the custom CSS as it will be included in a back-ticked CSS block
+    var css = document.getElementById("nseCustomCSSArea").value
+    css = css.replace(/\\/gi, "\\\\");
+    GM_setValue("nseCustomCSS", css);
+    GM_setValue("nseCustomCSSEnabled", document.getElementById("nseCheckCustomCSS").checked);
 
     var time = new Date().toLocaleTimeString();
     document.getElementById("nseSaveDiv").innerHTML = "Saved at " + time + "!";
@@ -641,39 +673,39 @@ addGlobalStyle(`
 }
 
 p:not(:last-child) {
-     margin: 0 0 20px;
+    margin: 0 0 20px;
 }
 
 section {
-     display: none;
-     padding: 20px 0 0;
-     border-top: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
+    display: none;
+    padding: 20px 0 0;
+    border-top: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
 }
 
 .nseRadioButton {
-     display: none;
+    display: none;
 }
 
 .nseLabel {
-     display: inline-block;
-     margin: 0 0 -1px;
-     padding: 15px 25px;
-     font-weight: 600;
-     text-align: center;
-     color: ${themes[nseSelectedTheme]["accentColor"]};
-     background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
-     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
-     margin-right: 5px;
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 15px 25px;
+    font-weight: 600;
+    text-align: center;
+    color: ${themes[nseSelectedTheme]["accentColor"]};
+    background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
+    border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
+    margin-right: 5px;
 }
 
 .settingsCheckbox {
-     padding: 5px 10px;
+    padding: 5px 10px;
 }
 
 .nseLabel:before {
-     font-weight: normal;
-     margin-right: 10px;
-     margin-left: 10px;
+    font-weight: normal;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 
 .nseLabel[for*='1']:before {
@@ -701,94 +733,94 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseLabel:hover {
-     color: ${themes[nseSelectedTheme]["highlightColor"]};
-     background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
-     cursor: pointer;
+    color: ${themes[nseSelectedTheme]["highlightColor"]};
+    background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
+    cursor: pointer;
 }
 
 .nseRadioButton:checked + .nseLabel {
-     color: ${themes[nseSelectedTheme]["accentColor"]};
-     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
-     border-top: 2px solid ${themes[nseSelectedTheme]["accentColor"]};
-     border-bottom: 1px solid ${themes[nseSelectedTheme]["backgroundColor"]};
+    color: ${themes[nseSelectedTheme]["accentColor"]};
+    border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
+    border-top: 2px solid ${themes[nseSelectedTheme]["accentColor"]};
+    border-bottom: 1px solid ${themes[nseSelectedTheme]["backgroundColor"]};
 }
 
 #nseTab1:checked ~ #nseContent1,#nseTab2:checked ~ #nseContent2,#nseTab3:checked ~ #nseContent3,#nseTab4:checked ~ #nseContent4 {
-     display: block;
+    display: block;
 }
 
 .nseLabel:before {
-     margin: 0;
-     font-size: 18px;
+    margin: 0;
+    font-size: 18px;
 }
 
 .nseLabel {
-     padding: 15px;
+    padding: 15px;
 }
 
 .explanationSpan {
-     font-size: 14px !important;
-     color: ${themes[nseSelectedTheme]["accentColor"]};
+    font-size: 14px !important;
+    color: ${themes[nseSelectedTheme]["accentColor"]};
 }
 
 .nseListHeader {
-     font-size: 18px;
+    font-size: 18px;
 }
 
 .nseImageButton {
-       position: relative;
-       color: ${themes[nseSelectedTheme]["foregroundColor"]};
-       font-weight: bold;
+    position: relative;
+    color: ${themes[nseSelectedTheme]["foregroundColor"]};
+    font-weight: bold;
 }
 
 .nseImageButton > a, .nseImageButton  > a:visited {
-     color: ${themes[nseSelectedTheme]["foregroundColor"]};
-     text-decoration: none;
-     border: 0;
+    color: ${themes[nseSelectedTheme]["foregroundColor"]};
+    text-decoration: none;
+    border: 0;
 }
 
 .nseImageButton:before {
-     font-weight: normal;
-     margin-right: 5px;
+    font-weight: normal;
+    margin-right: 5px;
  }
 
 #nseGithub:before {
-     content: "🐙";
+    content: "🐙";
  }
 
 #nseEmpoThread:before {
-     content: "🧵";
+    content: "🧵";
  }
 
 #nseChangelog:before {
-     content: "📋";
+    content: "📋";
 }
 
 #nseTagBlacklistHeader:before {
-     content: "👎";
+    content: "👎";
 }
 
 #nseTagWhitelistHeader:before {
-     content: "👍";
+    content: "👍";
 }
 
 #nseTitleBlacklistHeader:before {
-     content: "👎";
+    content: "👎";
 }
 
 #nseTitleWhitelistHeader:before {
-     content: "👍";
+    content: "👍";
 }
 
 #nseUploaderBlacklistHeader:before {
-     content: "👎";
+    content: "👎";
 }
 
 #nseUploaderWhitelistHeader:before {
-     content: "👍";
+    content: "👍";
 }
 
-.nseExplanationBox, #nseCustomThemeDiv {
+.nseExplanationBox, #nseCustomThemeDiv, #nseCustomCSSDiv {
     width: 97%;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -798,7 +830,7 @@ a.nseLink, a.nseLink:visited {
 }
 
 #nseHeader {
-   width: 100%;
+    width: 100%;
     margin: auto;
     text-align: center;
     font-size: 18px;
@@ -810,12 +842,12 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseTextArea {
-   width: 99%;
+    width: 99%;
     max-width: 99%;
 }
 
 .nseFieldDiv {
-   margin-bottom:10px;
+    margin-bottom:10px;
 }
 
 .nseExplanationNode {
@@ -823,17 +855,17 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseHiddenUploader, .nseHiddenTag, .nseHiddenTitle {
-   color: #F00 !important; 
-   font-weight: bold !important;   
+    color: #F00 !important; 
+    font-weight: bold !important;   
 }
 
 .nseWhitelistedUploader, .nseWhitelistedTag, .nseWhitelistedTitle { 
-   color: #0F0 !important; 
-   font-weight: bold !important;    
+    color: #0F0 !important; 
+    font-weight: bold !important;    
 }
 
 .nseHiddenTag, .nseWhitelistedTag, .nseWhitelistedTitle, .nseHiddenTitle {
-   display: inline;
+    display: inline;
 }
 
 .nseNiceButton {
@@ -864,6 +896,8 @@ a.nseLink, a.nseLink:visited {
 h3 {
     color: ${themes[nseSelectedTheme]["foregroundColor"]} !important;
 }
+
+${nseCustomCSSEnabled ? nseCustomCSS : ''}
 
 `);
 // End CSS section    
