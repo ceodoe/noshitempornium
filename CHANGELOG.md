@@ -1,4 +1,9 @@
 # Changelog
+v2.2
+- Added option to add your own custom CSS
+- Fixed whitespace/indentation of in-script HTML and CSS
+- Dropped alpha tag from version, I'm pretty confident it's more or less stable now
+
 v2.1.1a
 - Added Russian Roulette mode
 - Optimized tag filtering loop
