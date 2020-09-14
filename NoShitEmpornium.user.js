@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.2
+// @version      2.2.1
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.2"
+var nseVersion = "v2.2.1"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
