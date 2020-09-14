@@ -1,4 +1,9 @@
 # Changelog
+v2.2.1
+- Changed title filtering from words to phrases. List is now separated by semicolons instead of spaces, so you can use more than one word to filter titles on, great for filtering torrents with common themes or mistagged/untagged torrents.
+- Changed the name of the "Options" tab to "Settings" (button is still labeled "Options")
+- Added text to clarify which character to use to separate the lists
+
 v2.2
 - Added option to add your own custom CSS
 - Fixed whitespace/indentation of in-script HTML and CSS
