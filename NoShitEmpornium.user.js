@@ -24,10 +24,10 @@ var nseWhitelistTaglist = GM_getValue("nseWhitelist",""); // ^
 var nseWhitelistTags;
 
 var nseBlacklistTitleList = GM_getValue("nseBlacklistTitles","");
-var nseBlacklistTitleWords;
+var nseBlacklistTitlePhrases;
 
 var nseWhitelistTitleList = GM_getValue("nseWhitelistTitles","");
-var nseWhitelistTitleWords;
+var nseWhitelistTitlePhrases;
 
 var nseBlacklistUploadersList = GM_getValue("nseUploaders",""); // ^
 var nseBlacklistUploaders;
@@ -63,17 +63,17 @@ if(nseWhitelistTaglist.trim() == "") {
 
 // Initialize title lists
 if(nseBlacklistTitleList.trim() == "") {
-    nseBlacklistTitleList = "fillerword titleblacklist";
-    nseBlacklistTitleWords = new Array("fillerword", "titleblacklist");
+    nseBlacklistTitleList = "this is a title phrase;this is another title phrase";
+    nseBlacklistTitlePhrases = new Array("this is a title phrase", "this is another title phrase");
 } else {
-    nseBlacklistTitleWords = nseBlacklistTitleList.split(" ");
+    nseBlacklistTitlePhrases = nseBlacklistTitleList.split(";");
 }
 
 if(nseWhitelistTitleList.trim() == "") {
-    nseWhitelistTitleList = "fillerword titlewhitelist";
-    nseWhitelistTitleWords = new Array("fillerword", "titlewhitelist");
+    nseWhitelistTitleList = "this is a title phrase;this is another title phrase";
+    nseWhitelistTitlePhrases = new Array("this is a title phrase", "this is another title phrase");
 } else {
-    nseWhitelistTitleWords = nseWhitelistTitleList.split(" ");
+    nseWhitelistTitlePhrases = nseWhitelistTitleList.split(";");
 }
 
 
@@ -230,25 +230,25 @@ for(var i = 0; i < torrents.length; i++) {
         }
     }
     
-    // Scan title for nseBlacklistTitleWords
+    // Scan title for nseBlacklistTitlePhrases
     // ...For every blacklisted word:
-    for(var tblCount = 0; tblCount < nseBlacklistTitleWords.length; tblCount++) {
-        var currentTBLWord = nseBlacklistTitleWords[tblCount].toLowerCase();
+    for(var tblCount = 0; tblCount < nseBlacklistTitlePhrases.length; tblCount++) {
+        var currentTBLPhrase = nseBlacklistTitlePhrases[tblCount].trim().toLowerCase();
         var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
-        if(torrentTitle.includes(currentTBLWord)) {
+        if(torrentTitle.includes(currentTBLPhrase)) {
             currentHidden = true;
-            if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLWord})</color>`; }
+            if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`; }
         }
     }
     
-    // Scan title for nseWhitelistTitleWords
+    // Scan title for nseWhitelistTitlePhrases
     // ...For every whitelisted word:
-    for(var tblCount = 0; tblCount < nseWhitelistTitleWords.length; tblCount++) {
-        var currentTWLWord = nseWhitelistTitleWords[tblCount].toLowerCase();
+    for(var tblCount = 0; tblCount < nseWhitelistTitlePhrases.length; tblCount++) {
+        var currentTWLPhrase = nseWhitelistTitlePhrases[tblCount].trim().toLowerCase();
         var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
-        if(torrentTitle.includes(currentTWLWord)) {
+        if(torrentTitle.includes(currentTWLPhrase)) {
             currentWhitelisted = true;
-            titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLWord})</color>`;
+            titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
         }
     }
     
@@ -324,18 +324,18 @@ htmlContent.innerHTML = `
         <label class="nseLabel" for="nseTab3">Uploaders</label>
 
         <input class="nseRadioButton" id="nseTab4" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab4">Options</label>
+        <label class="nseLabel" for="nseTab4">Settings</label>
 
         <section id="nseContent1">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">Tag blacklist</span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">Tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
                 <div id="nseBLE" class="nseExplanationBox hidden">
                     
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">Tag whitelist</span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">Tag whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
                 <div id="nseWLE" class="nseExplanationBox hidden">
                     
                 </div>
@@ -345,14 +345,14 @@ htmlContent.innerHTML = `
 
         <section id="nseContent2">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">Title blacklist</span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">Title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
                 <div id="nseTitleBLE" class="nseExplanationBox hidden">
                 
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">Title whitelist</span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">Title whitelist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
                 <div id="nseTitleWLE" class="nseExplanationBox hidden">
                     
                 </div>
@@ -362,14 +362,14 @@ htmlContent.innerHTML = `
 
         <section id="nseContent3">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">Uploader blacklist</span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">Uploader blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
                 <div id="nseUBLE" class="nseExplanationBox hidden">
                     
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">Uploader whitelist</span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">Uploader whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
                 <div id="nseUWLE" class="nseExplanationBox hidden">
                     
                 </div>
@@ -601,13 +601,13 @@ document.getElementById("nseWLE").innerHTML = `
 
 document.getElementById("nseTitleBLE").innerHTML = `
 <div class="nseExplanationNode">
-    <b>TL;DR</b>: <i>If any of these words are in the title, hide the torrent</i>
+    <b>TL;DR</b>: <i>If any of these phrases are in the title, hide the torrent</i>
 </div>
 
-<div class="nseExplanationNode">This is where you specify title words you want to filter on. This is useful for hiding untagged content with a recurring theme (for example specific JAV series you don't care about, or re-encoded content). Character case does not matter.
+<div class="nseExplanationNode">This is where you specify title phrases you want to filter on. This is useful for hiding untagged content with a recurring theme (for example specific JAV series you don't care about, or re-encoded content). Character case does not matter. <b>Title phrases are separated by semicolons (;) &mdash; not spaces like tags or uploaders!</b>
 </div>
 
-<div class="nseExplanationNode">Example:<br /><pre>sdmm hikr reencode re-encode</pre></div>
+<div class="nseExplanationNode">Example:<br /><pre>sdmm;hikr;princess peach;reencode</pre></div>
 `;
 
 document.getElementById("nseTitleWLE").innerHTML = `
@@ -615,10 +615,10 @@ document.getElementById("nseTitleWLE").innerHTML = `
     <b>TL;DR</b>: <i>If any of these words are in the title, ignore all other rules</i>
 </div>
 
-<div class="nseExplanationNode">This is where you specify title words you want to show regardless of other rules. Character case does not matter.
+<div class="nseExplanationNode">This is where you specify title phrases you want to show regardless of other rules. Character case does not matter. <b>Title phrases are separated by semicolons (;) &mdash; not spaces like tags or uploaders!</b>
 </div>
 
-<div class="nseExplanationNode">Example:<br /><pre>minipack sdmm moist</pre></div>
+<div class="nseExplanationNode">Example:<br /><pre>minipack;super mario;sdmm;moist</pre></div>
 `;
 
 document.getElementById("nseUBLE").innerHTML = `
