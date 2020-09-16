@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.2.1
+// @version      2.2.2
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.2.1"
+var nseVersion = "v2.2.2"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -37,6 +37,8 @@ var nseWhitelistUploaders;
 
 var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
 var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled","");
+var nseHideAnonUploadsEnabled = GM_getValue("nseHideAnonUploadsEnabled","");
+
 var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
 var nseCustomTheme = GM_getValue("nseCustomTheme","");
 
@@ -99,6 +101,10 @@ if(nseObliviousModeEnabled == "") {
 
 if(nseRussianRouletteEnabled == "") {
     nseRussianRouletteEnabled = false;
+}
+
+if(nseHideAnonUploadsEnabled == "") {
+    nseHideAnonUploadsEnabled = false;
 }
 
 if(nseSelectedTheme == "") {
@@ -208,30 +214,40 @@ for(var i = 0; i < torrents.length; i++) {
     var currentWhitelisted = false;
 
     // Check uploaders
-    if(uploaderElement !== null) { // If it is null, it's an anon upload
-        var uploader = uploaderElement.innerHTML.trim().toLowerCase();
-        
-        for(var l = 0; l < nseBlacklistUploaders.length; l++) {
-            if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
-                currentHidden = true;
-                if(russianRouletteBulletInChamber == false) { uploaderElement.classList.add("nseHiddenUploader"); }
+    if(str_contains("collages.php", window.location.href) === false) { // There's no uploaders on collage pages
+        if(uploaderElement == null) { // If it is null, it's an anon upload
+            if(nseHideAnonUploadsEnabled) {
+                var anonName = torrents[i].querySelector("td > span.anon_name");
+                if(anonName.innerHTML == "anon") {
+                    currentHidden = true;
+                    if(russianRouletteBulletInChamber == false) { anonName.classList.add("nseHiddenUploader"); }
+                }
             }
-        }
-        
-        // If currentHidden is still false, that means no blacklisted uploader was found, check whitelist
-        // If currentHidden is true, blacklisted uploader was found, and since usernames are unique, skip check
-        if(currentHidden === false) {
-            for(var m = 0; m < nseWhitelistUploaders.length; m++) {
-                if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
-                    currentWhitelisted = true;
-                    uploaderElement.classList.add("nseWhitelistedUploader");
+        } else {
+            var uploader = uploaderElement.innerHTML.trim().toLowerCase();
+            
+            for(var l = 0; l < nseBlacklistUploaders.length; l++) {
+                if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
+                    currentHidden = true;
+                    if(russianRouletteBulletInChamber == false) { uploaderElement.classList.add("nseHiddenUploader"); }
+                }
+            }
+            
+            // If currentHidden is still false, that means no blacklisted uploader was found, check whitelist
+            // If currentHidden is true, blacklisted uploader was found, and since usernames are unique, skip check
+            if(currentHidden === false) {
+                for(var m = 0; m < nseWhitelistUploaders.length; m++) {
+                    if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
+                        currentWhitelisted = true;
+                        uploaderElement.classList.add("nseWhitelistedUploader");
+                    }
                 }
             }
         }
     }
     
     // Scan title for nseBlacklistTitlePhrases
-    // ...For every blacklisted word:
+    // ...For every blacklisted phrase:
     for(var tblCount = 0; tblCount < nseBlacklistTitlePhrases.length; tblCount++) {
         var currentTBLPhrase = nseBlacklistTitlePhrases[tblCount].trim().toLowerCase();
         var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
@@ -242,7 +258,7 @@ for(var i = 0; i < torrents.length; i++) {
     }
     
     // Scan title for nseWhitelistTitlePhrases
-    // ...For every whitelisted word:
+    // ...For every whitelisted phrase:
     for(var tblCount = 0; tblCount < nseWhitelistTitlePhrases.length; tblCount++) {
         var currentTWLPhrase = nseWhitelistTitlePhrases[tblCount].trim().toLowerCase();
         var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
@@ -378,6 +394,14 @@ htmlContent.innerHTML = `
         </section>
 
         <section id="nseContent4">
+            <h3>Filtering</h3> 
+            <p>
+                <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideAnonUploads" class="settingsCheckbox">
+                    👤 Hide anonymous uploads
+                </label>
+                <span class="explanationSpan">(Will still be overridden by whitelist rules)</span><br />
+            </p>
             <h3>Cosmetic</h3>
             <p>
                 <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
@@ -531,6 +555,7 @@ document.getElementById("nseSaveButton").onclick = (function() {
     
     GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
     GM_setValue("nseRussianRouletteEnabled", document.getElementById("nseCheckRussianRouletteMode").checked);
+    GM_setValue("nseHideAnonUploadsEnabled", document.getElementById("nseCheckHideAnonUploads").checked);
     
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
@@ -626,7 +651,7 @@ document.getElementById("nseUBLE").innerHTML = `
     <b>TL;DR</b>: <i>If this torrent is uploaded by any of these users, hide it</i>
 </div>
 
-<div class="nseExplanationNode">This is where you specify the names of uploaders you want to hide all uploads from, unless overriden by a whitelist rule. Uploader names will be highlighted in <span style="color:#f00"><b>red</b></span> when viewing hidden torrents. Character case does not matter.
+<div class="nseExplanationNode">This is where you specify the names of uploaders you want to hide all uploads from, unless overriden by a whitelist rule. Uploader names will be highlighted in <span style="color:#f00"><b>red</b></span> when viewing hidden torrents. Character case does not matter. Note that filtering based on usernames will not function on collage pages, as torrent uploaders are not exposed on those pages.
 </div>
 
 <div class="nseExplanationNode">Example:<br /><pre>SuperUploader2007 LowQualityUploadsIncorporated</pre></div>
@@ -637,7 +662,7 @@ document.getElementById("nseUWLE").innerHTML = `
     <b>TL;DR</b>: <i>If this torrent is uploaded by any of these users, show it regardless of any other rules</i>
 </div>
 
-<div class="nseExplanationNode">This is where you specify the names of uploaders you want to show all uploads from, regardless of any blacklist rules. Uploader names will be highlighted in <span style="color:#0f0"><b>green</b></span>. Character case does not matter.
+<div class="nseExplanationNode">This is where you specify the names of uploaders you want to show all uploads from, regardless of any blacklist rules. Uploader names will be highlighted in <span style="color:#0f0"><b>green</b></span>. Character case does not matter. Note that filtering based on usernames will not function on collage pages, as torrent uploaders are not exposed on those pages.
 </div>
 
 <div class="nseExplanationNode">Example:<br /><pre>NobelPrizeWinningUploads ActuallyGreatUploader69 ceodoe</pre></div>
