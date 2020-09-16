@@ -1,7 +1,7 @@
 # Changelog
 v2.2.2
 - Added option to hide anon uploads
-- Clarified help text on Uploaders tab to clarify that username-based filtering won't work on collage pages
+- Added help text on Uploaders tab to clarify that username-based filtering won't work on collage pages
 
 v2.2.1
 - Changed title filtering from words to phrases. List is now separated by semicolons instead of spaces, so you can use more than one word to filter titles on, great for filtering torrents with common themes or mistagged/untagged torrents.
