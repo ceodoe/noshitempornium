@@ -435,7 +435,7 @@ htmlContent.innerHTML = `
                 <label for="nseCheckHideWarned" class="settingsCheckbox">
                     ⚔️ Hide warned uploads
                 </label>
-                <span class="explanationSpan">(Hide torrents with active warning, whistelists will override)</span><br />
+                <span class="explanationSpan">(Hide torrents with active warning, whitelists will override)</span><br />
             </p>
             <h3>Cosmetic</h3>
             <p>
