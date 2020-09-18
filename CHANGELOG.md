@@ -1,4 +1,8 @@
 # Changelog
+v2.2.3
+- Added option to hide reported uploads
+- Added option to hide warned uploads
+
 v2.2.2
 - Added option to hide anon uploads
 - Added help text on Uploaders tab to clarify that username-based filtering won't work on collage pages
