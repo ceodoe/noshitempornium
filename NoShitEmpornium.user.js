@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.2.2
+// @version      2.2.3
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.2.2"
+var nseVersion = "v2.2.3"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -38,6 +38,8 @@ var nseWhitelistUploaders;
 var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
 var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled","");
 var nseHideAnonUploadsEnabled = GM_getValue("nseHideAnonUploadsEnabled","");
+var nseHideWarnedEnabled = GM_getValue("nseHideWarnedEnabled","");
+var nseHideReportedEnabled = GM_getValue("nseHideReportedEnabled","");
 
 var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
 var nseCustomTheme = GM_getValue("nseCustomTheme","");
@@ -105,6 +107,14 @@ if(nseRussianRouletteEnabled == "") {
 
 if(nseHideAnonUploadsEnabled == "") {
     nseHideAnonUploadsEnabled = false;
+}
+
+if(nseHideWarnedEnabled == "") {
+    nseHideWarnedEnabled = false;
+}
+
+if(nseHideReportedEnabled == "") {
+    nseHideReportedEnabled = false;
 }
 
 if(nseSelectedTheme == "") {
@@ -212,6 +222,19 @@ for(var i = 0; i < torrents.length; i++) {
 
     var currentHidden = false;
     var currentWhitelisted = false;
+    
+    // Check if reported or warned
+    if(nseHideReportedEnabled) {
+        if(titleElement.querySelector("span.reported") !== null) {
+            currentHidden = true;
+        }
+    }
+    
+    if(nseHideWarnedEnabled) {
+        if(torrents[i].classList.contains("redbar")) {
+            currentHidden = true;
+        }
+    }
 
     // Check uploaders
     if(str_contains("collages.php", window.location.href) === false) { // There's no uploaders on collage pages
@@ -398,9 +421,21 @@ htmlContent.innerHTML = `
             <p>
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideAnonUploads" class="settingsCheckbox">
-                    👤 Hide anonymous uploads
+                    👤 Hide all anonymous uploads
                 </label>
                 <span class="explanationSpan">(Will still be overridden by whitelist rules)</span><br />
+                
+                <input type="checkbox" id="nseCheckHideReported"${nseHideReportedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideReported" class="settingsCheckbox">
+                    ⛔ Hide reported uploads
+                </label>
+                <span class="explanationSpan">(Hide torrents with active reports, whitelists will override)</span><br />
+                
+                <input type="checkbox" id="nseCheckHideWarned"${nseHideWarnedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideWarned" class="settingsCheckbox">
+                    ⚔️ Hide warned uploads
+                </label>
+                <span class="explanationSpan">(Hide torrents with active warning, whistelists will override)</span><br />
             </p>
             <h3>Cosmetic</h3>
             <p>
@@ -409,6 +444,7 @@ htmlContent.innerHTML = `
                     ❓ Oblivious 
                 </label>
                 <span class="explanationSpan">(Hide torrent tag lists)</span><br />
+                
                 <input type="checkbox" id="nseCheckCustomCSS"${nseCustomCSSEnabled ? ' checked' : ''} />
                 <label for="nseCheckCustomCSS" class="settingsCheckbox">
                     📜 Custom CSS
@@ -556,6 +592,8 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
     GM_setValue("nseRussianRouletteEnabled", document.getElementById("nseCheckRussianRouletteMode").checked);
     GM_setValue("nseHideAnonUploadsEnabled", document.getElementById("nseCheckHideAnonUploads").checked);
+    GM_setValue("nseHideWarnedEnabled", document.getElementById("nseCheckHideWarned").checked);
+    GM_setValue("nseHideReportedEnabled", document.getElementById("nseCheckHideReported").checked);
     
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
