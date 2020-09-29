@@ -263,46 +263,48 @@ for(var i = 0; i < torrents.length; i++) {
 
     var torrentIconElement = torrents[i].querySelector("td > span.torrent_icon_container > span.icon > a > div.icon_container > div.icon_stack > i");
 
-    if(nseHideSnatchedEnabled) {
-        if(torrentIconElement.classList.contains("snatched")) {
-            currentHidden = true;
+    if(torrentIconElement != null) {
+        if(nseHideSnatchedEnabled) {
+            if(torrentIconElement.classList.contains("snatched")) {
+                currentHidden = true;
 
-            if(nseBypassWhitelistsEnabled) {
-                currentBypassWhitelist = true;
+                if(nseBypassWhitelistsEnabled) {
+                    currentBypassWhitelist = true;
+                }
+            }
+        }
+
+        if(nseHideSeedingEnabled) {
+            if(torrentIconElement.classList.contains("seeding")) {
+                currentHidden = true;
+
+                if(nseBypassWhitelistsEnabled) {
+                    currentBypassWhitelist = true;
+                }        
+            }
+        }
+
+        if(nseHideGrabbedEnabled) {
+            if(torrentIconElement.classList.contains("grabbed")) {
+                currentHidden = true;
+                
+                if(nseBypassWhitelistsEnabled) {
+                    currentBypassWhitelist = true;
+                }
+            }
+        }
+
+        if(nseHideLeechingEnabled) {
+            if(torrentIconElement.classList.contains("leeching")) {
+                currentHidden = true;
+                
+                if(nseBypassWhitelistsEnabled) {
+                    currentBypassWhitelist = true;
+                }
             }
         }
     }
-
-    if(nseHideSeedingEnabled) {
-        if(torrentIconElement.classList.contains("seeding")) {
-            currentHidden = true;
-
-            if(nseBypassWhitelistsEnabled) {
-                currentBypassWhitelist = true;
-            }        
-        }
-    }
-
-    if(nseHideGrabbedEnabled) {
-        if(torrentIconElement.classList.contains("grabbed")) {
-            currentHidden = true;
-            
-            if(nseBypassWhitelistsEnabled) {
-                currentBypassWhitelist = true;
-            }
-        }
-    }
-
-    if(nseHideLeechingEnabled) {
-        if(torrentIconElement.classList.contains("leeching")) {
-            currentHidden = true;
-            
-            if(nseBypassWhitelistsEnabled) {
-                currentBypassWhitelist = true;
-            }
-        }
-    }
-
+    
     // Check uploaders
     if(window.location.href.includes("collages.php") === false) { // There's no uploaders on collage pages
         if(uploaderElement == null) { // If it is null, it's an anon upload
