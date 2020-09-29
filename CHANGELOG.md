@@ -1,4 +1,12 @@
 # Changelog
+v2.2.4
+- Added option to hide grabbed torrents
+- Added option to hide currently leeching torrents
+- Added option to hide currently seeding torrents
+- Added option to hide snatched torrents
+- Added option to buypass whitelists for the above torrents so that they are always hidden
+- Remove some legacy code and minor CSS restructuring
+
 v2.2.3
 - Added option to hide reported uploads
 - Added option to hide warned uploads
