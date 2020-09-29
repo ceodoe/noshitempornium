@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.2.3
+// @version      2.2.4
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.2.3"
+var nseVersion = "v2.2.4"
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -40,6 +40,11 @@ var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled","");
 var nseHideAnonUploadsEnabled = GM_getValue("nseHideAnonUploadsEnabled","");
 var nseHideWarnedEnabled = GM_getValue("nseHideWarnedEnabled","");
 var nseHideReportedEnabled = GM_getValue("nseHideReportedEnabled","");
+var nseHideSnatchedEnabled = GM_getValue("nseHideSnatchedEnabled","");
+var nseHideSeedingEnabled = GM_getValue("nseHideSeedingEnabled","");
+var nseHideGrabbedEnabled = GM_getValue("nseHideGrabbedEnabled","");
+var nseHideLeechingEnabled = GM_getValue("nseHideLeechingEnabled","");
+var nseBypassWhitelistsEnabled = GM_getValue("nseBypassWhitelistsEnabled","");
 
 var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
 var nseCustomTheme = GM_getValue("nseCustomTheme","");
@@ -117,6 +122,26 @@ if(nseHideReportedEnabled == "") {
     nseHideReportedEnabled = false;
 }
 
+if(nseHideSnatchedEnabled == "") {
+    nseHideSnatchedEnabled = false;
+}
+
+if(nseHideSeedingEnabled == "") {
+    nseHideSeedingEnabled = false;
+}
+
+if(nseHideGrabbedEnabled == "") {
+    nseHideGrabbedEnabled = false;
+}
+
+if(nseHideLeechingEnabled == "") {
+    nseHideLeechingEnabled = false;
+}
+
+if(nseBypassWhitelistsEnabled == "") {
+    nseBypassWhitelistsEnabled = false;
+}
+
 if(nseSelectedTheme == "") {
     nseSelectedTheme = "nseThemeDefault";
 }
@@ -137,8 +162,7 @@ if(nseCustomCSSEnabled == "") {
 
 // End of initialization
 
-
-// Define themes;
+// Define themes
 var themes = {
     nseThemeDefault:
         { 
@@ -206,13 +230,13 @@ for(var i = 0; i < torrents.length; i++) {
     var uploaderElement = torrents[i].querySelector("td.user > a");
     var titleElement;
     
-    if(str_contains("collages.php", window.location.href) === true) {
+    if(window.location.href.includes("collages.php")) {
         titleElement = torrents[i].querySelector("td > strong > a");
     } else {
         titleElement = torrents[i].querySelector("td > a");
     }
 
-    if(str_contains("top10.php", window.location.href) === true) {
+    if(window.location.href.includes("top10.php")) {
         uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
     }
     
@@ -222,8 +246,9 @@ for(var i = 0; i < torrents.length; i++) {
 
     var currentHidden = false;
     var currentWhitelisted = false;
+    var currentBypassWhitelist = false;
     
-    // Check if reported or warned
+    // Check if filtered via options
     if(nseHideReportedEnabled) {
         if(titleElement.querySelector("span.reported") !== null) {
             currentHidden = true;
@@ -236,8 +261,50 @@ for(var i = 0; i < torrents.length; i++) {
         }
     }
 
+    var torrentIconElement = torrents[i].querySelector("td > span.torrent_icon_container > span.icon > a > div.icon_container > div.icon_stack > i");
+
+    if(nseHideSnatchedEnabled) {
+        if(torrentIconElement.classList.contains("snatched")) {
+            currentHidden = true;
+
+            if(nseBypassWhitelistsEnabled) {
+                currentBypassWhitelist = true;
+            }
+        }
+    }
+
+    if(nseHideSeedingEnabled) {
+        if(torrentIconElement.classList.contains("seeding")) {
+            currentHidden = true;
+
+            if(nseBypassWhitelistsEnabled) {
+                currentBypassWhitelist = true;
+            }        
+        }
+    }
+
+    if(nseHideGrabbedEnabled) {
+        if(torrentIconElement.classList.contains("grabbed")) {
+            currentHidden = true;
+            
+            if(nseBypassWhitelistsEnabled) {
+                currentBypassWhitelist = true;
+            }
+        }
+    }
+
+    if(nseHideLeechingEnabled) {
+        if(torrentIconElement.classList.contains("leeching")) {
+            currentHidden = true;
+            
+            if(nseBypassWhitelistsEnabled) {
+                currentBypassWhitelist = true;
+            }
+        }
+    }
+
     // Check uploaders
-    if(str_contains("collages.php", window.location.href) === false) { // There's no uploaders on collage pages
+    if(window.location.href.includes("collages.php") === false) { // There's no uploaders on collage pages
         if(uploaderElement == null) { // If it is null, it's an anon upload
             if(nseHideAnonUploadsEnabled) {
                 var anonName = torrents[i].querySelector("td > span.anon_name");
@@ -259,12 +326,15 @@ for(var i = 0; i < torrents.length; i++) {
             // If currentHidden is still false, that means no blacklisted uploader was found, check whitelist
             // If currentHidden is true, blacklisted uploader was found, and since usernames are unique, skip check
             if(currentHidden === false) {
-                for(var m = 0; m < nseWhitelistUploaders.length; m++) {
-                    if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
-                        currentWhitelisted = true;
-                        uploaderElement.classList.add("nseWhitelistedUploader");
-                    }
+                if(currentBypassWhitelist == false) {
+                    for(var m = 0; m < nseWhitelistUploaders.length; m++) {
+                        if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
+                            currentWhitelisted = true;
+                            uploaderElement.classList.add("nseWhitelistedUploader");
+                        }
+                    } 
                 }
+                
             }
         }
     }
@@ -282,12 +352,14 @@ for(var i = 0; i < torrents.length; i++) {
     
     // Scan title for nseWhitelistTitlePhrases
     // ...For every whitelisted phrase:
-    for(var tblCount = 0; tblCount < nseWhitelistTitlePhrases.length; tblCount++) {
-        var currentTWLPhrase = nseWhitelistTitlePhrases[tblCount].trim().toLowerCase();
-        var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
-        if(torrentTitle.includes(currentTWLPhrase)) {
-            currentWhitelisted = true;
-            titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+    if(currentBypassWhitelist == false) {
+        for(var tblCount = 0; tblCount < nseWhitelistTitlePhrases.length; tblCount++) {
+            var currentTWLPhrase = nseWhitelistTitlePhrases[tblCount].trim().toLowerCase();
+            var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
+            if(torrentTitle.includes(currentTWLPhrase)) {
+                currentWhitelisted = true;
+                titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+            }
         }
     }
     
@@ -300,9 +372,11 @@ for(var i = 0; i < torrents.length; i++) {
                 if(russianRouletteBulletInChamber == false) { tagList[k].classList.add("nseHiddenTag"); }
         }
 
-        if(nseWhitelistTags.includes(tagList[k].innerHTML) === true) {
-            currentWhitelisted = true;
-            tagList[k].classList.add("nseWhitelistedTag");
+        if(currentBypassWhitelist == false) {
+            if(nseWhitelistTags.includes(tagList[k].innerHTML) === true) {
+                currentWhitelisted = true;
+                tagList[k].classList.add("nseWhitelistedTag");
+            }
         }
     }
 
@@ -322,25 +396,17 @@ for(var i = 0; i < torrents.length; i++) {
 // Set up reference node to place our html
 var referenceNode = document.querySelector("div#filter_slidetoggle");
 
-if(str_contains("top10.php", window.location.href) === true) {
+if(window.location.href.includes("top10.php")) {
     referenceNode = document.querySelector("#content > div > form");
-} else if(str_contains("?action=notify", window.location.href) === true) {
+} else if(window.location.href.includes("?action=notify")) {
     referenceNode = document.querySelector("#content > div > h2");
-} else if(str_contains("collages.php?", window.location.href) === true) {
+} else if(window.location.href.includes("collages.php?")) {
     referenceNode = document.querySelector("div.clear:nth-child(6)");
 }
 
 function toggleTorrents() {
     for(var k = 0; k < torrents.length; k++) {
         torrents[k].classList.toggle("hidden");
-    }
-}
-
-function str_contains(needle, haystack) {
-    if(haystack.indexOf(needle) > -1) {
-        return true;
-    } else {
-        return false;
     }
 }
 
@@ -354,27 +420,27 @@ htmlContent.innerHTML = `
     </div>
     <div id="nseMainDiv" class="nseMainBox hidden">
         <input class="nseRadioButton" id="nseTab1" type="radio" name="tabs" checked>
-        <label class="nseLabel" for="nseTab1">Tags</label>
+        <label class="nseLabel" for="nseTab1">🏷️ Tags</label>
 
         <input class="nseRadioButton" id="nseTab2" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab2">Titles</label>
+        <label class="nseLabel" for="nseTab2">📚 Titles</label>
 
         <input class="nseRadioButton" id="nseTab3" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab3">Uploaders</label>
+        <label class="nseLabel" for="nseTab3">👥 Uploaders</label>
 
         <input class="nseRadioButton" id="nseTab4" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab4">Settings</label>
+        <label class="nseLabel" for="nseTab4">⚙️ Settings</label>
 
         <section id="nseContent1">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">Tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">👎 Tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
                 <div id="nseBLE" class="nseExplanationBox hidden">
                     
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">Tag whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">👍 Tag whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
                 <div id="nseWLE" class="nseExplanationBox hidden">
                     
                 </div>
@@ -384,14 +450,14 @@ htmlContent.innerHTML = `
 
         <section id="nseContent2">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">Title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">👎 Title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
                 <div id="nseTitleBLE" class="nseExplanationBox hidden">
                 
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">Title whitelist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">👍 Title whitelist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
                 <div id="nseTitleWLE" class="nseExplanationBox hidden">
                     
                 </div>
@@ -401,14 +467,14 @@ htmlContent.innerHTML = `
 
         <section id="nseContent3">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">Uploader blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">👎 Uploader blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
                 <div id="nseUBLE" class="nseExplanationBox hidden">
                     
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">Uploader whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">👍 Uploader whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
                 <div id="nseUWLE" class="nseExplanationBox hidden">
                     
                 </div>
@@ -419,6 +485,7 @@ htmlContent.innerHTML = `
         <section id="nseContent4">
             <h3>Filtering</h3> 
             <p>
+                <b>Torrent site status</b><br />
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideAnonUploads" class="settingsCheckbox">
                     👤 Hide all anonymous uploads
@@ -435,7 +502,38 @@ htmlContent.innerHTML = `
                 <label for="nseCheckHideWarned" class="settingsCheckbox">
                     ⚔️ Hide warned uploads
                 </label>
-                <span class="explanationSpan">(Hide torrents with active warning, whitelists will override)</span><br />
+                <span class="explanationSpan">(Hide torrents with active warning, whitelists will override)</span><br /><br />
+                
+                <b>Torrent personal status</b><br />
+                <input type="checkbox" id="nseCheckHideGrabbed"${nseHideGrabbedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideGrabbed" class="settingsCheckbox">
+                    💾 Hide grabbed uploads
+                </label>
+                <span class="explanationSpan">(Hide torrents you have previously grabbed)</span><br />
+                
+                <input type="checkbox" id="nseCheckHideLeeching"${nseHideLeechingEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideLeeching" class="settingsCheckbox">
+                    ⏬ Hide leeching uploads
+                </label>
+                <span class="explanationSpan">(Hide torrents you are currently leeching)</span><br />
+                
+                <input type="checkbox" id="nseCheckHideSeeding"${nseHideSeedingEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideSeeding" class="settingsCheckbox">
+                    ⏫ Hide seeding uploads
+                </label>
+                <span class="explanationSpan">(Hide torrents you are currently seeding)</span><br />
+
+                <input type="checkbox" id="nseCheckHideSnatched"${nseHideSnatchedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideSnatched" class="settingsCheckbox">
+                    💽 Hide snatched uploads
+                </label>
+                <span class="explanationSpan">(Hide torrents you have already downloaded/snatched)</span><br /><br />
+                
+                <input type="checkbox" id="nseCheckBypassWhitelists"${nseBypassWhitelistsEnabled ? ' checked' : ''} />
+                <label for="nseCheckBypassWhitelists" class="settingsCheckbox">
+                    💫 Bypass whitelists for personal status filtering
+                </label><br />
+                <span class="explanationSpan" style="margin-left: 60px;">(Ignore all whitelists when filtering grabbed/leeching/seeding/snatched torrents)</span><br />
             </p>
             <h3>Cosmetic</h3>
             <p>
@@ -510,9 +608,9 @@ htmlContent.innerHTML = `
                     NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
                 </p>
                 <p>
-                    <span class="nseImageButton" id="nseGithub"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">Visit the project's GitHub page</a></span><br />
-                    <span class="nseImageButton" id="nseChangelog"> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">See the changelog</a></span><br />
-                    <span class="nseImageButton" id="nseEmpoThread"> <a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread</a></span>
+                    <span class="nseImageButton" id="nseGithub"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">🐙 Visit the project's GitHub page</a></span><br />
+                    <span class="nseImageButton" id="nseChangelog"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">📋 See the changelog</a></span><br />
+                    <span class="nseImageButton" id="nseEmpoThread"><a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">🧵 Read the official forum thread</a></span>
                 </p>
         </section>
 
@@ -594,6 +692,11 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseHideAnonUploadsEnabled", document.getElementById("nseCheckHideAnonUploads").checked);
     GM_setValue("nseHideWarnedEnabled", document.getElementById("nseCheckHideWarned").checked);
     GM_setValue("nseHideReportedEnabled", document.getElementById("nseCheckHideReported").checked);
+    GM_setValue("nseHideSnatchedEnabled", document.getElementById("nseCheckHideSnatched").checked);
+    GM_setValue("nseHideSeedingEnabled", document.getElementById("nseCheckHideSeeding").checked);
+    GM_setValue("nseHideLeechingEnabled", document.getElementById("nseCheckHideLeeching").checked);
+    GM_setValue("nseHideGrabbedEnabled", document.getElementById("nseCheckHideGrabbed").checked);
+    GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
     
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
@@ -732,7 +835,6 @@ addGlobalStyle(`
     background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
     border-radius: 20px;
     margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 p:not(:last-child) {
@@ -752,7 +854,7 @@ section {
 .nseLabel {
     display: inline-block;
     margin: 0 0 -1px;
-    padding: 15px 25px;
+    padding: 15px;
     font-weight: 600;
     text-align: center;
     color: ${themes[nseSelectedTheme]["accentColor"]};
@@ -765,31 +867,6 @@ section {
     padding: 5px 10px;
 }
 
-.nseLabel:before {
-    font-weight: normal;
-    margin-right: 10px;
-    margin-left: 10px;
-}
-
-.nseLabel[for*='1']:before {
-    content: '🏷️';
-    margin-right: 5px;
-}
-
-.nseLabel[for*='2']:before {
-    content: '📚';
-    margin-right: 5px;
-}
-
-.nseLabel[for*='3']:before {
-    content: '👥';
-    margin-right: 5px;
-}
-
-.nseLabel[for*='4']:before {
-    content: '⚙️';
-    margin-right: 5px;
-}
 
 a.nseLink, a.nseLink:visited {
     color: ${themes[nseSelectedTheme]["accentColor"]};
@@ -798,7 +875,6 @@ a.nseLink, a.nseLink:visited {
 .nseLabel:hover {
     color: ${themes[nseSelectedTheme]["highlightColor"]};
     background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
-    cursor: pointer;
 }
 
 .nseRadioButton:checked + .nseLabel {
@@ -810,15 +886,6 @@ a.nseLink, a.nseLink:visited {
 
 #nseTab1:checked ~ #nseContent1,#nseTab2:checked ~ #nseContent2,#nseTab3:checked ~ #nseContent3,#nseTab4:checked ~ #nseContent4 {
     display: block;
-}
-
-.nseLabel:before {
-    margin: 0;
-    font-size: 18px;
-}
-
-.nseLabel {
-    padding: 15px;
 }
 
 .explanationSpan {
@@ -845,48 +912,11 @@ a.nseLink, a.nseLink:visited {
 .nseImageButton:before {
     font-weight: normal;
     margin-right: 5px;
- }
-
-#nseGithub:before {
-    content: "🐙";
- }
-
-#nseEmpoThread:before {
-    content: "🧵";
- }
-
-#nseChangelog:before {
-    content: "📋";
-}
-
-#nseTagBlacklistHeader:before {
-    content: "👎";
-}
-
-#nseTagWhitelistHeader:before {
-    content: "👍";
-}
-
-#nseTitleBlacklistHeader:before {
-    content: "👎";
-}
-
-#nseTitleWhitelistHeader:before {
-    content: "👍";
-}
-
-#nseUploaderBlacklistHeader:before {
-    content: "👎";
-}
-
-#nseUploaderWhitelistHeader:before {
-    content: "👍";
 }
 
 .nseExplanationBox, #nseCustomThemeDiv, #nseCustomCSSDiv {
     width: 97%;
     margin-top: 10px;
-    margin-bottom: 10px;
     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     padding: 10px;
     border-radius: 10px;
@@ -897,10 +927,9 @@ a.nseLink, a.nseLink:visited {
     margin: auto;
     text-align: center;
     font-size: 18px;
-    cursor: pointer;
 }
 
-.nseExplanationToggler {
+.nseExplanationToggler, #nseHeader, .nseNiceButton, .nseLabel:hover {
     cursor: pointer;
 }
 
@@ -909,11 +938,7 @@ a.nseLink, a.nseLink:visited {
     max-width: 99%;
 }
 
-.nseFieldDiv {
-    margin-bottom:10px;
-}
-
-.nseExplanationNode {
+.nseFieldDiv, .nseExplanationNode, .nseExplanationBox, #nseCustomThemeDiv, #nseCustomCSSDiv, .nseOuterDiv {
     margin-bottom: 10px;
 }
 
@@ -936,7 +961,6 @@ a.nseLink, a.nseLink:visited {
     color: ${themes[nseSelectedTheme]["foregroundColor"]} !important;
     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     border-radius: 10px;
-    cursor: pointer;
     padding: 5px;
     margin-left: 5px;
     margin-right: 5px;
