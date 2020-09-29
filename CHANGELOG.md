@@ -5,7 +5,7 @@ v2.2.4
 - Added option to hide currently seeding torrents
 - Added option to hide snatched torrents
 - Added option to bypass whitelists for the above torrents so that they are always hidden
-- Remove some legacy code and minor CSS restructuring
+- Removed some legacy code and minor CSS restructuring
 
 v2.2.3
 - Added option to hide reported uploads
