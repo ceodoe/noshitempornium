@@ -1,5 +1,5 @@
 # NoShitEmpornium
-Fully featured filtering solution for Empornium. Hide torrents based on tags, titles, whether your previously downloaded it, and lots more!
+Fully featured filtering solution for Empornium. Hide torrents based on tags, titles, uploaders, whether you previously downloaded it, and lots more!
 
 # Features
 - Maintain a blacklist of tags, titles, and uploaders you'd like to automatically hide
