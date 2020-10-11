@@ -1,4 +1,7 @@
 # Changelog
+v2.3
+- Added filtering for individual uploads. To use this new feature, click the new eye icon next to any torrent in any supported torrent list, and it will hide/show that upload regardless of any tag/title/uploader rules. This is useful if you just plain don't want to see a torrent, but don't have anything unique to filter it on. This feature is enabled by default when you update, but can be disabled from the Settings tab within NSE. Note that you don't need to manually save when filtering uploads this way, as it is done automatically whenever you click the eye icon.
+
 v2.2.4
 - Added option to hide grabbed torrents
 - Added option to hide currently leeching torrents
