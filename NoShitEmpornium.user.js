@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.2.4
+// @version      2.3
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,10 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.2.4"
+var nseVersion = "v2.3"
+
+// Store the hide icon as text to dodge CSP
+var nseHideIconString = "data:image/png;base64,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";
 
 // Load saved lists and options
 var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
@@ -51,6 +54,10 @@ var nseCustomTheme = GM_getValue("nseCustomTheme","");
 
 var nseCustomCSSEnabled = GM_getValue("nseCustomCSSEnabled","");
 var nseCustomCSS = GM_getValue("nseCustomCSS","");
+
+var nseIndividualUploadHidingEnabled = GM_getValue("nseIndividualUploadHidingEnabled", "");
+var nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", "")
+var nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", "")
 
 // Initialize lists and options
 
@@ -160,6 +167,19 @@ if(nseCustomCSSEnabled == "") {
     nseCustomCSSEnabled = false;
 }
 
+if(nseIndividualUploadHidingEnabled == "") {
+    nseIndividualUploadHidingEnabled = true; // Defaults to on, because it's super useful
+}
+
+// Save these internally as arrays as the user will never manipulate these directly
+if(nseIndividualUploadHidingBlacklist == "") {
+    nseIndividualUploadHidingBlacklist = new Array(0);
+}
+
+if(nseIndividualUploadHidingWhitelist == "") {
+    nseIndividualUploadHidingWhitelist = new Array(0);
+}
+
 // End of initialization
 
 // Define themes
@@ -236,6 +256,124 @@ for(var i = 0; i < torrents.length; i++) {
         titleElement = torrents[i].querySelector("td > a");
     }
 
+    var currentHidden = false;
+    var currentWhitelisted = false;
+    var currentBypassWhitelist = false;
+    var currentForceHide = false;
+    var currentForceShow = false;
+
+    // Check if we are adding the hide button
+    if(nseIndividualUploadHidingEnabled) {
+        var iconDaddy = torrents[i].querySelector("td > span.torrent_icon_container");
+
+        var nseToggleHideElement = document.createElement("span");
+        nseToggleHideElement.className = "icon";
+        nseToggleHideElement.innerHTML = `
+        <div class="icon_container">
+            <div class="icon_stack">
+                <i class="font_icon torrent_icons clickable">
+                    <img src="${nseHideIconString}" />
+                </i>
+            </div>
+        </div>
+        `;
+
+        nseToggleHideElement.title = "Filter this torrent with NSE";
+        nseToggleHideElement.classList.add("nseToggleHideButton");
+        
+        var actualIcon = nseToggleHideElement.querySelector("div > div > i")
+        var torrentID = titleElement.href.match(/([0-9]+)/)[0];
+        actualIcon.torrentID = torrentID;
+        actualIcon.onclick = function() {
+            var torrentDad = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+
+            if(torrentDad.getAttribute("isNSEHidden") == null) {
+                torrentDad.setAttribute("isNSEHidden", "0");
+            }
+
+            if(torrentDad.getAttribute("isNSEHidden") === "1") {
+                // Blacklisted, move to whitelist and unhide
+                var currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
+                if(currindex > -1) {
+                    nseIndividualUploadHidingBlacklist.splice(currindex, 1);
+                }
+                
+                nseIndividualUploadHidingWhitelist.push(this.torrentID);
+                
+                torrentDad.classList.toggle("hidden");
+                torrentDad.setAttribute("isNSEHidden", "0");
+                torrentDad.style.backgroundColor = null;
+
+                var nseHeaderNode = document.querySelector("#nseHeaderText");
+
+                var currNum = nseHeaderNode.innerHTML.match(/([0-9]+)/)[0];
+                currNum = Number(currNum) - 1;
+
+                if(currNum == 0) {
+                    nseHeaderNode.innerHTML = "NoShitEmpornium";
+                } else {
+                    nseHeaderNode.innerHTML = `Toggle ${currNum} hidden torrents`;
+                }
+
+                this.classList.add("nseIndividuallyWhitelisted");
+                this.classList.remove("nseIndividuallyBlacklisted");
+                this.classList.remove("nseIndividuallyUntouched");
+            } else if(torrentDad.getAttribute("isNSEHidden") == "0") {
+                // Not hidden or is whitelisted, move to blacklist and hide
+                var currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
+                if(currindex > -1) {
+                    nseIndividualUploadHidingWhitelist.splice(currindex, 1);
+                }
+                
+                nseIndividualUploadHidingBlacklist.push(this.torrentID);
+                
+                torrentDad.classList.toggle("hidden");
+                torrentDad.setAttribute("isNSEHidden", "1");
+                torrentDad.style.backgroundColor = "#AAF";
+
+                var nseHeaderNode = document.querySelector("#nseHeaderText");
+
+                if(nseHeaderNode.innerHTML != "NoShitEmpornium") {
+                    var currNum = nseHeaderNode.innerHTML.match(/([0-9]+)/)[0];
+                    currNum = Number(currNum) + 1;
+                    nseHeaderNode.innerHTML = `Toggle ${currNum} hidden torrents`;
+                } else {
+                    nseHeaderNode.innerHTML = `Toggle 1 hidden torrent`;
+                }
+
+                this.classList.remove("nseIndividuallyWhitelisted");
+                this.classList.remove("nseIndividuallyUntouched");
+                this.classList.add("nseIndividuallyBlacklisted");
+            }
+
+            //Save lists immediately after manipulating them
+            GM_setValue("nseIndividualUploadHidingBlacklist", nseIndividualUploadHidingBlacklist);
+            GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
+        };
+
+        iconDaddy.appendChild(nseToggleHideElement);
+
+        // Check if torrent is black/whitelisted this way
+        var currentBLIndex = nseIndividualUploadHidingBlacklist.indexOf(torrentID);
+        if(currentBLIndex > -1) {
+            actualIcon.classList.add("nseIndividuallyBlacklisted");
+            currentHidden = true;
+            currentForceHide = true;
+        }
+        
+        currentWLIndex = nseIndividualUploadHidingWhitelist.indexOf(torrentID);
+        if(currentWLIndex > -1) {
+            actualIcon.classList.add("nseIndividuallyWhitelisted");
+            currentWhitelisted = true;
+            currentForceShow = true;
+        }
+
+        if(currentForceHide == false && currentForceShow == false) {
+            // Torrent not acted upon
+            actualIcon.classList.add("nseIndividuallyUntouched");
+        }
+    }
+
     if(window.location.href.includes("top10.php")) {
         uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
     }
@@ -244,10 +382,6 @@ for(var i = 0; i < torrents.length; i++) {
         tagElement.classList.add("hidden");
     }
 
-    var currentHidden = false;
-    var currentWhitelisted = false;
-    var currentBypassWhitelist = false;
-    
     // Check if filtered via options
     if(nseHideReportedEnabled) {
         if(titleElement.querySelector("span.reported") !== null) {
@@ -382,12 +516,23 @@ for(var i = 0; i < torrents.length; i++) {
         }
     }
 
+    // If forcing through individual filtering, ignore results
+    if(currentForceShow) {
+        currentHidden = false;
+        currentWhitelisted = true;
+    } else if(currentForceHide) {
+        currentHidden = true;
+        currentWhitelisted = false;
+    }
+
     if(currentWhitelisted === true) {
         torrents[i].classList.remove("hidden");
+        torrents[i].setAttribute("isNSEHidden", "0");
     } else if(currentHidden === true) {
         if(russianRouletteBulletInChamber == false) {
             torrents[i].style.backgroundColor = "#AAF";
             torrents[i].classList.add("hidden");
+            torrents[i].setAttribute("isNSEHidden", "1");
             count += 1;
         }
     }
@@ -487,6 +632,14 @@ htmlContent.innerHTML = `
         <section id="nseContent4">
             <h3>Filtering</h3> 
             <p>
+                <b>Individual uploads</b><br />
+                <input type="checkbox" id="nseCheckIndividualHide"${nseIndividualUploadHidingEnabled ? ' checked' : ''} />
+                <label for="nseCheckIndividualHide" class="settingsCheckbox">
+                    👁️ Enable individual upload filtering
+                </label><br />
+                <span class="explanationSpan" style="margin-left: 60px;">(Click the eye icon next to the torrent name to blacklist/whitelist uploads</span><br />
+                <span class="explanationSpan" style="margin-left: 60px;">individually, ignoring <b>all</b> other rules. These filters are automatically saved)</span><br /><br />
+                
                 <b>Torrent site status</b><br />
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideAnonUploads" class="settingsCheckbox">
@@ -699,6 +852,7 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseHideLeechingEnabled", document.getElementById("nseCheckHideLeeching").checked);
     GM_setValue("nseHideGrabbedEnabled", document.getElementById("nseCheckHideGrabbed").checked);
     GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
+    GM_setValue("nseIndividualUploadHidingEnabled", document.getElementById("nseCheckIndividualHide").checked);
     
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
@@ -984,6 +1138,25 @@ a.nseLink, a.nseLink:visited {
 
 h3 {
     color: ${themes[nseSelectedTheme]["foregroundColor"]} !important;
+}
+
+.nseIndividuallyWhitelisted {
+    border: 2px solid green;
+    background-color: #CEF6D8;
+}
+
+.nseIndividuallyBlacklisted {
+    border: 2px solid red;
+    background-color: #F6CED8;
+}
+
+.nseIndividuallyUntouched {
+    border: 2px solid gray;
+    background-color: #EBEBEB;
+}
+
+.nseIndividuallyBlacklisted, .nseIndividuallyWhitelisted, .nseIndividuallyUntouched {    
+    border-radius: 5px;
 }
 
 ${nseCustomCSSEnabled ? nseCustomCSS : ''}
