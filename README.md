@@ -19,11 +19,11 @@ Note that NSE is only tested with Tampermonkey, and thus it is the only "officia
 
 # How to use
 * Make sure the checkbox for "Hide tags in lists" is **unchecked** in your user settings on Emp, the script won't be able to access tags if they're hidden (hover over your username at the top right of any page and click Settings). In addition, it is recommended that you increase the value of "Max Tags in lists" to a high number such as 1000, so that torrents with a lot of tags will be correctly handled.
-* Install Tampermonkey using the appropriate link above
+* Install Tampermonkey using the link above
 * Install NSE by clicking [here](https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js)
 * Follow the instructions given by Tampermonkey to install the script
-* Once the script is installed, visit an applicable page on Emp (Torrents, Top 10, Collages, Notifications)
-* Click the Options button in the new NSE configuration area placed below the search center
+* Once the script is installed, visit an applicable page on Emp (Torrents, Top 10/100/250/500, Collages, Notifications)
+* Click the Options button in the new NSE configuration area (placed below the search center, or near the top of the torrent list area)
 * Add your lists of tags, title words or uploaders in the newly revealed area, and check the Settings tab for more goodies
 * Click the question mark next to each list for an explanation of what it does
 * Click "Save" then "Reload page" to save your options and reload the page
@@ -38,7 +38,7 @@ If you:
 * Reinstall the same version of the script
 * Uninstall then reinstall the script
 
-...all your lists and settings will be deleted. If you're planning to do any of these things, make sure you back up your settings first! 
+...all your lists and settings may be deleted. If you're planning to do any of these things, make sure you back up your settings first! 
 
 How to back up all your NSE settings:
 * Enter the Tampermonkey dashboard by clicking its icon on your browser toolbar and selecting "Dashboard"
