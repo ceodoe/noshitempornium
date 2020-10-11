@@ -167,7 +167,7 @@ if(nseCustomCSSEnabled == "") {
     nseCustomCSSEnabled = false;
 }
 
-if(nseIndividualUploadHidingEnabled == "") {
+if(nseIndividualUploadHidingEnabled === "") {
     nseIndividualUploadHidingEnabled = true; // Defaults to on, because it's super useful
 }
 
