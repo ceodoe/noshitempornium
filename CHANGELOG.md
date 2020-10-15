@@ -1,4 +1,10 @@
 # Changelog
+v2.3.1
+- Add compatibility with Gazelle Collapse Duplicates (restores the torrent icon box)
+- Fixed an oversight causing the hidden torrents list not to be toggleable under certain conditions
+- Fixed a bug where the NSE options area wouldn't appear on any Notifications pages past the first page
+- Add logic to avoid duplicate entries in the individual upload filter lists if the same torrent is black/whitelisted several times on the same page (the same torrent can appear multiple times on the Top10 page, for example)
+
 v2.3
 - Added filtering for individual uploads. To use this new feature, click the new eye icon next to any torrent in any supported torrent list, and it will hide/show that upload regardless of any tag/title/uploader rules. This is useful if you just plain don't want to see a torrent, but don't have anything unique to filter it on. This feature is enabled by default when you update, but can be disabled from the Settings tab within NSE. Note that you don't need to manually save when filtering uploads this way, as it is done automatically whenever you click the eye icon.
 
