@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.3.1
+// @version      2.3.2
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -14,7 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.3.1"
+var nseVersion = "v2.3.2"
 
 // Store the hide icon as text to dodge CSP
 var nseHideIconString = "data:image/png;base64,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";
@@ -58,6 +58,8 @@ var nseCustomCSS = GM_getValue("nseCustomCSS","");
 var nseIndividualUploadHidingEnabled = GM_getValue("nseIndividualUploadHidingEnabled", "");
 var nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", "")
 var nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", "")
+
+var nseEnableGCDCompatibilityMode = GM_getValue("nseEnableGCDCompatibilityMode", "")
 
 // Initialize lists and options
 
@@ -180,6 +182,11 @@ if(nseIndividualUploadHidingWhitelist == "") {
     nseIndividualUploadHidingWhitelist = new Array(0);
 }
 
+//
+if(nseEnableGCDCompatibilityMode == "") {
+    nseEnableGCDCompatibilityMode = false;
+}
+
 // End of initialization
 
 // Define themes
@@ -225,6 +232,31 @@ var themes = {
             highlightColor: nseCustomTheme["highlightColor"]
         }
 };
+
+// Reenable torrent icon box and hide comments if GCD mode is on, using a timer is the best I can do
+if(window.location.href.includes("torrents.php")) { //torrents.php is the only page we have in common
+    if(nseEnableGCDCompatibilityMode) {
+        window.setTimeout(function () {
+            // Reenable all torrent icon boxes
+            var iconContainers = document.querySelectorAll("span.torrent_icon_container")
+            for(var a = 0; a < iconContainers.length; a++) {
+                iconContainers[a].style.display = "flex";
+            }
+    
+            // Hide all comment icons GCD creates
+            var commentElements = document.querySelectorAll("a.comment");
+            for(var b = 0; b < commentElements.length; b++) {
+                commentElements[b].style.display = "none";
+            }
+            
+            // Bring all eyes to the front of the z-index as they are obscured by the div.version element
+            var allEyes = document.querySelectorAll(".nseToggleHideButton");
+            for(var c = 0; c < allEyes.length; c++) {
+                allEyes[c].style.zIndex = "9001";
+            }
+        },1500); // This should be enough time for any modern-ish machine to run through GCD's code before we look for its elements
+    }
+}
 
 
 // Main loop - for every torrent:
@@ -357,7 +389,6 @@ for(var i = 0; i < torrents.length; i++) {
             GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
         };
 
-        iconDaddy.style.display = "flex"; // For Gazelle Collapse Duplicates compatibility
         iconDaddy.appendChild(nseToggleHideElement);
 
         // Check if torrent is black/whitelisted this way
@@ -646,6 +677,13 @@ htmlContent.innerHTML = `
                 </label><br />
                 <span class="explanationSpan" style="margin-left: 60px;">(Click the eye icon next to the torrent name to blacklist/whitelist uploads</span><br />
                 <span class="explanationSpan" style="margin-left: 60px;">individually, ignoring <b>all</b> other rules. These filters are automatically saved)</span><br /><br />
+
+                <input type="checkbox" id="nseCheckGCDCompatibilityMode"${nseEnableGCDCompatibilityMode ? ' checked' : ''} />
+                <label for="nseCheckGCDCompatibilityMode" class="settingsCheckbox">
+                    📃 Enable support for individual filtering when using <i>Gazelle Collapse Duplicates</i>
+                </label><br />
+                <span class="explanationSpan" style="margin-left: 60px;">(This is experimental and might not work as expected, you have been warned.</span><br />              
+                <span class="explanationSpan" style="margin-left: 60px;">Interoperability with other scripts cannot be guaranteed)</span><br /><br />                
                 
                 <b>Torrent site status</b><br />
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
@@ -794,7 +832,7 @@ referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
 // Assign event handlers
 var headerNode = document.getElementById("nseHeaderText");
 headerNode.innerHTML = "Toggle " + count + " hidden torrent";
-headerNode.onclick = (function() { toggleTorrents(); });
+headerNode.parentNode.onclick = (function() { toggleTorrents(); });
 
 if(count === 0) {
     headerNode.innerHTML = "NoShitEmpornium";
@@ -803,6 +841,7 @@ if(count === 0) {
 }
 
 document.getElementById("nseToggleOptionsNode").onclick = (function() {
+    event.stopPropagation();
     document.getElementById("nseMainDiv").classList.toggle("hidden");
 });
 
@@ -859,6 +898,7 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseHideGrabbedEnabled", document.getElementById("nseCheckHideGrabbed").checked);
     GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
     GM_setValue("nseIndividualUploadHidingEnabled", document.getElementById("nseCheckIndividualHide").checked);
+    GM_setValue("nseEnableGCDCompatibilityMode", document.getElementById("nseCheckGCDCompatibilityMode").checked)
     
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
