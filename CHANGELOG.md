@@ -1,4 +1,10 @@
 # Changelog
+v2.3.2
+- Move support for "Gazelle Collapse Duplicates" script (GCD) into its own option under Settings, default is disabled
+- When GCD support is enabled, all torrent comment icons created by it are now hidden
+- When GCD support is enabled, the eye-icon for individual filters is now brought to the front as not to be obscured by the version lines from GCD
+- The "toggle hidden torrents" on-click functionality now covers most of the options box instead of just the text
+
 v2.3.1
 - Add compatibility with Gazelle Collapse Duplicates (restores the torrent icon box)
 - Fixed an oversight causing the hidden torrents list not to be toggleable under certain conditions
