@@ -45,6 +45,6 @@ How to back up all your NSE settings:
 * Click the "Settings" tab, and set "Config mode" to "Advanced"
 * Go back to the "Installed Userscripts" list, and click on NoShitEmpornium
 * Select the "Storage" tab, and copy-paste all that text into a file, save it to your computer or on cloud storage
-* You have now backed up your settings. To restore them, paste your your settings back into the Storage text box and click "Save"
+* You have now backed up your settings. To restore them, paste your settings back into the Storage text box and click "Save"
 
 # [Click here for changelog](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md)
