@@ -11,11 +11,13 @@ Fully featured filtering solution for Empornium. Hide torrents based on tags, ti
 - Neat toggle button and GUI to manage lists and settings
 
 # Prerequisites
-NSE is a user script written in JavaScript. In order to use it, you'll need to install the add-on/extension Tampermonkey in your browser.
+- A supported browser:
+  - [Firefox](https://getfirefox.com/) (Recommended!)
+  - Chromium-based browsers are also supported
+- The [Tampermonkey](https://tampermonkey.net/) userscript engine addon for your browser
 
-[Click here to install Tampermonkey in your browser!](https://tampermonkey.net/)
-
-Note that NSE is only tested with Tampermonkey, and thus it is the only "officially" supported userscript engine.
+# Note on browsers and userscript engines
+Note that NSE is mainly developed on and tested with mainline Firefox and Tampermonkey, and thus Tampermonkey is the only "officially" supported userscript engine. Although I am an avid FF user, I'm not blind to the fact that most of the world uses Chrome, so every release of NSE is also tested and made sure to work on Chromium-based browsers. Waterfox and other comparably niche browser forks and userscript engines might work fully or partly, but are not supported. Thus there is no guarantee it will work on any other combination of browsers and engines aside from FF/Chromium + Tampermonkey.  
 
 # How to use
 * Make sure the checkbox for "Hide tags in lists" is **unchecked** in your user settings on Emp, the script won't be able to access tags if they're hidden (hover over your username at the top right of any page and click Settings). In addition, it is recommended that you increase the value of "Max Tags in lists" to a high number such as 1000, so that torrents with a lot of tags will be correctly handled.
