@@ -6,10 +6,10 @@
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @author       ceodoe
-// @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
-// @include      /^https?://www\.empornium\.(me|sx)/collages\.php.*id=*/
-// @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
-// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php.*(\?|&)(type=|id=)/
+// @include      /^https?://www\.empornium\.(me|is|sx)/torrents\.php*/
+// @include      /^https?://www\.empornium\.(me|is|sx)/collages\.php.*id=*/
+// @include      /^https?://www\.empornium\.(me|is|sx)/top10\.php*/
+// @exclude      /^https?://www\.empornium\.(me|is|sx)/torrents\.php.*(\?|&)(type=|id=)/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
