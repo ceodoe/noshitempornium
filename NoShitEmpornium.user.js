@@ -1,20 +1,36 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.3.2
+// @version      2.3.3
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @author       ceodoe
-// @include      /^https?://www\.empornium\.(me|sx)/torrents\.php*/
-// @include      /^https?://www\.empornium\.(me|sx)/collages\.php.*id=*/
-// @include      /^https?://www\.empornium\.(me|sx)/top10\.php*/
-// @exclude      /^https?://www\.empornium\.(me|sx)/torrents\.php.*(\?|&)(type=|id=)/
+// @include      /^https?://www\.empornium\.(me|sx|is)/torrents\.php*/
+// @include      /^https?://www\.empornium\.(me|sx|is)/collages\.php.*id=*/
+// @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
+// @exclude      /^https?://www\.empornium\.(me|sx|is)/torrents\.php.*(\?|&)(type=|id=)/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
-var nseVersion = "v2.3.2"
+//
+// Copyright © 2015-2021 ceodoe
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+var nseVersion = "v2.3.3"
 
 // Store the hide icon as text to dodge CSP
 var nseHideIconString = "data:image/png;base64,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";
@@ -192,7 +208,7 @@ if(nseEnableGCDCompatibilityMode == "") {
 // Define themes
 var themes = {
     nseThemeDefault:
-        { 
+        {
             backgroundColor: "#fff",
             backgroundHighlightColor: "#cfe7ff",
             foregroundColor: "#000",
@@ -200,7 +216,7 @@ var themes = {
             highlightColor: "#0071b0"
         },
     nseThemeLegacy:
-        { 
+        {
             backgroundColor: "#00f",
             backgroundHighlightColor: "#44f",
             foregroundColor: "#fff",
@@ -208,22 +224,22 @@ var themes = {
             highlightColor: "#fff"
         },
     nseThemeEdgy:
-        { 
+        {
             backgroundColor: "#000",
             backgroundHighlightColor: "#333",
             foregroundColor: "#f00",
             accentColor: "#f22",
             highlightColor: "#f22"
         },
-    nseThemeBaked: 
-        { 
+    nseThemeBaked:
+        {
             backgroundColor: "#8300ff",
             backgroundHighlightColor: "#087300",
             foregroundColor: "#0a8700",
             accentColor: "#b669ff",
             highlightColor: "#b669ff"
         },
-    nseThemeCustom: 
+    nseThemeCustom:
         {
             backgroundColor: nseCustomTheme["backgroundColor"],
             backgroundHighlightColor: nseCustomTheme["backgroundHighlightColor"],
@@ -242,13 +258,13 @@ if(window.location.href.includes("torrents.php")) { //torrents.php is the only p
             for(var a = 0; a < iconContainers.length; a++) {
                 iconContainers[a].style.display = "flex";
             }
-    
+
             // Hide all comment icons GCD creates
             var commentElements = document.querySelectorAll("a.comment");
             for(var b = 0; b < commentElements.length; b++) {
                 commentElements[b].style.display = "none";
             }
-            
+
             // Bring all eyes to the front of the z-index as they are obscured by the div.version element
             var allEyes = document.querySelectorAll(".nseToggleHideButton");
             for(var c = 0; c < allEyes.length; c++) {
@@ -265,12 +281,12 @@ var torrents = document.querySelectorAll("tr.torrent");
 
 for(var i = 0; i < torrents.length; i++) {
     var tagElement = torrents[i].querySelector("td > div.tags");
-    
+
     if(tagElement === null) {
         continue; // skip to next iteration if we can't get taglist,
                   // I've seen rows break on rare occasions in the source HTML
     }
-    
+
     var russianRouletteBulletInChamber = false;
     if(nseRussianRouletteEnabled == true) {
         var randNum = Math.floor(Math.random() * 6) + 1; // 1/6 chance to fire
@@ -278,10 +294,10 @@ for(var i = 0; i < torrents.length; i++) {
             russianRouletteBulletInChamber = true;
         }
     }
-    
+
     var uploaderElement = torrents[i].querySelector("td.user > a");
     var titleElement;
-    
+
     if(window.location.href.includes("collages.php")) {
         titleElement = torrents[i].querySelector("td > strong > a");
     } else {
@@ -312,7 +328,7 @@ for(var i = 0; i < torrents.length; i++) {
 
         nseToggleHideElement.title = "Filter this torrent with NSE";
         nseToggleHideElement.classList.add("nseToggleHideButton");
-        
+
         var actualIcon = nseToggleHideElement.querySelector("div > div > i")
         var torrentID = titleElement.href.match(/([0-9]+)/)[0];
         actualIcon.torrentID = torrentID;
@@ -334,7 +350,7 @@ for(var i = 0; i < torrents.length; i++) {
                 if(currindex == -1) { // Only add if not already whitelisted to avoid duplicates
                     nseIndividualUploadHidingWhitelist.push(this.torrentID);
                 }
-                
+
                 torrentDad.classList.toggle("hidden");
                 torrentDad.setAttribute("isNSEHidden", "0");
                 torrentDad.style.backgroundColor = null;
@@ -359,12 +375,12 @@ for(var i = 0; i < torrents.length; i++) {
                 if(currindex > -1) {
                     nseIndividualUploadHidingWhitelist.splice(currindex, 1);
                 }
-                
+
                 currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
                 if(currindex == -1) { // Only add if not already blacklisted to avoid duplicates
                     nseIndividualUploadHidingBlacklist.push(this.torrentID);
                 }
-                
+
                 torrentDad.classList.toggle("hidden");
                 torrentDad.setAttribute("isNSEHidden", "1");
                 torrentDad.style.backgroundColor = "#AAF";
@@ -398,7 +414,7 @@ for(var i = 0; i < torrents.length; i++) {
             currentHidden = true;
             currentForceHide = true;
         }
-        
+
         var currentWLIndex = nseIndividualUploadHidingWhitelist.indexOf(torrentID);
         if(currentWLIndex > -1) {
             actualIcon.classList.add("nseIndividuallyWhitelisted");
@@ -415,7 +431,7 @@ for(var i = 0; i < torrents.length; i++) {
     if(window.location.href.includes("top10.php")) {
         uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
     }
-    
+
     if(nseObliviousModeEnabled == true) {
         tagElement.classList.add("hidden");
     }
@@ -426,7 +442,7 @@ for(var i = 0; i < torrents.length; i++) {
             currentHidden = true;
         }
     }
-    
+
     if(nseHideWarnedEnabled) {
         if(torrents[i].classList.contains("redbar")) {
             currentHidden = true;
@@ -452,14 +468,14 @@ for(var i = 0; i < torrents.length; i++) {
 
                 if(nseBypassWhitelistsEnabled) {
                     currentBypassWhitelist = true;
-                }        
+                }
             }
         }
 
         if(nseHideGrabbedEnabled) {
             if(torrentIconElement.classList.contains("grabbed")) {
                 currentHidden = true;
-                
+
                 if(nseBypassWhitelistsEnabled) {
                     currentBypassWhitelist = true;
                 }
@@ -469,14 +485,14 @@ for(var i = 0; i < torrents.length; i++) {
         if(nseHideLeechingEnabled) {
             if(torrentIconElement.classList.contains("leeching")) {
                 currentHidden = true;
-                
+
                 if(nseBypassWhitelistsEnabled) {
                     currentBypassWhitelist = true;
                 }
             }
         }
     }
-    
+
     // Check uploaders
     if(window.location.href.includes("collages.php") === false) { // There's no uploaders on collage pages
         if(uploaderElement == null) { // If it is null, it's an anon upload
@@ -489,14 +505,14 @@ for(var i = 0; i < torrents.length; i++) {
             }
         } else {
             var uploader = uploaderElement.innerHTML.trim().toLowerCase();
-            
+
             for(var l = 0; l < nseBlacklistUploaders.length; l++) {
                 if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
                     currentHidden = true;
                     if(russianRouletteBulletInChamber == false) { uploaderElement.classList.add("nseHiddenUploader"); }
                 }
             }
-            
+
             // If currentHidden is still false, that means no blacklisted uploader was found, check whitelist
             // If currentHidden is true, blacklisted uploader was found, and since usernames are unique, skip check
             if(currentHidden === false) {
@@ -506,13 +522,13 @@ for(var i = 0; i < torrents.length; i++) {
                             currentWhitelisted = true;
                             uploaderElement.classList.add("nseWhitelistedUploader");
                         }
-                    } 
+                    }
                 }
-                
+
             }
         }
     }
-    
+
     // Scan title for nseBlacklistTitlePhrases
     // ...For every blacklisted phrase:
     for(var tblCount = 0; tblCount < nseBlacklistTitlePhrases.length; tblCount++) {
@@ -523,7 +539,7 @@ for(var i = 0; i < torrents.length; i++) {
             if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`; }
         }
     }
-    
+
     // Scan title for nseWhitelistTitlePhrases
     // ...For every whitelisted phrase:
     if(currentBypassWhitelist == false) {
@@ -536,7 +552,7 @@ for(var i = 0; i < torrents.length; i++) {
             }
         }
     }
-    
+
     var tagList = tagElement.querySelectorAll("a");
 
     // For every tag in the current torrent
@@ -620,14 +636,14 @@ htmlContent.innerHTML = `
             <div class="nseFieldDiv">
                 <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">👎 Tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
                 <div id="nseBLE" class="nseExplanationBox hidden">
-                    
+
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
             </div>
             <div class="nseFieldDiv">
                 <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">👍 Tag whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
                 <div id="nseWLE" class="nseExplanationBox hidden">
-                    
+
                 </div>
                 <textarea class="nseTextArea" id="nseWhitelistTaglistArea" rows=10>${nseWhitelistTaglist}</textarea>
             </div>
@@ -637,14 +653,14 @@ htmlContent.innerHTML = `
             <div class="nseFieldDiv">
                 <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">👎 Title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
                 <div id="nseTitleBLE" class="nseExplanationBox hidden">
-                
+
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
             </div>
             <div class="nseFieldDiv">
                 <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">👍 Title whitelist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
                 <div id="nseTitleWLE" class="nseExplanationBox hidden">
-                    
+
                 </div>
                 <textarea class="nseTextArea" id="nseWhitelistTitleListArea" rows=10>${nseWhitelistTitleList}</textarea>
             </div>
@@ -654,21 +670,21 @@ htmlContent.innerHTML = `
             <div class="nseFieldDiv">
                 <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">👎 Uploader blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
                 <div id="nseUBLE" class="nseExplanationBox hidden">
-                    
+
                 </div>
                 <textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
             </div>
             <div class="nseFieldDiv">
                 <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">👍 Uploader whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
                 <div id="nseUWLE" class="nseExplanationBox hidden">
-                    
+
                 </div>
                 <textarea class="nseTextArea" id="nseWhitelistUploadersArea" rows=10>${nseWhitelistUploadersList}</textarea>
             </div>
         </section>
 
         <section id="nseContent4">
-            <h3>Filtering</h3> 
+            <h3>Filtering</h3>
             <p>
                 <b>Individual uploads</b><br />
                 <input type="checkbox" id="nseCheckIndividualHide"${nseIndividualUploadHidingEnabled ? ' checked' : ''} />
@@ -682,41 +698,41 @@ htmlContent.innerHTML = `
                 <label for="nseCheckGCDCompatibilityMode" class="settingsCheckbox">
                     📃 Enable support for individual filtering when using <i>Gazelle Collapse Duplicates</i>
                 </label><br />
-                <span class="explanationSpan" style="margin-left: 60px;">(This is experimental and might not work as expected, you have been warned.</span><br />              
-                <span class="explanationSpan" style="margin-left: 60px;">Interoperability with other scripts cannot be guaranteed)</span><br /><br />                
-                
+                <span class="explanationSpan" style="margin-left: 60px;">(This is experimental and might not work as expected, you have been warned.</span><br />
+                <span class="explanationSpan" style="margin-left: 60px;">Interoperability with other scripts cannot be guaranteed)</span><br /><br />
+
                 <b>Torrent site status</b><br />
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideAnonUploads" class="settingsCheckbox">
                     👤 Hide all anonymous uploads
                 </label>
                 <span class="explanationSpan">(Will still be overridden by whitelist rules)</span><br />
-                
+
                 <input type="checkbox" id="nseCheckHideReported"${nseHideReportedEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideReported" class="settingsCheckbox">
                     ⛔ Hide reported uploads
                 </label>
                 <span class="explanationSpan">(Hide torrents with active reports, whitelists will override)</span><br />
-                
+
                 <input type="checkbox" id="nseCheckHideWarned"${nseHideWarnedEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideWarned" class="settingsCheckbox">
                     ⚔️ Hide warned uploads
                 </label>
                 <span class="explanationSpan">(Hide torrents with active warning, whitelists will override)</span><br /><br />
-                
+
                 <b>Torrent personal status</b><br />
                 <input type="checkbox" id="nseCheckHideGrabbed"${nseHideGrabbedEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideGrabbed" class="settingsCheckbox">
                     💾 Hide grabbed uploads
                 </label>
                 <span class="explanationSpan">(Hide torrents you have previously grabbed)</span><br />
-                
+
                 <input type="checkbox" id="nseCheckHideLeeching"${nseHideLeechingEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideLeeching" class="settingsCheckbox">
                     ⏬ Hide leeching uploads
                 </label>
                 <span class="explanationSpan">(Hide torrents you are currently leeching)</span><br />
-                
+
                 <input type="checkbox" id="nseCheckHideSeeding"${nseHideSeedingEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideSeeding" class="settingsCheckbox">
                     ⏫ Hide seeding uploads
@@ -728,7 +744,7 @@ htmlContent.innerHTML = `
                     💽 Hide snatched uploads
                 </label>
                 <span class="explanationSpan">(Hide torrents you have already downloaded/snatched)</span><br /><br />
-                
+
                 <input type="checkbox" id="nseCheckBypassWhitelists"${nseBypassWhitelistsEnabled ? ' checked' : ''} />
                 <label for="nseCheckBypassWhitelists" class="settingsCheckbox">
                     💫 Bypass whitelists for personal status filtering
@@ -739,10 +755,10 @@ htmlContent.innerHTML = `
             <p>
                 <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
                 <label for="nseCheckObliviousMode" class="settingsCheckbox">
-                    ❓ Oblivious 
+                    ❓ Oblivious
                 </label>
                 <span class="explanationSpan">(Hide torrent tag lists)</span><br />
-                
+
                 <input type="checkbox" id="nseCheckCustomCSS"${nseCustomCSSEnabled ? ' checked' : ''} />
                 <label for="nseCheckCustomCSS" class="settingsCheckbox">
                     📜 Custom CSS
@@ -754,16 +770,16 @@ htmlContent.innerHTML = `
                 </div>
             </p>
             <p>
-                Theme:<br />	
+                Theme:<br />
                 <select name="nseThemeDropdown" id="nseThemeDropdown">
                     <option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
                     <option value="nseThemeLegacy" ${nseSelectedTheme=="nseThemeLegacy" ? "selected='selected'" : ''}>Legacy</option>
                     <option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
                     <option value="nseThemeBaked" ${nseSelectedTheme=="nseThemeBaked" ? "selected='selected'" : ''}>Baked</option>
                     <option value="nseThemeCustom" ${nseSelectedTheme=="nseThemeCustom" ? "selected='selected'" : ''}>Custom</option>
-                </select> 
+                </select>
                 <span id="nseThemeDescription" class="explanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a blue background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
-                
+
                 <div id="nseCustomThemeDiv" ${nseSelectedTheme=="nseThemeCustom" ? '' : 'class="hidden"'}>
                     <p>
                         You can use any <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value" target="_blank">CSS color notation</a> here.<br />
@@ -789,7 +805,7 @@ htmlContent.innerHTML = `
                         Highlight color:<br />
                         <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme['highlightColor']}' />
                     </p>
-                
+
                     <p>Remember to click "Save" to save your changes!</p>
                 </div>
             </p>
@@ -798,29 +814,29 @@ htmlContent.innerHTML = `
                 <p>
                     <input type="checkbox" id="nseCheckRussianRouletteMode"${nseRussianRouletteEnabled ? ' checked' : ''} />
                     <label for="nseCheckRussianRouletteMode" class="settingsCheckbox">
-                        🎲 Russian Roulette	
+                        🎲 Russian Roulette
                     </label>
                     <span class="explanationSpan">(Randomly and silently show filtered torrents)</span>
                 </p>
 
             <h3>About</h3>
                 <p>
-                    NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium.
+                    Copyright &copy; 2015-2020 ceodoe. NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.me/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
                 <p>
-                    <span class="nseImageButton" id="nseGithub"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">🐙 Visit the project's GitHub page</a></span><br />
-                    <span class="nseImageButton" id="nseChangelog"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">📋 See the changelog</a></span><br />
-                    <span class="nseImageButton" id="nseEmpoThread"><a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">🧵 Read the official forum thread</a></span>
+                    <span class="nseImageButton" id="nseGithub"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">🐙 Report a bug or view commit history on GitHub</a></span><br />
+                    <span class="nseImageButton" id="nseChangelog"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">📋 Read the NSE changelog</a></span><br />
+                    <span class="nseImageButton" id="nseEmpoThread"><a class="nseLink" href="https://www.empornium.me/forum/thread/44258?postid=956045#post956045" target="_blank">🧵 Read the official forum thread on Emp</a></span>
                 </p>
         </section>
 
         <div style="text-align: center;">
-            <span id="nseSaveButton" class="nseNiceButton">💾 Save</span> 
-            <span id="nseReloadButton" class="nseNiceButton">🔃 Reload page and apply changes</span> 
+            <span id="nseSaveButton" class="nseNiceButton">💾 Save</span>
+            <span id="nseReloadButton" class="nseNiceButton">🔃 Reload page and apply changes</span>
         </div>
 
         <div style="text-align: center;" id="nseSaveDiv" class="hidden">
-            
+
         </div>
     </div>
 </div>
@@ -856,13 +872,13 @@ document.getElementById("nseCheckCustomCSS").onclick = (function() {
 document.getElementById("nseThemeDropdown").onchange = (function() {
     var selectedTheme = this.options[this.selectedIndex].value;
     var descriptionNode = document.getElementById("nseThemeDescription");
-    
+
     if(selectedTheme == "nseThemeCustom") {
         document.getElementById("nseCustomThemeDiv").classList.remove("hidden");
     } else {
         document.getElementById("nseCustomThemeDiv").classList.add("hidden");
     }
-    
+
     if(selectedTheme == "nseThemeDefault") {
         descriptionNode.innerHTML = "White background with black text and blue accents";
     } else if(selectedTheme == "nseThemeLegacy") {
@@ -880,13 +896,13 @@ document.getElementById("nseThemeDropdown").onchange = (function() {
 document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseTaglist", document.getElementById("nseBlacklistTaglistArea").value); // Legacy name for BC
     GM_setValue("nseWhitelist", document.getElementById("nseWhitelistTaglistArea").value); // ^
-    
+
     GM_setValue("nseBlacklistTitles", document.getElementById("nseBlacklistTitleListArea").value);
     GM_setValue("nseWhitelistTitles", document.getElementById("nseWhitelistTitleListArea").value);
-    
+
     GM_setValue("nseUploaders", document.getElementById("nseBlacklistUploadersArea").value); // ^
     GM_setValue("nseWhitelistUploaders", document.getElementById("nseWhitelistUploadersArea").value);
-    
+
     GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
     GM_setValue("nseRussianRouletteEnabled", document.getElementById("nseCheckRussianRouletteMode").checked);
     GM_setValue("nseHideAnonUploadsEnabled", document.getElementById("nseCheckHideAnonUploads").checked);
@@ -899,11 +915,11 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
     GM_setValue("nseIndividualUploadHidingEnabled", document.getElementById("nseCheckIndividualHide").checked);
     GM_setValue("nseEnableGCDCompatibilityMode", document.getElementById("nseCheckGCDCompatibilityMode").checked)
-    
+
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
-    
-    
+
+
     if(nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value == "nseThemeCustom") {
         // save custom colors
         nseCustomTheme = {
@@ -913,10 +929,10 @@ document.getElementById("nseSaveButton").onclick = (function() {
             accentColor: document.getElementById("nseCustomThemeAccentCol").value,
             highlightColor: document.getElementById("nseCustomThemeHighCol").value
         };
-        
+
         GM_setValue("nseCustomTheme", nseCustomTheme);
     }
-    
+
     // We need to escape backslashes in the custom CSS as it will be included in a back-ticked CSS block
     var css = document.getElementById("nseCustomCSSArea").value
     css = css.replace(/\\/gi, "\\\\");
@@ -941,7 +957,7 @@ var explanationTogglers = new Array("nseBLE", "nseWLE", "nseTitleBLE", "nseTitle
 for(var i = 0; i < explanationTogglers.length; i++) {
     var currentElement = explanationTogglers[i];
     document.getElementById(currentElement + "Toggler").onclick = function() {
-        document.getElementById(this.id.substring(0, this.id.length - 7)).classList.toggle("hidden");          
+        document.getElementById(this.id.substring(0, this.id.length - 7)).classList.toggle("hidden");
     };
 };
 
@@ -950,18 +966,18 @@ document.getElementById("nseBLE").innerHTML = `
     <b>TL;DR</b>: <i>If any of these tags exist, hide the torrent</i>
 </div>
 
-<div class="nseExplanationNode">This is where you specify tags you don't want to see. Any torrent matching any of these tags will be hidden unless overridden by any of the whitelist rules. The correct format for this field is the same used for tags on Empornium itself: Tags are separated by spaces, and uses a period between words within a tag. Character case does not matter. Blacklisted tags will be highlighted in <span style="color:#f00"><b>red</b></span> when viewing hidden torrents. 
+<div class="nseExplanationNode">This is where you specify tags you don't want to see. Any torrent matching any of these tags will be hidden unless overridden by any of the whitelist rules. The correct format for this field is the same used for tags on Empornium itself: Tags are separated by spaces, and uses a period between words within a tag. Character case does not matter. Blacklisted tags will be highlighted in <span style="color:#f00"><b>red</b></span> when viewing hidden torrents.
 </div>
 
 <div class="nseExplanationNode">Example:<br /><pre>scat piss.drinking jerk.off.instruction non.nude</pre></div>
 `;
-          
+
 document.getElementById("nseWLE").innerHTML = `
 <div class="nseExplanationNode">
     <b>TL;DR</b>: <i>If any of these tags exist, ignore all other rules</i>
 </div>
 
-<div class="nseExplanationNode">This is where you specify tags you want to show regardless of all other rules. In other words, no matter if the torrent matches on tags, title or uploader blacklists &mdash; if it contains any of these whitelisted tags, it will be shown regardless. The correct format for this field is the same used for tags on Empornium itself: Tags are separated by spaces, and uses a period between words within a tag. Character case does not matter. Whitelisted tags will be highlighted in <span style="color:#0f0"><b>green</b></span>. 
+<div class="nseExplanationNode">This is where you specify tags you want to show regardless of all other rules. In other words, no matter if the torrent matches on tags, title or uploader blacklists &mdash; if it contains any of these whitelisted tags, it will be shown regardless. The correct format for this field is the same used for tags on Empornium itself: Tags are separated by spaces, and uses a period between words within a tag. Character case does not matter. Whitelisted tags will be highlighted in <span style="color:#0f0"><b>green</b></span>.
 </div>
 
 <div class="nseExplanationNode">Example:<br /><pre>sasha.grey huge.ass gianna.michaels femdom</pre></div>
@@ -1145,13 +1161,13 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseHiddenUploader, .nseHiddenTag, .nseHiddenTitle {
-    color: #F00 !important; 
-    font-weight: bold !important;   
+    color: #F00 !important;
+    font-weight: bold !important;
 }
 
-.nseWhitelistedUploader, .nseWhitelistedTag, .nseWhitelistedTitle { 
-    color: #0F0 !important; 
-    font-weight: bold !important;    
+.nseWhitelistedUploader, .nseWhitelistedTag, .nseWhitelistedTitle {
+    color: #0F0 !important;
+    font-weight: bold !important;
 }
 
 .nseHiddenTag, .nseWhitelistedTag, .nseWhitelistedTitle, .nseHiddenTitle {
@@ -1201,11 +1217,11 @@ h3 {
     background-color: #EBEBEB;
 }
 
-.nseIndividuallyBlacklisted, .nseIndividuallyWhitelisted, .nseIndividuallyUntouched {    
+.nseIndividuallyBlacklisted, .nseIndividuallyWhitelisted, .nseIndividuallyUntouched {
     border-radius: 5px;
 }
 
 ${nseCustomCSSEnabled ? nseCustomCSS : ''}
 
 `);
-// End CSS section    
+// End CSS section
