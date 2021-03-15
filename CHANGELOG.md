@@ -1,4 +1,10 @@
 # Changelog
+v2.3.3
+- Add support for .is domain
+- Adjusted some text in the Options box
+- Added a license notice to the script and a full license file in the repository
+- Whitespace adjustments 
+
 v2.3.2
 - Move support for "Gazelle Collapse Duplicates" script (GCD) into its own option under Settings, default is disabled
 - When GCD support is enabled, all torrent comment icons created by it are now hidden
