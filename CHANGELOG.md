@@ -1,4 +1,9 @@
 # Changelog
+v2.3.4
+- Fix z-order index of individual filtering icons (eyes) when using GCD compatibility mode, so that they don't appear in front of the torrent preview that is shown when hovering over a torrent title
+- You now need to again click the toggle text to toggle torrents instead of anywhere in the options box. This was done revert a change in an earlier release that broke compatibility with browsers that don't support event.stopPropagation() like Waterfox and Pale Moon, basically browsers based on OLD Firefox code. This does not mean that these browsers are now supported, but this change has little impact in other browsers and avoids users of these browsers having to stay on an older version of NSE. I still massively recommend those users upgrade to a modern browser like Firefox.
+- Link to author profile and to NSE forum thread now takes which site domain you are using into account when generating the links (me/sx/is)
+
 v2.3.3
 - Add support for .is domain
 - Adjusted some text in the Options box
