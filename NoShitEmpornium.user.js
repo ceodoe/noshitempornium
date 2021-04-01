@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.3.4
+// @version      2.3.5
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -30,187 +30,82 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-var nseVersion = "v2.3.4"
-var currentDomain = "me"
-
-if(window.location.href.includes("empornium.sx")) {
-    currentDomain = "sx";
-} else if(window.location.href.includes("empornium.is")) {
-    currentDomain = "is";
-}
+var nseVersion = "v2.3.5"
 
 // Store the hide icon as text to dodge CSP
 var nseHideIconString = "data:image/png;base64,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";
 
 // Load saved lists and options
-var nseBlacklistTaglist = GM_getValue("nseTaglist",""); // 3 unchanged names to allow backwards comp
+var nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
 var nseBlacklistTags;
 
-var nseWhitelistTaglist = GM_getValue("nseWhitelist",""); // ^
+var nseWhitelistTaglist = GM_getValue("nseWhitelist", "whitelist.tags go.here"); // ^
 var nseWhitelistTags;
 
-var nseBlacklistTitleList = GM_getValue("nseBlacklistTitles","");
+var nseBlacklistTitleList = GM_getValue("nseBlacklistTitles", "this is a title phrase;this is another title phrase");
 var nseBlacklistTitlePhrases;
 
-var nseWhitelistTitleList = GM_getValue("nseWhitelistTitles","");
+var nseWhitelistTitleList = GM_getValue("nseWhitelistTitles", "this is a title phrase;this is another title phrase");
 var nseWhitelistTitlePhrases;
 
-var nseBlacklistUploadersList = GM_getValue("nseUploaders",""); // ^
+var nseBlacklistUploadersList = GM_getValue("nseUploaders", "putusernameshere separatedbyspacesonly nonewlines"); // ^
 var nseBlacklistUploaders;
 
-var nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders","");
+var nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders", "putusernameshere separatedbyspacesonly nonewlines");
 var nseWhitelistUploaders;
 
-var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled","");
-var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled","");
-var nseHideAnonUploadsEnabled = GM_getValue("nseHideAnonUploadsEnabled","");
-var nseHideWarnedEnabled = GM_getValue("nseHideWarnedEnabled","");
-var nseHideReportedEnabled = GM_getValue("nseHideReportedEnabled","");
-var nseHideSnatchedEnabled = GM_getValue("nseHideSnatchedEnabled","");
-var nseHideSeedingEnabled = GM_getValue("nseHideSeedingEnabled","");
-var nseHideGrabbedEnabled = GM_getValue("nseHideGrabbedEnabled","");
-var nseHideLeechingEnabled = GM_getValue("nseHideLeechingEnabled","");
-var nseBypassWhitelistsEnabled = GM_getValue("nseBypassWhitelistsEnabled","");
+var nseObliviousModeEnabled = GM_getValue("nseObliviousModeEnabled", false);
+var nseRussianRouletteEnabled = GM_getValue("nseRussianRouletteEnabled", false);
+var nseHideAnonUploadsEnabled = GM_getValue("nseHideAnonUploadsEnabled", false);
+var nseHideWarnedEnabled = GM_getValue("nseHideWarnedEnabled", false);
+var nseHideReportedEnabled = GM_getValue("nseHideReportedEnabled", false);
+var nseHideSnatchedEnabled = GM_getValue("nseHideSnatchedEnabled", false);
+var nseHideSeedingEnabled = GM_getValue("nseHideSeedingEnabled", false);
+var nseHideGrabbedEnabled = GM_getValue("nseHideGrabbedEnabled", false);
+var nseHideLeechingEnabled = GM_getValue("nseHideLeechingEnabled", false);
+var nseBypassWhitelistsEnabled = GM_getValue("nseBypassWhitelistsEnabled", false);
 
-var nseSelectedTheme = GM_getValue("nseSelectedTheme","");
-var nseCustomTheme = GM_getValue("nseCustomTheme","");
+var nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
+var nseCustomTheme = GM_getValue("nseCustomTheme", {
+    backgroundColor: "#fff",
+    backgroundHighlightColor: "#cfe7ff",
+    foregroundColor: "#000",
+    accentColor: "#0af",
+    highlightColor: "#0071b0"
+});
 
-var nseCustomCSSEnabled = GM_getValue("nseCustomCSSEnabled","");
-var nseCustomCSS = GM_getValue("nseCustomCSS","");
+var nseCustomCSSEnabled = GM_getValue("nseCustomCSSEnabled", false);
+var nseCustomCSS = GM_getValue("nseCustomCSS", "/* With great power comes great responsibility */");
 
-var nseIndividualUploadHidingEnabled = GM_getValue("nseIndividualUploadHidingEnabled", "");
-var nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", "")
-var nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", "")
+var nseIndividualUploadHidingEnabled = GM_getValue("nseIndividualUploadHidingEnabled", new Array(0));
+var nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", new Array(0));
+var nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", new Array(0));
 
-var nseEnableGCDCompatibilityMode = GM_getValue("nseEnableGCDCompatibilityMode", "")
+var nseEnableGCDCompatibilityMode = GM_getValue("nseEnableGCDCompatibilityMode", false);
 
-// Initialize lists and options
 
 // Initialize tag lists
-if(nseBlacklistTaglist.trim() == "") {
-    nseBlacklistTaglist = "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood";
-    nseBlacklistTags = new Array("enter.illegal.tags.here", "separated.by.spaces.only", "no.newlines", "scat", "puke", "blood");
-} else {
-    nseBlacklistTags = nseBlacklistTaglist.split(" ");
-}
+nseBlacklistTaglist = nseBlacklistTaglist.trim();
+nseBlacklistTags = nseBlacklistTaglist.split(" ");
 
-if(nseWhitelistTaglist.trim() == "") {
-    nseWhitelistTaglist = "whitelist.tags go.here";
-    nseWhitelistTags = new Array("whitelist.tags", "go.here");
-} else {
-    nseWhitelistTags = nseWhitelistTaglist.split(" ");
-}
-
+nseWhitelistTaglist = nseWhitelistTaglist.trim();
+nseWhitelistTags = nseWhitelistTaglist.split(" ");
 
 // Initialize title lists
-if(nseBlacklistTitleList.trim() == "") {
-    nseBlacklistTitleList = "this is a title phrase;this is another title phrase";
-    nseBlacklistTitlePhrases = new Array("this is a title phrase", "this is another title phrase");
-} else {
-    nseBlacklistTitlePhrases = nseBlacklistTitleList.split(";");
-}
+nseBlacklistTitleList = nseBlacklistTitleList.trim();
+nseBlacklistTitlePhrases = nseBlacklistTitleList.split(";");
 
-if(nseWhitelistTitleList.trim() == "") {
-    nseWhitelistTitleList = "this is a title phrase;this is another title phrase";
-    nseWhitelistTitlePhrases = new Array("this is a title phrase", "this is another title phrase");
-} else {
-    nseWhitelistTitlePhrases = nseWhitelistTitleList.split(";");
-}
-
+nseWhitelistTitleList = nseWhitelistTitleList.trim();
+nseWhitelistTitlePhrases = nseWhitelistTitleList.split(";");
 
 // Initialize uploader lists
-if(nseBlacklistUploadersList.trim() == "") {
-    nseBlacklistUploadersList = "putusernameshere separatedbyspacesonly nonewlines";
-    nseBlacklistUploaders = new Array("putusernameshere", "separatedbyspacesonly", "nonewlines");
-} else {
-    nseBlacklistUploaders = nseBlacklistUploadersList.split(" ");
-}
+nseBlacklistUploadersList = nseBlacklistUploadersList.trim();
+nseBlacklistUploaders = nseBlacklistUploadersList.split(" ");
 
-if(nseWhitelistUploadersList.trim() == "") {
-    nseWhitelistUploadersList = "putusernameshere separatedbyspacesonly nonewlines";
-    nseWhitelistUploaders = new Array("putusernameshere", "separatedbyspacesonly", "nonewlines");
-} else {
-    nseWhitelistUploaders = nseWhitelistUploadersList.split(" ");
-}
-
-// Initialize options
-if(nseObliviousModeEnabled == "") {
-    nseObliviousModeEnabled = false;
-}
-
-if(nseRussianRouletteEnabled == "") {
-    nseRussianRouletteEnabled = false;
-}
-
-if(nseHideAnonUploadsEnabled == "") {
-    nseHideAnonUploadsEnabled = false;
-}
-
-if(nseHideWarnedEnabled == "") {
-    nseHideWarnedEnabled = false;
-}
-
-if(nseHideReportedEnabled == "") {
-    nseHideReportedEnabled = false;
-}
-
-if(nseHideSnatchedEnabled == "") {
-    nseHideSnatchedEnabled = false;
-}
-
-if(nseHideSeedingEnabled == "") {
-    nseHideSeedingEnabled = false;
-}
-
-if(nseHideGrabbedEnabled == "") {
-    nseHideGrabbedEnabled = false;
-}
-
-if(nseHideLeechingEnabled == "") {
-    nseHideLeechingEnabled = false;
-}
-
-if(nseBypassWhitelistsEnabled == "") {
-    nseBypassWhitelistsEnabled = false;
-}
-
-if(nseSelectedTheme == "") {
-    nseSelectedTheme = "nseThemeDefault";
-}
-
-if(nseCustomTheme == "") {
-    nseCustomTheme = {
-        backgroundColor: "#fff",
-        backgroundHighlightColor: "#cfe7ff",
-        foregroundColor: "#000",
-        accentColor: "#0af",
-        highlightColor: "#0071b0"
-    }
-}
-
-if(nseCustomCSSEnabled == "") {
-    nseCustomCSSEnabled = false;
-}
-
-if(nseIndividualUploadHidingEnabled === "") {
-    nseIndividualUploadHidingEnabled = true; // Defaults to on, because it's super useful
-}
-
-// Save these internally as arrays as the user will never manipulate these directly
-if(nseIndividualUploadHidingBlacklist == "") {
-    nseIndividualUploadHidingBlacklist = new Array(0);
-}
-
-if(nseIndividualUploadHidingWhitelist == "") {
-    nseIndividualUploadHidingWhitelist = new Array(0);
-}
-
-//
-if(nseEnableGCDCompatibilityMode == "") {
-    nseEnableGCDCompatibilityMode = false;
-}
-
+nseWhitelistUploadersList = nseWhitelistUploadersList.trim();
+nseWhitelistUploaders = nseWhitelistUploadersList.split(" ");
 // End of initialization
+
 
 // Define themes
 var themes = {
@@ -541,10 +436,13 @@ for(var i = 0; i < torrents.length; i++) {
     for(var tblCount = 0; tblCount < nseBlacklistTitlePhrases.length; tblCount++) {
         var currentTBLPhrase = nseBlacklistTitlePhrases[tblCount].trim().toLowerCase();
         var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
-        if(torrentTitle.includes(currentTBLPhrase)) {
-            currentHidden = true;
-            if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`; }
-        }
+
+        if(currentTBLPhrase != "") {
+            if(torrentTitle.includes(currentTBLPhrase)) {
+                currentHidden = true;
+                if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`; }
+            }
+        }        
     }
 
     // Scan title for nseWhitelistTitlePhrases
@@ -553,9 +451,12 @@ for(var i = 0; i < torrents.length; i++) {
         for(var tblCount = 0; tblCount < nseWhitelistTitlePhrases.length; tblCount++) {
             var currentTWLPhrase = nseWhitelistTitlePhrases[tblCount].trim().toLowerCase();
             var torrentTitle = titleElement.innerHTML.trim().toLowerCase();
-            if(torrentTitle.includes(currentTWLPhrase)) {
-                currentWhitelisted = true;
-                titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+
+            if(currentTWLPhrase != "") {
+                if(torrentTitle.includes(currentTWLPhrase)) {
+                    currentWhitelisted = true;
+                    titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+                }
             }
         }
     }
@@ -828,12 +729,12 @@ htmlContent.innerHTML = `
 
             <h3>About</h3>
                 <p>
-                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="https://www.empornium.${currentDomain}/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
+                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
                 <p>
                     <span class="nseImageButton" id="nseGithub"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">🐙 Report a bug or view commit history on GitHub</a></span><br />
                     <span class="nseImageButton" id="nseChangelog"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">📋 Read the NSE changelog</a></span><br />
-                    <span class="nseImageButton" id="nseEmpoThread"><a class="nseLink" href="https://www.empornium.${currentDomain}/forum/thread/44258?postid=956045#post956045" target="_blank">🧵 Read the official forum thread on Emp</a></span>
+                    <span class="nseImageButton" id="nseEmpoThread"><a class="nseLink" href="/forum/thread/44258?postid=956045#post956045" target="_blank">🧵 Read the official forum thread on Emp</a></span>
                 </p>
         </section>
 
@@ -852,15 +753,19 @@ htmlContent.innerHTML = `
 // Perform actual insertion of our HTML UI element
 referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
 
-// Assign event handlers
+// Assign event handlers and other tidbits
 var headerNode = document.getElementById("nseHeaderText");
-headerNode.innerHTML = "Toggle " + count + " hidden torrent";
-headerNode.onclick = (function() { toggleTorrents(); });
 
 if(count === 0) {
     headerNode.innerHTML = "NoShitEmpornium";
+} else if(count === 1) {
+    headerNode.innerHTML = "Toggle 1 hidden torrent";
 } else if(count > 1) {
-    headerNode.innerHTML = headerNode.innerHTML + "s";
+    headerNode.innerHTML = "Toggle " + count + " hidden torrents";
+}
+
+if(count > 0) {
+    headerNode.onclick = (function() { toggleTorrents(); });
 }
 
 document.getElementById("nseToggleOptionsNode").onclick = (function() {
