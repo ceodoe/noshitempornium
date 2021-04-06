@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.3.5
+// @version      2.4.0
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -30,7 +30,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-var nseVersion = "v2.3.5"
+var nseVersion = "v2.4.0"
 
 // Store the hide icon as text to dodge CSP
 var nseHideIconString = "data:image/png;base64,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";
@@ -64,6 +64,7 @@ var nseHideSeedingEnabled = GM_getValue("nseHideSeedingEnabled", false);
 var nseHideGrabbedEnabled = GM_getValue("nseHideGrabbedEnabled", false);
 var nseHideLeechingEnabled = GM_getValue("nseHideLeechingEnabled", false);
 var nseBypassWhitelistsEnabled = GM_getValue("nseBypassWhitelistsEnabled", false);
+var nseRightClickManagementEnabled = GM_getValue("nseRightClickManagementEnabled", true);
 
 var nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
 var nseCustomTheme = GM_getValue("nseCustomTheme", {
@@ -156,7 +157,7 @@ if(window.location.href.includes("torrents.php")) { //torrents.php is the only p
     if(nseEnableGCDCompatibilityMode) {
         window.setTimeout(function () {
             // Reenable all torrent icon boxes
-            var iconContainers = document.querySelectorAll("span.torrent_icon_container")
+            var iconContainers = document.querySelectorAll("span.torrent_icon_container");
             for(var a = 0; a < iconContainers.length; a++) {
                 iconContainers[a].style.display = "flex";
             }
@@ -405,19 +406,26 @@ for(var i = 0; i < torrents.length; i++) {
                     if(russianRouletteBulletInChamber == false) { anonName.classList.add("nseHiddenUploader"); }
                 }
             }
-        } else {
+        } else { // Not an anon upload
+            // Add class for right-click management if enabled
+            if(nseRightClickManagementEnabled) {
+                uploaderElement.classList.add("nseUploaderElement");
+            }
+
             var uploader = uploaderElement.innerHTML.trim().toLowerCase();
 
+            var hiddenByUploader = false;
             for(var l = 0; l < nseBlacklistUploaders.length; l++) {
                 if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
+                    hiddenByUploader = true;
                     currentHidden = true;
                     if(russianRouletteBulletInChamber == false) { uploaderElement.classList.add("nseHiddenUploader"); }
                 }
             }
 
-            // If currentHidden is still false, that means no blacklisted uploader was found, check whitelist
-            // If currentHidden is true, blacklisted uploader was found, and since usernames are unique, skip check
-            if(currentHidden === false) {
+            // If hiddenByUploader is still false, that means no blacklisted uploader was found, check whitelist
+            // If hiddenByUploader is true, blacklisted uploader was found, and since usernames are unique, skip check
+            if(hiddenByUploader == false) {
                 if(currentBypassWhitelist == false) {
                     for(var m = 0; m < nseWhitelistUploaders.length; m++) {
                         if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
@@ -426,7 +434,6 @@ for(var i = 0; i < torrents.length; i++) {
                         }
                     }
                 }
-
             }
         }
     }
@@ -442,7 +449,7 @@ for(var i = 0; i < torrents.length; i++) {
                 currentHidden = true;
                 if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`; }
             }
-        }        
+        }
     }
 
     // Scan title for nseWhitelistTitlePhrases
@@ -465,6 +472,11 @@ for(var i = 0; i < torrents.length; i++) {
 
     // For every tag in the current torrent
     for(var k = 0; k < tagList.length; k++) {
+        // Add classes for right-click management if enabled
+        if(nseRightClickManagementEnabled) {
+            tagList[k].classList.add("nseTagElement");
+        }
+
         if(nseBlacklistTags.includes(tagList[k].innerHTML) === true) {
                 currentHidden = true;
                 if(russianRouletteBulletInChamber == false) { tagList[k].classList.add("nseHiddenTag"); }
@@ -609,6 +621,13 @@ htmlContent.innerHTML = `
                 <span class="explanationSpan" style="margin-left: 60px;">(This is experimental and might not work as expected, you have been warned.</span><br />
                 <span class="explanationSpan" style="margin-left: 60px;">Interoperability with other scripts cannot be guaranteed)</span><br /><br />
 
+                <b>List management</b><br />
+                <input type="checkbox" id="nseCheckRightClickManagementEnabled"${nseRightClickManagementEnabled ? ' checked' : ''} />
+                <label for="nseCheckRightClickManagementEnabled" class="settingsCheckbox">
+                    👤 Enable Right-Click Management
+                </label><br />
+                <span class="explanationSpan" style="margin-left: 60px;">(Right-click a tag or uploader in the torrent list to add/remove from your lists)</span><br /><br />
+
                 <b>Torrent site status</b><br />
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
                 <label for="nseCheckHideAnonUploads" class="settingsCheckbox">
@@ -748,6 +767,15 @@ htmlContent.innerHTML = `
         </div>
     </div>
 </div>
+
+<div id="nseRCMBox" class="hidden">
+    <div id="nseRCMClose">❌</div>
+    <p id="nseRCMBoxInfoText">Tag/uploader placeholder text</p>
+    <p id="nseRCMBoxChoices">
+
+    </p>
+    <p><small>Your settings will be automatically saved when you choose one of the above options. Your changes will reflect in the torrent list once the page is <span class="nseSpanLink" onclick="location.reload();"><b>reloaded</b></a>.</small></p>
+</div>
 `
 
 // Perform actual insertion of our HTML UI element
@@ -803,8 +831,231 @@ document.getElementById("nseThemeDropdown").onchange = (function() {
     }
 });
 
+// Create event handlers for right-click management
+if(nseRightClickManagementEnabled) {
+    var allTagElements = document.querySelectorAll(".nseTagElement");
+    for(var i = 0; i < allTagElements.length; i++) {
+        allTagElements[i].addEventListener('contextmenu', function(ev) {
+            ev.preventDefault();
+
+            showRCMBox("tag", this.innerHTML.trim(), ev.pageX, ev.pageY);
+
+            return false;
+        }, false);
+    }
+
+    var allUploaderElements = document.querySelectorAll(".nseUploaderElement");
+    for(var j = 0; j < allUploaderElements.length; j++) {
+        allUploaderElements[j].addEventListener('contextmenu', function(ev) {
+            ev.preventDefault();
+
+            showRCMBox("uploader", this.innerHTML.trim(), ev.pageX, ev.pageY);
+
+            return false;
+        }, false);
+    }
+
+    document.getElementById("nseRCMClose").onclick = function() {
+        this.parentNode.classList.add("hidden");
+    }
+}
+
+function showRCMBox(boxType, elementValue, mouseX, mouseY) {
+    var box = document.getElementById("nseRCMBox");
+    var x = mouseX;
+    var y = mouseY;
+
+    if(x - 150 < 0) {
+        x = 0;
+    } else if(x + 320 > window.innerWidth) {
+        x = window.innerWidth - 350;
+    } else {
+        x -= 150;
+    }
+
+    box.style.left = x + "px";
+    box.style.top = y - 90 + "px";
+
+    var nseRCMBoxInfoText = box.querySelector("#nseRCMBoxInfoText");
+    if(boxType == "tag") {
+        var infoText = "<b>Tag:</b> <span class=\"nseRCMMonospace\" id=\"nseRCMBoxTag\">" + elementValue + "</span><br /><br />";
+
+        var currTagBlacklist = document.getElementById("nseBlacklistTaglistArea").value.split(" ");
+        var currTagWhitelist = document.getElementById("nseWhitelistTaglistArea").value.split(" ");
+        var nseRCMBoxChoices = document.getElementById("nseRCMBoxChoices");
+
+        if(currTagBlacklist.includes(elementValue)) { // Current tag is in blacklist
+            infoText = infoText + `This tag was found in your <span class="nseBlacklistIdentifier">blacklist</span>!`;
+
+            nseRCMBoxChoices.innerHTML = `
+                <span class="nseRCMButton" id="nseRCMBoxBLRemove">➖ Remove from blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Move to whitelist</span><br />
+            `;
+
+            document.getElementById("nseRCMBoxBLRemove").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxTag").innerHTML;
+                removeItemFromList("nseBlacklistTaglistArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+
+            document.getElementById("nseRCMBoxWLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxTag").innerHTML;
+                addItemToList("nseWhitelistTaglistArea", "nseBlacklistTaglistArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+        } else if(currTagWhitelist.includes(elementValue)) { // Current tag is in whitelist
+            infoText = infoText + `This tag was found in your <span class="nseWhitelistIdentifier">whitelist</span>!`;
+
+            nseRCMBoxChoices.innerHTML = `
+                <span class="nseRCMButton" id="nseRCMBoxWLRemove">➖ Remove from whitelist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Move to blacklist</span><br />
+            `;
+
+            document.getElementById("nseRCMBoxWLRemove").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxTag").innerHTML;
+                removeItemFromList("nseWhitelistTaglistArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+
+            document.getElementById("nseRCMBoxBLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxTag").innerHTML;
+                addItemToList("nseBlacklistTaglistArea", "nseWhitelistTaglistArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+        } else { // Current tag is in no list
+            infoText = infoText + "This tag was not found in either of your taglists.";
+
+            nseRCMBoxChoices.innerHTML = `
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Add to blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Add to whitelist</span><br />
+            `;
+
+            document.getElementById("nseRCMBoxBLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxTag").innerHTML;
+                addItemToList("nseBlacklistTaglistArea", "nseWhitelistTaglistArea", currTag)
+                saveData();
+                closeRCMBox();
+            };
+
+            document.getElementById("nseRCMBoxWLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxTag").innerHTML;
+                addItemToList("nseWhitelistTaglistArea", "nseBlacklistTaglistArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+        }
+
+        nseRCMBoxInfoText.innerHTML = infoText;
+    } else if(boxType == "uploader") {
+        var infoText = "<b>Uploader:</b> <span class=\"nseRCMMonospace\" id=\"nseRCMBoxUploader\">" + elementValue + "</span><br /><br />";
+
+        var currUploaderBlacklist = document.getElementById("nseBlacklistUploadersArea").value.split(" ");
+        var currUploaderWhitelist = document.getElementById("nseWhitelistUploadersArea").value.split(" ");
+        var nseRCMBoxChoices = document.getElementById("nseRCMBoxChoices");
+
+        if(currUploaderBlacklist.includes(elementValue)) { // Current uploader is in blacklist
+            infoText = infoText + `This uploader was found in your <span class="nseBlacklistIdentifier">blacklist</span>!`;
+
+            nseRCMBoxChoices.innerHTML = `
+                <span class="nseRCMButton" id="nseRCMBoxBLRemove">➖ Remove from blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Move to whitelist</span><br />
+            `;
+
+            document.getElementById("nseRCMBoxBLRemove").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
+                removeItemFromList("nseBlacklistUploadersArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+
+            document.getElementById("nseRCMBoxWLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
+                addItemToList("nseWhitelistUploadersArea", "nseBlacklistUploadersArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+        } else if(currUploaderWhitelist.includes(elementValue)) { // Current uploader is in whitelist
+            infoText = infoText + `This uploader was found in your <span class="nseWhitelistIdentifier">whitelist</span>!`;
+
+            nseRCMBoxChoices.innerHTML = `
+                <span class="nseRCMButton" id="nseRCMBoxWLRemove">➖ Remove from whitelist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Move to blacklist</span><br />
+            `;
+
+            document.getElementById("nseRCMBoxWLRemove").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
+                removeItemFromList("nseWhitelistUploadersArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+
+            document.getElementById("nseRCMBoxBLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
+                addItemToList("nseBlacklistUploadersArea", "nseWhitelistUploadersArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+        } else { // Current uploader is in no list
+            infoText = infoText + "This uploader was not found in either of your uploader lists.";
+
+            nseRCMBoxChoices.innerHTML = `
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Add to blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Add to whitelist</span><br />
+            `;
+
+            document.getElementById("nseRCMBoxBLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
+                addItemToList("nseBlacklistUploadersArea", "nseWhitelistUploadersArea", currTag)
+                saveData();
+                closeRCMBox();
+            };
+
+            document.getElementById("nseRCMBoxWLAdd").onclick = function() {
+                var currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
+                addItemToList("nseWhitelistUploadersArea", "nseBlacklistUploadersArea", currTag);
+                saveData();
+                closeRCMBox();
+            };
+        }
+
+        nseRCMBoxInfoText.innerHTML = infoText;
+    }
+
+    box.classList.remove("hidden");
+    return false;
+}
+
+function closeRCMBox() {
+    document.getElementById("nseRCMBox").classList.add("hidden");
+}
+
+function removeItemFromList(tagListAreaName, tagName) {
+    var currList = document.getElementById(tagListAreaName).value.trim().split(" ");
+
+    var index = currList.indexOf(tagName);
+    if (index > -1) {
+        currList.splice(index, 1);
+    }
+
+    document.getElementById(tagListAreaName).value = currList.join(" ");
+}
+
+function addItemToList(tagListAreaName, oppositeTagListAreaName, tagName) {
+    removeItemFromList(oppositeTagListAreaName, tagName);
+
+    var currList = document.getElementById(tagListAreaName).value.trim().split(" ");
+    currList.push(tagName);
+    document.getElementById(tagListAreaName).value = currList.join(" ");
+}
+
 // Save function
-document.getElementById("nseSaveButton").onclick = (function() {
+document.getElementById("nseSaveButton").onclick = function() { saveData(); };
+
+function saveData() {
     GM_setValue("nseTaglist", document.getElementById("nseBlacklistTaglistArea").value); // Legacy name for BC
     GM_setValue("nseWhitelist", document.getElementById("nseWhitelistTaglistArea").value); // ^
 
@@ -826,6 +1077,7 @@ document.getElementById("nseSaveButton").onclick = (function() {
     GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
     GM_setValue("nseIndividualUploadHidingEnabled", document.getElementById("nseCheckIndividualHide").checked);
     GM_setValue("nseEnableGCDCompatibilityMode", document.getElementById("nseCheckGCDCompatibilityMode").checked)
+    GM_setValue("nseRightClickManagementEnabled", document.getElementById("nseCheckRightClickManagementEnabled").checked)
 
     var nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
@@ -853,7 +1105,7 @@ document.getElementById("nseSaveButton").onclick = (function() {
     var time = new Date().toLocaleTimeString();
     document.getElementById("nseSaveDiv").innerHTML = "Saved at " + time + "!";
     document.getElementById("nseSaveDiv").classList.remove("hidden");
-});
+}
 
 document.getElementById("nseReloadButton").onclick = (function() {
     location.reload();
@@ -953,16 +1205,19 @@ function addGlobalStyle(css) {
 
 addGlobalStyle(`
 
-.nseOuterDiv {
+.nseOuterDiv, #nseRCMBox {
     font-family: Helvetica;
     margin:auto;
     color: ${themes[nseSelectedTheme]["foregroundColor"]};
-    width: 600px;
     padding: 10px;
     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     box-shadow: 0 1px 3px rgba(0,0,0,.1);
     background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
     border-radius: 20px;
+}
+
+.nseOuterDiv {
+    width: 600px;
     margin-top: 10px;
 }
 
@@ -996,9 +1251,13 @@ section {
     padding: 5px 10px;
 }
 
-
 a.nseLink, a.nseLink:visited {
     color: ${themes[nseSelectedTheme]["accentColor"]};
+}
+
+.nseSpanLink {
+    color: ${themes[nseSelectedTheme]["accentColor"]};
+    cursor: pointer;
 }
 
 .nseLabel:hover {
@@ -1058,8 +1317,26 @@ a.nseLink, a.nseLink:visited {
     font-size: 18px;
 }
 
-.nseExplanationToggler, #nseHeaderText, .nseNiceButton, .nseLabel:hover {
+.nseExplanationToggler, #nseHeaderText, .nseNiceButton, .nseRCMButton, .nseLabel:hover {
     cursor: pointer;
+}
+
+#nseRCMBox {
+    width: 300px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9001;
+}
+
+#nseRCMClose {
+    float: right;
+    cursor: pointer;
+}
+
+.nseRCMMonospace {
+    font-family: Courier New;
+    font-size: 18px;
 }
 
 .nseTextArea {
@@ -1071,12 +1348,12 @@ a.nseLink, a.nseLink:visited {
     margin-bottom: 10px;
 }
 
-.nseHiddenUploader, .nseHiddenTag, .nseHiddenTitle {
+.nseHiddenUploader, .nseHiddenTag, .nseHiddenTitle, .nseBlacklistIdentifier {
     color: #F00 !important;
     font-weight: bold !important;
 }
 
-.nseWhitelistedUploader, .nseWhitelistedTag, .nseWhitelistedTitle {
+.nseWhitelistedUploader, .nseWhitelistedTag, .nseWhitelistedTitle, .nseWhitelistIdentifier {
     color: #0F0 !important;
     font-weight: bold !important;
 }
@@ -1085,7 +1362,7 @@ a.nseLink, a.nseLink:visited {
     display: inline;
 }
 
-.nseNiceButton {
+.nseNiceButton, .nseRCMButton {
     background-color: ${themes[nseSelectedTheme]["backgroundColor"]} !important;
     color: ${themes[nseSelectedTheme]["foregroundColor"]} !important;
     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
@@ -1096,7 +1373,7 @@ a.nseLink, a.nseLink:visited {
     font-size: 16px;
 }
 
-.nseNiceButton:hover {
+.nseNiceButton:hover, .nseRCMButton:hover {
     background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
 }
 
