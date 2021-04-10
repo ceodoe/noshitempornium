@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.4.0
+// @version      2.4.1
 // @description  Hides torrents with specified tags or by specified uploaders on Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -30,7 +30,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-var nseVersion = "v2.4.0"
+var nseVersion = "v2.4.1"
 
 // Store the hide icon as text to dodge CSP
 var nseHideIconString = "data:image/png;base64,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";
@@ -205,6 +205,11 @@ for(var i = 0; i < torrents.length; i++) {
         titleElement = torrents[i].querySelector("td > strong > a");
     } else {
         titleElement = torrents[i].querySelector("td > a");
+    }
+
+    // Add classes for right-click management, if enabled
+    if(nseRightClickManagementEnabled) {
+        titleElement.classList.add("nseTitleElement");
     }
 
     var currentHidden = false;
@@ -624,7 +629,7 @@ htmlContent.innerHTML = `
                 <b>List management</b><br />
                 <input type="checkbox" id="nseCheckRightClickManagementEnabled"${nseRightClickManagementEnabled ? ' checked' : ''} />
                 <label for="nseCheckRightClickManagementEnabled" class="settingsCheckbox">
-                    👤 Enable Right-Click Management
+                    🖱️ Enable Right-Click Management
                 </label><br />
                 <span class="explanationSpan" style="margin-left: 60px;">(Right-click a tag or uploader in the torrent list to add/remove from your lists)</span><br /><br />
 
@@ -776,7 +781,7 @@ htmlContent.innerHTML = `
     </p>
     <p><small>Your settings will be automatically saved when you choose one of the above options. Your changes will reflect in the torrent list once the page is <span class="nseSpanLink" onclick="location.reload();"><b>reloaded</b></a>.</small></p>
 </div>
-`
+`;
 
 // Perform actual insertion of our HTML UI element
 referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
@@ -850,6 +855,28 @@ if(nseRightClickManagementEnabled) {
             ev.preventDefault();
 
             showRCMBox("uploader", this.innerHTML.trim(), ev.pageX, ev.pageY);
+
+            return false;
+        }, false);
+    }
+
+    var allTitleElements = document.querySelectorAll(".nseTitleElement");
+    for(var k = 0; k < allTitleElements.length; k++) {
+        allTitleElements[k].addEventListener('contextmenu', function(ev) {
+            ev.preventDefault();
+
+            // Strip already hidden tags
+            var currTitle = this.innerHTML;
+            var colorIndex = currTitle.indexOf("<color");
+
+            console.log(currTitle);
+            console.log(colorIndex);
+            
+            if(colorIndex != -1) {
+                currTitle = currTitle.substring(0, colorIndex);
+            }
+
+            showRCMBox("title", currTitle.trim(), ev.pageX, ev.pageY);
 
             return false;
         }, false);
@@ -1023,6 +1050,37 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
         }
 
         nseRCMBoxInfoText.innerHTML = infoText;
+    } else if(boxType == "title") {
+        var infoText = `Customize the title phrase you would like to filter in the text box below. You can use a semicolon <span class="nseRCMMonospace">;</span> to separate multiple phrases:<br /><br />
+        <input type="text" style="width:95%;" id="nseRCMTitlePhraseText" value="${elementValue.replace(/"/g, '&quot;')}"></input><br />`;
+        nseRCMBoxInfoText.innerHTML = infoText;
+
+        var nseRCMBoxChoices = document.getElementById("nseRCMBoxChoices");
+
+        nseRCMBoxChoices.innerHTML = `
+            <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Add phrase(s) to title blacklist</span><br /><br />
+            <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Add phrase(s) to title whitelist</span><br />
+        `;
+
+        document.getElementById("nseRCMBoxWLAdd").onclick = function() {
+            var currTitlePhrase = document.getElementById("nseRCMTitlePhraseText").value;
+            
+            console.log("currTitlePhrase: "+currTitlePhrase);
+
+            addItemToList("nseWhitelistTitleListArea", "nseBlacklistTitleListArea", currTitlePhrase);
+            saveData();
+            closeRCMBox();
+        };
+
+        document.getElementById("nseRCMBoxBLAdd").onclick = function() {
+            var currTitlePhrase = document.getElementById("nseRCMTitlePhraseText").value;
+
+            console.log("currTitlePhrase: "+currTitlePhrase);
+
+            addItemToList("nseBlacklistTitleListArea", "nseWhitelistTitleListArea", currTitlePhrase);
+            saveData();
+            closeRCMBox();
+        };
     }
 
     box.classList.remove("hidden");
@@ -1044,12 +1102,32 @@ function removeItemFromList(tagListAreaName, tagName) {
     document.getElementById(tagListAreaName).value = currList.join(" ");
 }
 
-function addItemToList(tagListAreaName, oppositeTagListAreaName, tagName) {
-    removeItemFromList(oppositeTagListAreaName, tagName);
+function addItemToList(tagListAreaName, oppositeTagListAreaName, filterValue) {
+    var splitChar = " ";
+    if(tagListAreaName == "nseWhitelistTitleListArea" || tagListAreaName == "nseBlacklistTitleListArea") {
+        splitChar = ";";
+    } else {
+        // Only do opposite removal for tags/uploaders
+        removeItemFromList(oppositeTagListAreaName, filterValue);
+    }
 
-    var currList = document.getElementById(tagListAreaName).value.trim().split(" ");
-    currList.push(tagName);
-    document.getElementById(tagListAreaName).value = currList.join(" ");
+    var currList = document.getElementById(tagListAreaName).value.trim().split(splitChar);
+
+    if(splitChar == ";") {
+        // Since titles can include more than one phrase, iterate through an exploded array
+        var titleArray = filterValue.split(splitChar);
+
+        for(var l = 0; l < titleArray.length; l++) {
+            var currPhrase = titleArray[l].trim();
+            if(currPhrase != "") {
+                currList.push(currPhrase);
+            }
+        }
+    } else {
+        currList.push(filterValue);    
+    }
+    
+    document.getElementById(tagListAreaName).value = currList.join(splitChar).replace(/;/,';');
 }
 
 // Save function
