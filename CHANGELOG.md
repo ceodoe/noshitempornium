@@ -1,4 +1,8 @@
 # Changelog
+v2.4.1
+- When Right-Click Management is active, you can now right-click torrent titles to filter based on that torrent's name.
+- Gave Right-Click Management settings toggle a unique icon
+
 v2.4
 - We here at NSE Enterprises, Inc understand that it's hard to keep managing your text tags with one hand. That's why we've developed our groundbreaking new invention: Right-Click Management! This new feature allows you to right-click any tag or any uploader in the torrent list, in order to add/remove them from their respective black- or whitelists. Never type a tag or uploader name again!
 - We also understand that some people want to keep their daggum context menus, so Right-Click Management can be turned off via the Settings page.
