@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.4.1
-// @description  Hides torrents with specified tags or by specified uploaders on Empornium
+// @version      2.5.0
+// @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @author       ceodoe
@@ -13,6 +13,8 @@
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_listValues
+// @grant        GM.deleteValue
 // ==/UserScript==
 //
 // Copyright © 2015-2021 ceodoe
@@ -30,7 +32,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-var nseVersion = "v2.4.1"
+var nseVersion = "v2.5.0"
 
 // Store the hide icon as text to dodge CSP
 var nseHideIconString = "data:image/png;base64,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";
@@ -318,9 +320,11 @@ for(var i = 0; i < torrents.length; i++) {
         // Check if torrent is black/whitelisted this way
         var currentBLIndex = nseIndividualUploadHidingBlacklist.indexOf(torrentID);
         if(currentBLIndex > -1) {
-            actualIcon.classList.add("nseIndividuallyBlacklisted");
-            currentHidden = true;
-            currentForceHide = true;
+            if(russianRouletteBulletInChamber == false) {
+                actualIcon.classList.add("nseIndividuallyBlacklisted");
+                currentHidden = true;
+                currentForceHide = true;
+            }
         }
 
         var currentWLIndex = nseIndividualUploadHidingWhitelist.indexOf(torrentID);
@@ -631,7 +635,7 @@ htmlContent.innerHTML = `
                 <label for="nseCheckRightClickManagementEnabled" class="settingsCheckbox">
                     🖱️ Enable Right-Click Management
                 </label><br />
-                <span class="explanationSpan" style="margin-left: 60px;">(Right-click a tag or uploader in the torrent list to add/remove from your lists)</span><br /><br />
+                <span class="explanationSpan" style="margin-left: 60px;">(Right-click a tag/title/uploader in the torrent list to add/remove from your lists)</span><br /><br />
 
                 <b>Torrent site status</b><br />
                 <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
@@ -750,6 +754,18 @@ htmlContent.innerHTML = `
                     </label>
                     <span class="explanationSpan">(Randomly and silently show filtered torrents)</span>
                 </p>
+            
+                <h3>Data management</h3>
+                <p>
+                    <span class="explanationSpan">Use these functions to import, export or reset all your NSE lists and settings.</span>
+                    <div class="nseNiceBox">⤵️ Import NSE data<br />
+                        <input type="file" accept=".json,text/plain" id="nseImportFilePicker">
+                    </div><br />
+                    <span class="nseNiceButton" id="nseExportButton">⤴️ Export NSE data</span> 
+                    <span class="nseNiceButton" id="nseEraseDataButton">🔄 Reset NSE data</span><br /><br />
+                    
+                    <span class="explanationSpan"><b>IMPORTANT: Data overwritten or reset by the functions above is <i>not</i> recoverable!</b></span>
+                </p>
 
             <h3>About</h3>
                 <p>
@@ -836,6 +852,20 @@ document.getElementById("nseThemeDropdown").onchange = (function() {
     }
 });
 
+function handleCtrlS(e) {
+    if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && e.keyCode == 83) {
+        e.preventDefault();
+        saveData();
+    }
+}
+
+document.getElementById("nseBlacklistTaglistArea").addEventListener("keydown", function(e) { handleCtrlS(e); }, false);
+document.getElementById("nseWhitelistTaglistArea").addEventListener("keydown", function(e) { handleCtrlS(e); }, false);
+document.getElementById("nseBlacklistTitleListArea").addEventListener("keydown", function(e) { handleCtrlS(e); }, false);
+document.getElementById("nseWhitelistTitleListArea").addEventListener("keydown", function(e) { handleCtrlS(e); }, false);
+document.getElementById("nseBlacklistUploadersArea").addEventListener("keydown", function(e) { handleCtrlS(e); }, false);
+document.getElementById("nseWhitelistUploadersArea").addEventListener("keydown", function(e) { handleCtrlS(e); }, false);
+
 // Create event handlers for right-click management
 if(nseRightClickManagementEnabled) {
     var allTagElements = document.querySelectorAll(".nseTagElement");
@@ -868,9 +898,6 @@ if(nseRightClickManagementEnabled) {
             // Strip already hidden tags
             var currTitle = this.innerHTML;
             var colorIndex = currTitle.indexOf("<color");
-
-            console.log(currTitle);
-            console.log(colorIndex);
             
             if(colorIndex != -1) {
                 currTitle = currTitle.substring(0, colorIndex);
@@ -1065,8 +1092,6 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
         document.getElementById("nseRCMBoxWLAdd").onclick = function() {
             var currTitlePhrase = document.getElementById("nseRCMTitlePhraseText").value;
             
-            console.log("currTitlePhrase: "+currTitlePhrase);
-
             addItemToList("nseWhitelistTitleListArea", "nseBlacklistTitleListArea", currTitlePhrase);
             saveData();
             closeRCMBox();
@@ -1074,8 +1099,6 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
 
         document.getElementById("nseRCMBoxBLAdd").onclick = function() {
             var currTitlePhrase = document.getElementById("nseRCMTitlePhraseText").value;
-
-            console.log("currTitlePhrase: "+currTitlePhrase);
 
             addItemToList("nseBlacklistTitleListArea", "nseWhitelistTitleListArea", currTitlePhrase);
             saveData();
@@ -1129,6 +1152,66 @@ function addItemToList(tagListAreaName, oppositeTagListAreaName, filterValue) {
     
     document.getElementById(tagListAreaName).value = currList.join(splitChar).replace(/;/,';');
 }
+
+function downloadFile(filename, text) {
+    let element = document.createElement('a');
+    element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+    element.setAttribute("download", filename);
+    element.style.display = "none";
+    document.body.appendChild(element);
+  
+    element.click();
+    document.body.removeChild(element);
+}
+
+function exportSettings() {
+    let settingsNames = GM_listValues();
+    let settings = {};
+
+    for(let i = 0; i < settingsNames.length; i++) {
+        settings[settingsNames[i]] = GM_getValue(settingsNames[i], null);
+    }
+
+    let jsonOutput = JSON.stringify(settings);
+    let dateString = Date.now();
+
+    downloadFile(`nseExport-${dateString}.json`, jsonOutput);
+}
+
+document.getElementById("nseExportButton").onclick = function() { exportSettings(); };
+
+function importSettings(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+        if(confirm("Are you sure you want to import this file? Your existing settings will be overwritten!")) {
+            let settingsObject = JSON.parse(reader.result);
+
+            for(let i = 0; i < Object.keys(settingsObject).length; i++) {
+                GM_setValue(Object.keys(settingsObject)[i], settingsObject[Object.keys(settingsObject)[i]]);
+            }
+
+            location.reload();
+        }
+    };
+    reader.readAsText(event.target.files[0]);
+};
+
+document.getElementById("nseImportFilePicker").onchange = function () { importSettings(event); };
+
+function resetSettings() {
+    if(confirm("Are you sure you want to reset all blacklists, all whitelists, and all preferences in NSE? This cannot be undone!")) {
+        let settingsNames = GM_listValues();
+
+        for(let i = 0; i < settingsNames.length; i++) {
+            GM.deleteValue(settingsNames[i]);
+        }
+
+        location.reload();
+    }
+};
+
+document.getElementById("nseEraseDataButton").onclick = function () { resetSettings(); };
+
 
 // Save function
 document.getElementById("nseSaveButton").onclick = function() { saveData(); };
@@ -1380,12 +1463,16 @@ a.nseLink, a.nseLink:visited {
     margin-right: 5px;
 }
 
-.nseExplanationBox, #nseCustomThemeDiv, #nseCustomCSSDiv {
+.nseExplanationBox, #nseCustomThemeDiv, #nseCustomCSSDiv, .nseNiceBox {
     width: 97%;
     margin-top: 10px;
     border: 1px solid ${themes[nseSelectedTheme]["accentColor"]};
     padding: 10px;
     border-radius: 10px;
+}
+
+.nseNiceBox {
+    width: 75%;
 }
 
 #nseHeader {
@@ -1453,6 +1540,10 @@ a.nseLink, a.nseLink:visited {
 
 .nseNiceButton:hover, .nseRCMButton:hover {
     background-color: ${themes[nseSelectedTheme]["backgroundHighlightColor"]} !important;
+}
+
+.nseNiceButton, .nseRCMButton {
+    padding-top: 7px;
 }
 
 #nseSaveDiv {
