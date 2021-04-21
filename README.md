@@ -31,7 +31,7 @@ Note that NSE is mainly developed on and tested with mainline Firefox and Tamper
 * Click "Save" then "Reload page" to save your options and reload the page
 * Torrents matching your blacklist rules will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button. Torrents matching whitelist rules will be shown regardless of blacklist rules. To hide individual torrents, click the eye icon that appears next to it
 
-# Important note / Backups
+# Important note
 If you:
 
 * Use incognito mode
@@ -42,7 +42,10 @@ If you:
 
 ...all your lists and settings may be deleted. If you're planning to do any of these things, make sure you back up your settings first! 
 
-How to back up all your NSE settings:
+# Backups
+Use the **Export NSE data** button in Options > Settings > Data management to backup all your data to a file. Use the **Import NSE data** button to restore from a file.
+
+You can also do it through Tampermonkey:
 * Enter the Tampermonkey dashboard by clicking its icon on your browser toolbar and selecting "Dashboard"
 * Click the "Settings" tab, and set "Config mode" to "Advanced"
 * Go back to the "Installed Userscripts" list, and click on NoShitEmpornium
