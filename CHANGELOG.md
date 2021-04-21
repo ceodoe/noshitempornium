@@ -1,4 +1,20 @@
 # Changelog
+v2.5
+
+- Features:
+  - Added support for importing or exporting all NSE data to/from a file, through the new "Data management" section in the Settings page
+  - You can also reset all NSE lists and settings to their default values in the Data management area 
+  - You can now press Ctrl+S (Windows/Linux) or Cmd+S (macOS) to save your settings when editing any black/whitelist
+
+- Bugfixes:
+  - Fixed a bug where the eye icons from individual filtering would indicate results being hidden when they were actually being shown by the Russian Roulette
+
+- Other:
+  - Added "title" to Right-Click Management explanation text
+  - Adjusted the padding of buttons created by NSE to make them look more uniform
+  - Updated script description
+  - Removed some leftover debug code
+
 v2.4.1
 - When Right-Click Management is active, you can now right-click torrent titles to filter based on that torrent's name.
 - Gave Right-Click Management settings toggle a unique icon
