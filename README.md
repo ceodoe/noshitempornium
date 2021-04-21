@@ -26,7 +26,7 @@ Note that NSE is mainly developed on and tested with mainline Firefox and Tamper
 * Follow the instructions given by Tampermonkey to install the script
 * Once the script is installed, visit an applicable page on Emp (Torrents, Top 10/100/250/500, Collages, Notifications)
 * Click the Options button in the new NSE configuration area (placed below the search center, or near the top of the torrent list area)
-* Add your lists of tags, title words or uploaders in the newly revealed area, and check the Settings tab for more goodies
+* Add your lists of tags, title phrases or uploaders in the newly revealed areas, and check the Settings tab for more goodies
 * Click the question mark next to each list for an explanation of what it does
 * Click "Save" then "Reload page" to save your options and reload the page
 * Torrents matching your blacklist rules will now be hidden, and can be shown by clicking the "Toggle X hidden torrents" button. Torrents matching whitelist rules will be shown regardless of blacklist rules. To hide individual torrents, click the eye icon that appears next to it
