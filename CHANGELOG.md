@@ -1,4 +1,28 @@
 # Changelog
+v2.5.1
+
+- Features:
+  - When the NSE options area is expanded, there is now a button available to close it from the bottom so you don't have to scroll back up to do it. It also somewhat corrects for the lost page height when closing the options, by scrolling your view to the NSE box immediately after closing it
+  - Added a quick-refresh button that shows up in the main NSE box next to the Options button if/when you make any changes with Right-Click Management
+
+- UI:
+  - Split the huge settings page into four sub-pages
+  - Renamed "Cosmetic" options category to "Interface"
+  - Adjusted some text in the explanation boxes for the lists
+
+- Bugfixes:
+  - "Export NSE data" button now saves your current settings before exporting them
+  - The "toggle x torrents" button will no longer toggle an empty list if you end up unfiltering everything on the page during one page load. Instead it will switch to showing non-hidden torrents and disable toggle functionality whenever this happens. Re-hiding a torrent will re-enable the toggling functionality
+  - The above change also fixes a bug that would kill toggle functionality when using individual filtering on pages where there were no hidden results before manually filtering
+
+- Code:
+  - Lots of code changes, simplification and rearrangement (loops are FUN!)
+  - Added @supportURL and @homepageURL to the userscript header
+  - Replaced custom CSS inject function with GM_addStyle
+  - Replaced all vars with lets because I was already using block scoping and apparently let has been in ES for six years 
+  - Changed names of "settingsCheckbox" and "explanationSpan" to "nseSettingsCheckbox" and "nseExplanationSpan" respectively; You'll need to update your custom CSS if you style these elements
+
+
 v2.5
 
 - Features:
