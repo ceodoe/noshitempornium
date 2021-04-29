@@ -1426,7 +1426,11 @@ function saveData() {
     GM_setValue("nseEnableGCDCompatibilityMode", document.getElementById("nseCheckGCDCompatibilityMode").checked);
     GM_setValue("nseRightClickManagementEnabled", document.getElementById("nseCheckRightClickManagementEnabled").checked);
     GM_setValue("nseEmojiEnabled", document.getElementById("nseCheckEmojiEnabled").checked);
-    GM_setValue("nseEveryDayIsApril1st", document.getElementById("nseCheckApril1stAllYear").checked);
+
+    if(nseEnableApril1stOption) {
+        GM_setValue("nseEveryDayIsApril1st", document.getElementById("nseCheckApril1stAllYear").checked);
+    }
+    
     GM_setValue("nseScrollToNSEEnabled", document.getElementById("nseCheckScrollToNSEEnabled").checked);
 
 
