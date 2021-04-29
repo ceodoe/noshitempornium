@@ -1,4 +1,15 @@
 # Changelog
+v2.5.2
+
+- Features:
+  - Added an option to enable or disable the extended unicode icons/emoji (Enabled by default)
+  - Added an option to automatically scroll to NSE/torrents area on page load (Disabled by default)
+  - Added an easter egg (spoilers: [[1]](https://github.com/ceodoe/noshitempornium/blob/457b2e16af431a3ddfafdc9062af304b44bab9bb/NoShitEmpornium.user.js#L185-L188) [[2]](https://github.com/ceodoe/noshitempornium/blob/457b2e16af431a3ddfafdc9062af304b44bab9bb/NoShitEmpornium.user.js#L535-L539) [[3]](https://github.com/ceodoe/noshitempornium/blob/457b2e16af431a3ddfafdc9062af304b44bab9bb/NoShitEmpornium.user.js#L986-L997))
+
+- Other:
+  - Minor text and code changes
+
+
 v2.5.1
 
 - Features:
