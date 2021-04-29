@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.1
+// @version      2.5.2
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -35,7 +35,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let nseVersion = "v2.5.1"
+let nseVersion = "v2.5.2"
 
 // Load saved lists and options
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
@@ -67,6 +67,9 @@ let nseHideGrabbedEnabled = GM_getValue("nseHideGrabbedEnabled", false);
 let nseHideLeechingEnabled = GM_getValue("nseHideLeechingEnabled", false);
 let nseBypassWhitelistsEnabled = GM_getValue("nseBypassWhitelistsEnabled", false);
 let nseRightClickManagementEnabled = GM_getValue("nseRightClickManagementEnabled", true);
+let nseEmojiEnabled = GM_getValue("nseEmojiEnabled", true);
+let nseEveryDayIsApril1st = GM_getValue("nseEveryDayIsApril1st", false);
+let nseScrollToNSEEnabled = GM_getValue("nseScrollToNSEEnabled", false);
 
 let nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
 let nseCustomTheme = GM_getValue("nseCustomTheme", {
@@ -179,6 +182,11 @@ if(window.location.href.includes("torrents.php")) { //torrents.php is the only p
     }
 }
 
+let nseEnableApril1stOption = false;
+if(nseBlacklistTags.includes("hehehehehe")) {
+    nseEnableApril1stOption = true;
+}
+
 // Set up reference node to place our html
 let referenceNodeList = {"top10.php": "#content > div > form",      // TopX pages
                          "action=notify": "#content > div > h2",    // Notifications
@@ -204,20 +212,20 @@ htmlContent.innerHTML = `
     </div>
     <div id="nseMainDiv" class="nseMainBox hidden">
         <input class="nseRadioButton" id="nseTab1" type="radio" name="tabs" checked>
-        <label class="nseLabel" for="nseTab1">🏷️ Tags</label>
+        <label class="nseLabel" for="nseTab1"><span class="nseEmoji">🏷️</span> Tags</label>
 
         <input class="nseRadioButton" id="nseTab2" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab2">📚 Titles</label>
+        <label class="nseLabel" for="nseTab2"><span class="nseEmoji">📚</span> Titles</label>
 
         <input class="nseRadioButton" id="nseTab3" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab3">👥 Uploaders</label>
+        <label class="nseLabel" for="nseTab3"><span class="nseEmoji">👥</span> Uploaders</label>
 
         <input class="nseRadioButton" id="nseTab4" type="radio" name="tabs">
-        <label class="nseLabel" for="nseTab4">⚙️ Settings</label>
+        <label class="nseLabel" for="nseTab4"><span class="nseEmoji">⚙️</span> Settings</label>
 
         <section id="nseContent1">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader">👎 Tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagBlacklistHeader"><span class="nseEmoji">👎</span> Tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseBLEToggler">[?]</sup><br />
                 <div id="nseBLE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If any of these tags exist, hide the torrent</i>
@@ -241,7 +249,7 @@ htmlContent.innerHTML = `
                 <textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader">👍 Tag whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagWhitelistHeader"><span class="nseEmoji">👍</span> Tag whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseWLEToggler">[?]</sup><br />
                 <div id="nseWLE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If any of these tags exist, ignore all other rules and show the torrent</i>
@@ -269,7 +277,7 @@ htmlContent.innerHTML = `
 
         <section id="nseContent2">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader">👎 Title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleBlacklistHeader"><span class="nseEmoji">👎</span> Title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleBLEToggler">[?]</sup><br />
                 <div id="nseTitleBLE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If any of these phrases are in the title, hide the torrent</i>
@@ -291,7 +299,7 @@ htmlContent.innerHTML = `
                 <textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader">👍 Title whitelist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleWhitelistHeader"><span class="nseEmoji">👍</span> Title whitelist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseTitleWLEToggler">[?]</sup><br />
                 <div id="nseTitleWLE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If any of these phrases are in the title, ignore all other rules and show the torrent</i>
@@ -308,7 +316,7 @@ htmlContent.innerHTML = `
 
         <section id="nseContent3">
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader">👎 Uploader blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseUploaderBlacklistHeader"><span class="nseEmoji">👎</span> Uploader blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUBLEToggler">[?]</sup><br />
                 <div id="nseUBLE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If this torrent is uploaded by any of these users, hide it</i>
@@ -331,7 +339,7 @@ htmlContent.innerHTML = `
                 <textarea class="nseTextArea" id="nseBlacklistUploadersArea" rows=10>${nseBlacklistUploadersList}</textarea>
             </div>
             <div class="nseFieldDiv">
-                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader">👍 Uploader whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseUploaderWhitelistHeader"><span class="nseEmoji">👍</span> Uploader whitelist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseUWLEToggler">[?]</sup><br />
                 <div id="nseUWLE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If this torrent is uploaded by any of these users, show it regardless of any other rules</i>
@@ -356,16 +364,16 @@ htmlContent.innerHTML = `
 
         <section id="nseContent4">
             <input class="nseRadioButton" id="nseSettingsTab1" type="radio" name="settingsTabs" checked>
-            <label class="nseLabel" for="nseSettingsTab1">🔍 Filtering</label>
+            <label class="nseLabel" for="nseSettingsTab1"><span class="nseEmoji">🔍</span> Filtering</label>
 
             <input class="nseRadioButton" id="nseSettingsTab2" type="radio" name="settingsTabs">
-            <label class="nseLabel" for="nseSettingsTab2">🖥️ Interface</label>
+            <label class="nseLabel" for="nseSettingsTab2"><span class="nseEmoji">🖥️</span> Interface</label>
 
             <input class="nseRadioButton" id="nseSettingsTab3" type="radio" name="settingsTabs">
-            <label class="nseLabel" for="nseSettingsTab3">🗃️ Data management</label>
+            <label class="nseLabel" for="nseSettingsTab3"><span class="nseEmoji">🗃️</span> Data management</label>
 
             <input class="nseRadioButton" id="nseSettingsTab4" type="radio" name="settingsTabs">
-            <label class="nseLabel" for="nseSettingsTab4">ℹ️ About</label>
+            <label class="nseLabel" for="nseSettingsTab4"><span class="nseEmoji">ℹ️</span> About</label>
 
             <section id="nseSettingsContent1">
                 <h3>Filtering</h3>
@@ -373,14 +381,14 @@ htmlContent.innerHTML = `
                     <b>Individual uploads</b><br />
                     <input type="checkbox" id="nseCheckIndividualHide"${nseIndividualUploadHidingEnabled ? ' checked' : ''} />
                     <label for="nseCheckIndividualHide" class="nseSettingsCheckbox">
-                        👁️ Enable individual upload filtering
+                        <span class="nseEmoji">👁️</span> Enable individual upload filtering
                     </label><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">(Click the eye icon next to the torrent name to blacklist/whitelist uploads</span><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">individually, ignoring <b>all</b> other rules. These filters are automatically saved)</span><br /><br />
 
                     <input type="checkbox" id="nseCheckGCDCompatibilityMode"${nseEnableGCDCompatibilityMode ? ' checked' : ''} />
                     <label for="nseCheckGCDCompatibilityMode" class="nseSettingsCheckbox">
-                        📃 Enable support for individual filtering when using <i>Gazelle Collapse Duplicates</i>
+                        <span class="nseEmoji">📃</span> Enable support for individual filtering when using <i>Gazelle Collapse Duplicates</i>
                     </label><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">(This is experimental and might not work as expected, you have been warned.</span><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">Interoperability with other scripts cannot be guaranteed)</span><br /><br />
@@ -388,57 +396,57 @@ htmlContent.innerHTML = `
                     <b>List management</b><br />
                     <input type="checkbox" id="nseCheckRightClickManagementEnabled"${nseRightClickManagementEnabled ? ' checked' : ''} />
                     <label for="nseCheckRightClickManagementEnabled" class="nseSettingsCheckbox">
-                        🖱️ Enable Right-Click Management
+                        <span class="nseEmoji">🖱️</span> Enable Right-Click Management
                     </label><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">(Right-click a tag/title/uploader in the torrent list to add/remove from your lists)</span><br /><br />
 
                     <b>Torrent site status</b><br />
                     <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideAnonUploads" class="nseSettingsCheckbox">
-                        👤 Hide all anonymous uploads
+                        <span class="nseEmoji">👤</span> Hide all anonymous uploads
                     </label>
                     <span class="nseExplanationSpan">(Will still be overridden by whitelist rules)</span><br />
 
                     <input type="checkbox" id="nseCheckHideReported"${nseHideReportedEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideReported" class="nseSettingsCheckbox">
-                        ⛔ Hide reported uploads
+                        <span class="nseEmoji">⛔</span> Hide reported uploads
                     </label>
                     <span class="nseExplanationSpan">(Hide torrents with active reports, whitelists will override)</span><br />
 
                     <input type="checkbox" id="nseCheckHideWarned"${nseHideWarnedEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideWarned" class="nseSettingsCheckbox">
-                        ⚔️ Hide warned uploads
+                        <span class="nseEmoji">⚔️</span> Hide warned uploads
                     </label>
                     <span class="nseExplanationSpan">(Hide torrents with active warning, whitelists will override)</span><br /><br />
 
                     <b>Torrent personal status</b><br />
                     <input type="checkbox" id="nseCheckHideGrabbed"${nseHideGrabbedEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideGrabbed" class="nseSettingsCheckbox">
-                        💾 Hide grabbed uploads
+                        <span class="nseEmoji">💾</span> Hide grabbed uploads
                     </label>
                     <span class="nseExplanationSpan">(Hide torrents you have previously grabbed)</span><br />
 
                     <input type="checkbox" id="nseCheckHideLeeching"${nseHideLeechingEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideLeeching" class="nseSettingsCheckbox">
-                        ⏬ Hide leeching uploads
+                        <span class="nseEmoji">⏬</span> Hide leeching uploads
                     </label>
                     <span class="nseExplanationSpan">(Hide torrents you are currently leeching)</span><br />
 
                     <input type="checkbox" id="nseCheckHideSeeding"${nseHideSeedingEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideSeeding" class="nseSettingsCheckbox">
-                        ⏫ Hide seeding uploads
+                        <span class="nseEmoji">⏫</span> Hide seeding uploads
                     </label>
                     <span class="nseExplanationSpan">(Hide torrents you are currently seeding)</span><br />
 
                     <input type="checkbox" id="nseCheckHideSnatched"${nseHideSnatchedEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideSnatched" class="nseSettingsCheckbox">
-                        💽 Hide snatched uploads
+                        <span class="nseEmoji">💽</span> Hide snatched uploads
                     </label>
                     <span class="nseExplanationSpan">(Hide torrents you have already downloaded/snatched)</span><br /><br />
 
                     <input type="checkbox" id="nseCheckBypassWhitelists"${nseBypassWhitelistsEnabled ? ' checked' : ''} />
                     <label for="nseCheckBypassWhitelists" class="nseSettingsCheckbox">
-                        💫 Bypass whitelists for personal status filtering
+                        <span class="nseEmoji">💫</span> Bypass whitelists for personal status filtering
                     </label><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">(Ignore all whitelists when filtering grabbed/leeching/seeding/snatched torrents)</span><br />
                 </p>
@@ -446,24 +454,36 @@ htmlContent.innerHTML = `
 
             <section id="nseSettingsContent2">
                 <h3>Interface</h3>
-                <p>
+                
+                <div>
                     <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
                     <label for="nseCheckObliviousMode" class="nseSettingsCheckbox">
-                        ❓ Oblivious
+                        <span class="nseEmoji">❓</span> Oblivious
                     </label>
                     <span class="nseExplanationSpan">(Hide torrent tag lists)</span><br />
 
                     <input type="checkbox" id="nseCheckCustomCSS"${nseCustomCSSEnabled ? ' checked' : ''} />
                     <label for="nseCheckCustomCSS" class="nseSettingsCheckbox">
-                        📜 Custom CSS
+                        <span class="nseEmoji">📜</span> Custom CSS
                     </label>
-                    <span class="nseExplanationSpan">(Define your own CSS rules)</span>
+                    <span class="nseExplanationSpan">(Define your own CSS rules)</span><br />
                     <div id="nseCustomCSSDiv" ${nseCustomCSSEnabled ? '' : 'class="hidden"'}>
                         Define your custom CSS below. Note that this code is injected at the very end of the built-in CSS, so use the !important tag liberally to overwrite existing rules. Do not escape backslashes, it will be done automatically. Avoid using backticks. <br />
                         <textarea class="nseTextArea" id="nseCustomCSSArea" rows=10>${nseCustomCSS.replace(/\\\\/gi,"\\")}</textarea>
                     </div>
-                </p>
-                <p>
+
+                    <input type="checkbox" id="nseCheckScrollToNSEEnabled"${nseScrollToNSEEnabled ? ' checked' : ''} />
+                    <label for="nseCheckScrollToNSEEnabled" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">⚓</span> Automatically scroll to NSE on page load
+                    </label>
+                    <span class="nseExplanationSpan">(Makes browsing several pages easier)</span><br />
+
+                    <input type="checkbox" id="nseCheckEmojiEnabled"${nseEmojiEnabled ? ' checked' : ''} />
+                    <label for="nseCheckEmojiEnabled" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🖼️</span> Enable extended Unicode icons ("emoji")
+                    </label>
+                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br /><br />
+                
                     Theme:<br />
                     <select name="nseThemeDropdown" id="nseThemeDropdown">
                         <option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
@@ -500,29 +520,35 @@ htmlContent.innerHTML = `
                             <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme['highlightColor']}' />
                         </p>
 
-                        <p>Remember to click "Save" to save your changes!</p>
+                        <p>Remember to click the [Save] button to save your changes!</p>
                     </div>
-                </p>
-
-                <b>"Fun"</b>
-                <p>
+                </div>
+                
+                <div style="margin-top: 20px; margin-bottom: 20px;">
+                    <b>"Fun"</b><br />
                     <input type="checkbox" id="nseCheckRussianRouletteMode"${nseRussianRouletteEnabled ? ' checked' : ''} />
                     <label for="nseCheckRussianRouletteMode" class="nseSettingsCheckbox">
-                        🎲 Russian Roulette
+                        <span class="nseEmoji">🎲</span> Russian Roulette
                     </label>
-                    <span class="nseExplanationSpan">(Randomly and silently show filtered torrents)</span>
-                </p>
+                    <span class="nseExplanationSpan">(Randomly and silently show filtered torrents)</span><br />
+
+                    ${nseEnableApril1stOption ? `<input type="checkbox" id="nseCheckApril1stAllYear"${nseEveryDayIsApril1st ? ' checked' : ''} />
+                    <label for="nseCheckApril1stAllYear" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🤪</span> Every day is April 1st
+                    </label>
+                    <span class="nseExplanationSpan">(For the masochists among us)</span>` : ''}
+                </div>
             </section>
 
             <section id="nseSettingsContent3">
                 <h3>Data management</h3>
                 <p>
                     <span class="nseExplanationSpan">Use these functions to import, export or reset all your NSE lists and settings.</span>
-                    <div class="nseNiceBox">⤵️ Import NSE data<br />
+                    <div class="nseNiceBox"><span class="nseEmoji">⤵️</span> Import NSE data<br />
                         <input type="file" accept=".json,text/plain" id="nseImportFilePicker">
                     </div><br />
-                    <span class="nseNiceButton" id="nseExportButton">⤴️ Export NSE data</span> 
-                    <span class="nseNiceButton" id="nseEraseDataButton">🔄 Reset NSE data</span><br /><br />
+                    <span class="nseNiceButton" id="nseExportButton"><span class="nseEmoji">⤴️</span> Export NSE data</span> 
+                    <span class="nseNiceButton" id="nseEraseDataButton"><span class="nseEmoji">🔄</span> Reset NSE data</span><br /><br />
                     
                     <span class="nseExplanationSpan"><b>IMPORTANT: Data overwritten or reset by the functions above is <i>not</i> recoverable!</b></span>
                 </p>
@@ -531,20 +557,26 @@ htmlContent.innerHTML = `
             <section id="nseSettingsContent4">
                 <h3>About</h3>
                 <p>
-                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with 💕 by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
+                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
+
+                <h3>Resources</h3>
                 <p>
-                    <span class="nseImageButton" id="nseGithub"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">🐙 Report a bug or view commit history on GitHub</a></span><br />
-                    <span class="nseImageButton" id="nseChangelog"><a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">📋 Read the NSE changelog</a></span><br />
-                    <span class="nseImageButton" id="nseEmpoThread"><a class="nseLink" href="/forum/thread/44258?postid=956045#post956045" target="_blank">🧵 Read the official forum thread on Emp</a></span>
+                    <b>
+                        <span class="nseEmoji">🐙</span> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">Report a bug or view commit history on GitHub</a><br />
+                        
+                        <span class="nseEmoji">📋</span> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">Read the NSE changelog</a><br />
+                        
+                        <span class="nseEmoji">🧵</span> <a class="nseLink" href="/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread on Emp</a>
+                    </b>
                 </p>
             </section>
         </section>
 
         <div style="text-align: center;">
-            <span id="nseSaveButton" class="nseNiceButton">💾 Save</span>
-            <span id="nseReloadButton" class="nseNiceButton">🔃 Reload page and apply changes</span> 
-            <span id="nseCloseOptionsButton" class="nseNiceButton">❌ Close options</span>
+            <span id="nseSaveButton" class="nseNiceButton"><span class="nseEmoji">💾</span> Save</span>
+            <span id="nseReloadButton" class="nseNiceButton"><span class="nseEmoji">🔃</span> Reload page and apply changes</span> 
+            <span id="nseCloseOptionsButton" class="nseNiceButton"><span class="nseEmoji">❌</span> Close options</span>
         </div>
 
         <div style="text-align: center;" id="nseSaveDiv" class="hidden">
@@ -554,7 +586,7 @@ htmlContent.innerHTML = `
 </div>
 
 <div id="nseRCMBox" class="hidden">
-    <div id="nseRCMClose">❌</div>
+    <div id="nseRCMClose">${nseEmojiEnabled ? '❌' : '<span style="color:red"><b><big>X</big></b></span>'}</div>
     <p id="nseRCMBoxInfoText">Tag/uploader placeholder text</p>
     <p id="nseRCMBoxChoices">
 
@@ -566,6 +598,9 @@ htmlContent.innerHTML = `
 referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
 // End HTML section
 
+if(nseScrollToNSEEnabled) {
+    document.getElementById("nseOuter").scrollIntoView();
+}
 
 // Main filtering loop - for every torrent:
 let count = 0;
@@ -901,7 +936,6 @@ for(let i = 0; i < torrents.length; i++) {
 let headerNode = document.getElementById("nseHeaderText");
 
 adjustHiddenHeaderCount(count);
-console.log(count);
 
 headerNode.onclick = function() {
     if(headerNode.innerHTML.match(/([0-9]+)/) !== null) {
@@ -948,6 +982,19 @@ document.getElementById("nseThemeDropdown").onchange = function() {
         descriptionNode.innerHTML = "Define your own colors using the text boxes below";
     }
 };
+
+// We like to have fun around here 😏
+{
+    let now = new Date();
+    if(nseEveryDayIsApril1st || (now.getMonth() == 3 && now.getDate() == 1)) {
+        let emojiElements = document.getElementsByClassName("nseEmoji");
+        let normieArray = new Array("😂","🤣","😆", "🍆", "🍑", "💦", "💯", "😭", "🙃", "💩", "👌", "😏", "🙄", "🥵", "😱", "👀", "🤡");
+        for(let i = 0; i < emojiElements.length; i++) {
+            let randNum = Math.floor(Math.random() * normieArray.length);
+            emojiElements[i].innerHTML = normieArray[randNum];
+        }
+    }
+}
 
 let nseTextAreas = new Array("nseBlacklistTaglistArea","nseWhitelistTaglistArea","nseBlacklistTitleListArea","nseWhitelistTitleListArea","nseBlacklistUploadersArea","nseWhitelistUploadersArea");
 
@@ -1083,8 +1130,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             infoText = infoText + `This tag was found in your <span class="nseBlacklistIdentifier">blacklist</span>!`;
 
             nseRCMBoxChoices.innerHTML = `
-                <span class="nseRCMButton" id="nseRCMBoxBLRemove">➖ Remove from blacklist</span><br /><br />
-                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Move to whitelist</span><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLRemove">${nseEmojiEnabled ? '➖' : '-'} Remove from blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">${nseEmojiEnabled ? '➕' : '+'} Move to whitelist</span><br />
             `;
 
             document.getElementById("nseRCMBoxBLRemove").onclick = function() {
@@ -1104,8 +1151,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             infoText = infoText + `This tag was found in your <span class="nseWhitelistIdentifier">whitelist</span>!`;
 
             nseRCMBoxChoices.innerHTML = `
-                <span class="nseRCMButton" id="nseRCMBoxWLRemove">➖ Remove from whitelist</span><br /><br />
-                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Move to blacklist</span><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLRemove">${nseEmojiEnabled ? '➖' : '-'} Remove from whitelist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">${nseEmojiEnabled ? '➕' : '+'} Move to blacklist</span><br />
             `;
 
             document.getElementById("nseRCMBoxWLRemove").onclick = function() {
@@ -1125,8 +1172,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             infoText = infoText + "This tag was not found in either of your taglists.";
 
             nseRCMBoxChoices.innerHTML = `
-                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Add to blacklist</span><br /><br />
-                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Add to whitelist</span><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">${nseEmojiEnabled ? '➕' : '+'} Add to blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">${nseEmojiEnabled ? '➕' : '+'} Add to whitelist</span><br />
             `;
 
             document.getElementById("nseRCMBoxBLAdd").onclick = function() {
@@ -1156,8 +1203,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             infoText = infoText + `This uploader was found in your <span class="nseBlacklistIdentifier">blacklist</span>!`;
 
             nseRCMBoxChoices.innerHTML = `
-                <span class="nseRCMButton" id="nseRCMBoxBLRemove">➖ Remove from blacklist</span><br /><br />
-                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Move to whitelist</span><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLRemove">${nseEmojiEnabled ? '➖' : '-'} Remove from blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">${nseEmojiEnabled ? '➕' : '+'} Move to whitelist</span><br />
             `;
 
             document.getElementById("nseRCMBoxBLRemove").onclick = function() {
@@ -1177,8 +1224,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             infoText = infoText + `This uploader was found in your <span class="nseWhitelistIdentifier">whitelist</span>!`;
 
             nseRCMBoxChoices.innerHTML = `
-                <span class="nseRCMButton" id="nseRCMBoxWLRemove">➖ Remove from whitelist</span><br /><br />
-                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Move to blacklist</span><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLRemove">${nseEmojiEnabled ? '➖' : '-'} Remove from whitelist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">${nseEmojiEnabled ? '➕' : '+'} Move to blacklist</span><br />
             `;
 
             document.getElementById("nseRCMBoxWLRemove").onclick = function() {
@@ -1198,8 +1245,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             infoText = infoText + "This uploader was not found in either of your uploader lists.";
 
             nseRCMBoxChoices.innerHTML = `
-                <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Add to blacklist</span><br /><br />
-                <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Add to whitelist</span><br />
+                <span class="nseRCMButton" id="nseRCMBoxBLAdd">${nseEmojiEnabled ? '➕' : '+'} Add to blacklist</span><br /><br />
+                <span class="nseRCMButton" id="nseRCMBoxWLAdd">${nseEmojiEnabled ? '➕' : '+'} Add to whitelist</span><br />
             `;
 
             document.getElementById("nseRCMBoxBLAdd").onclick = function() {
@@ -1226,8 +1273,8 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
         let nseRCMBoxChoices = document.getElementById("nseRCMBoxChoices");
 
         nseRCMBoxChoices.innerHTML = `
-            <span class="nseRCMButton" id="nseRCMBoxBLAdd">➕ Add phrase(s) to title blacklist</span><br /><br />
-            <span class="nseRCMButton" id="nseRCMBoxWLAdd">➕ Add phrase(s) to title whitelist</span><br />
+            <span class="nseRCMButton" id="nseRCMBoxBLAdd">${nseEmojiEnabled ? '➕' : '+'} Add phrase(s) to title blacklist</span><br /><br />
+            <span class="nseRCMButton" id="nseRCMBoxWLAdd">${nseEmojiEnabled ? '➕' : '+'} Add phrase(s) to title whitelist</span><br />
         `;
 
         document.getElementById("nseRCMBoxWLAdd").onclick = function() {
@@ -1246,7 +1293,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
             closeRCMBox();
         };
     }
-
+    
     box.classList.remove("hidden");
     return false;
 }
@@ -1376,8 +1423,12 @@ function saveData() {
     GM_setValue("nseHideGrabbedEnabled", document.getElementById("nseCheckHideGrabbed").checked);
     GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
     GM_setValue("nseIndividualUploadHidingEnabled", document.getElementById("nseCheckIndividualHide").checked);
-    GM_setValue("nseEnableGCDCompatibilityMode", document.getElementById("nseCheckGCDCompatibilityMode").checked)
-    GM_setValue("nseRightClickManagementEnabled", document.getElementById("nseCheckRightClickManagementEnabled").checked)
+    GM_setValue("nseEnableGCDCompatibilityMode", document.getElementById("nseCheckGCDCompatibilityMode").checked);
+    GM_setValue("nseRightClickManagementEnabled", document.getElementById("nseCheckRightClickManagementEnabled").checked);
+    GM_setValue("nseEmojiEnabled", document.getElementById("nseCheckEmojiEnabled").checked);
+    GM_setValue("nseEveryDayIsApril1st", document.getElementById("nseCheckApril1stAllYear").checked);
+    GM_setValue("nseScrollToNSEEnabled", document.getElementById("nseCheckScrollToNSEEnabled").checked);
+
 
     let nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
@@ -1627,6 +1678,10 @@ h3 {
 
 .nseIndividuallyBlacklisted, .nseIndividuallyWhitelisted, .nseIndividuallyUntouched {
     border-radius: 5px;
+}
+
+.nseEmoji {
+    display: ${nseEmojiEnabled ? 'inline-block' : 'none'};
 }
 
 ${nseCustomCSSEnabled ? nseCustomCSS : ''}
