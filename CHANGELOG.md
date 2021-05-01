@@ -1,4 +1,9 @@
 # Changelog
+v2.5.3
+
+  - Features:
+    - Added an option to use a "Hard Pass" tag blacklist. Hard Pass tags will make sure the torrent gets hidden no matter what other settings are set; The only thing that will override Hard Pass is manually whitelisting a torrent through individual filtering (clicking the eye icon on it). Hard Pass is disabled by default, and can be enabled in Options > Settings > Filtering > Hard Pass. You can also enable the Black Hole option in the same place as Hard Pass to remove the results from the page entirely instead of hiding them behind the toggle button. Hard Pass options have also been added to Right-Click Management
+
 v2.5.2
 
 - Features:
