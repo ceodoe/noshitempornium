@@ -4,11 +4,13 @@ Fully featured filtering solution for Empornium. Hide torrents based on tags, ti
 # Features
 - Maintain a blacklist of tags, titles, and uploaders you'd like to automatically hide
 - Whitelists to ignore the above blacklist rules
-- Filter individual torrents by clicking the new eye icon next to it!
+- Filter individual torrents that don't match any of your rules
 - Hide uploads based on whether you've grabbed/downloaded it before, or if you're actively leeching/seeding it
 - Click a button to see the list of hidden torrents
 - Highlighting based on your lists, so you'll always know why a torrent was hidden or whitelisted
 - Neat toggle button and GUI to manage lists and settings
+- Actively updated
+- Lots more!
 
 # Prerequisites
 - A supported browser:
