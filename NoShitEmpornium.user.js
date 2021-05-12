@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.3
+// @version      2.5.4
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -35,7 +35,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let nseVersion = "v2.5.3";
+let nseVersion = "v2.5.4";
 
 // Load saved lists and options
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
@@ -75,6 +75,8 @@ let nseEveryDayIsApril1st = GM_getValue("nseEveryDayIsApril1st", false);
 let nseScrollToNSEEnabled = GM_getValue("nseScrollToNSEEnabled", false);
 let nseHardPassEnabled = GM_getValue("nseHardPassEnabled", false);
 let nseRemoveHardPassResults = GM_getValue("nseRemoveHardPassResults", false);
+let nseHideUnseededEnabled = GM_getValue("nseHideUnseededEnabled", false);
+let nseHideCategoryIconsEnabled = GM_getValue("nseHideCategoryIconsEnabled", false);
 
 let nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
 let nseCustomTheme = GM_getValue("nseCustomTheme", {
@@ -165,8 +167,18 @@ let themes = {
         }
 };
 
+// Figure out what page we're on
+let currentPage = "Torrents";
+if(window.location.href.includes("top10.php")) {
+    currentPage = "Top 10";
+} else if(window.location.href.includes("action=notify")) {
+    currentPage = "Notifications";
+} else if(window.location.href.includes("collages.php?")) {
+    currentPage = "Collage";
+}
+
 // Reenable torrent icon box and hide comments if GCD mode is on, using a timer is the best I can do
-if(window.location.href.includes("torrents.php")) { //torrents.php is the only page we have in common
+if(currentPage == "Torrents") { //torrents.php is the only page we have in common
     if(nseEnableGCDCompatibilityMode) {
         window.setTimeout(function () {
             // Reenable all torrent icon boxes
@@ -195,19 +207,17 @@ if(nseBlacklistTags.includes("hehehehehe")) {
     nseEnableApril1stOption = true;
 }
 
+
+
 // Set up reference node to place our html
-let referenceNodeList = {"top10.php": "#content > div > form",      // TopX pages
-                         "action=notify": "#content > div > h2",    // Notifications
-                         "collages.php?": "div.clear:nth-child(6)"  // Collage pages
-};
+let referenceNode = document.querySelector("div#filter_slidetoggle"); // Torrents
 
-let referenceNode = document.querySelector("div#filter_slidetoggle"); // Default/Torrents.php
-
-for(let rni = 0; rni < Object.keys(referenceNodeList).length; rni++) {
-    if(window.location.href.includes(Object.keys(referenceNodeList)[rni])) {
-        referenceNode = document.querySelector(referenceNodeList[Object.keys(referenceNodeList)[rni]]);
-        break;
-    }
+if(currentPage == "Top 10") {
+    referenceNode = document.querySelector("#content > div > form");
+} else if(currentPage == "Notifications") {
+    referenceNode = document.querySelector("#content > div > h2");
+} else if(currentPage == "Collage") {
+    referenceNode = document.querySelector("div.clear:nth-child(6)");
 }
 
 // Start HTML section
@@ -453,7 +463,13 @@ htmlContent.innerHTML = `
                     <label for="nseCheckHideWarned" class="nseSettingsCheckbox">
                         <span class="nseEmoji">⚔️</span> Hide warned uploads
                     </label>
-                    <span class="nseExplanationSpan">(Hide torrents with active warning, whitelists will override)</span><br /><br />
+                    <span class="nseExplanationSpan">(Hide torrents with active warning, whitelists will override)</span><br />
+
+                    <input type="checkbox" id="nseCheckHideUnseeded"${nseHideUnseededEnabled ? ' checked' : ''} />
+                    <label for="nseCheckHideUnseeded" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🏜️</span> Hide unseeded uploads
+                    </label>
+                    <span class="nseExplanationSpan">(Hide torrents with zero seeders, whitelists will override)</span><br /><br />
 
                     <b>Torrent personal status</b><br />
                     <input type="checkbox" id="nseCheckHideGrabbed"${nseHideGrabbedEnabled ? ' checked' : ''} />
@@ -529,7 +545,13 @@ htmlContent.innerHTML = `
                     <label for="nseCheckEmojiEnabled" class="nseSettingsCheckbox">
                         <span class="nseEmoji">🖼️</span> Enable extended Unicode icons ("emoji")
                     </label>
-                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br /><br />
+                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br />
+                    
+                    <input type="checkbox" id="nseCheckHideCategoryIcons"${nseHideCategoryIconsEnabled ? ' checked' : ''} />
+                    <label for="nseCheckHideCategoryIcons" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🔢</span> Hide category icons
+                    </label>
+                    <span class="nseExplanationSpan">(Hides category icons/links in torrent lists)</span><br /><br />
 
                     Theme:<br />
                     <select name="nseThemeDropdown" id="nseThemeDropdown">
@@ -672,7 +694,7 @@ for(let i = 0; i < torrents.length; i++) {
     let uploaderElement = torrents[i].querySelector("td.user > a");
     let titleElement;
 
-    if(window.location.href.includes("collages.php")) {
+    if(currentPage == "Collage") {
         titleElement = torrents[i].querySelector("td > strong > a");
     } else {
         titleElement = torrents[i].querySelector("td > a");
@@ -793,7 +815,7 @@ for(let i = 0; i < torrents.length; i++) {
         }
     }
 
-    if(window.location.href.includes("top10.php")) {
+    if(currentPage == "Top 10") {
         uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
     }
 
@@ -811,6 +833,20 @@ for(let i = 0; i < torrents.length; i++) {
     if(nseHideWarnedEnabled) {
         if(torrents[i].classList.contains("redbar")) {
             currentHidden = true;
+        }
+    }
+
+    if(nseHideUnseededEnabled) {
+        let selector = "td:nth-child(8)";
+
+        if(currentPage == "Collage") {
+            selector = "td:nth-child(7)";
+        }
+        
+        let seeders = torrents[i].querySelector(selector);
+        if(seeders.classList.contains("r00")) {
+            currentHidden = true;
+            seeders.innerHTML = "(0)";
         }
     }
 
@@ -859,7 +895,7 @@ for(let i = 0; i < torrents.length; i++) {
     }
 
     // Check uploaders
-    if(window.location.href.includes("collages.php") === false) { // There's no uploaders on collage pages
+    if(currentPage !== "Collage") { // There are no uploaders on collage pages
         if(uploaderElement == null) { // If it is null, it's an anon upload
             if(nseHideAnonUploadsEnabled) {
                 let anonName = torrents[i].querySelector("td > span.anon_name");
@@ -999,6 +1035,22 @@ for(let i = 0; i < torrents.length; i++) {
 
 
 // Event handler assignment section (+ and other minor tasks)
+
+// Remove categories if enabled
+if(nseHideCategoryIconsEnabled) {
+    let selector = ".cats_col";
+    if(currentPage == "Collage") {
+        selector = "#torrent_table > tbody > tr > td:nth-child(1)";
+    } else if(currentPage == "Notifications") {
+        selector = ".cats_cols";
+    }
+
+    let catsCols = document.querySelectorAll(selector);
+    for(let i = 0; i < catsCols.length; i++) {
+        catsCols[i].nextElementSibling.setAttribute("colspan", "2");
+        catsCols[i].remove();
+    }
+}
 
 // Remove Hard Pass results if Black Hole is enabled
 if(nseHardPassEnabled && nseRemoveHardPassResults) {
@@ -1579,6 +1631,8 @@ function saveData() {
     
     GM_setValue("nseHardPassEnabled", document.getElementById("nseCheckHardPassEnabled").checked);
     GM_setValue("nseRemoveHardPassResults", document.getElementById("nseCheckRemoveHardPassResults").checked);
+    GM_setValue("nseHideUnseededEnabled", document.getElementById("nseCheckHideUnseeded").checked);
+    GM_setValue("nseHideCategoryIconsEnabled", document.getElementById("nseCheckHideCategoryIcons").checked);
 
     let nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
