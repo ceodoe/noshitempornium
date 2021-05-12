@@ -1,4 +1,10 @@
 # Changelog
+v2.5.4
+
+  - Features:
+    - Added an option to hide unseeded torrents (Disabled by default, enable in Options > Settings > Filtering > Torrent site status)
+    - Added an option to hide category icons in torrent lists (Disabled by default, enable in Options > Settings > Interface)
+
 v2.5.3
 
   - Features:
