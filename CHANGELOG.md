@@ -1,4 +1,10 @@
 # Changelog
+v2.5.5
+
+  - Features:
+    - NSE now runs on "user uploaded" pages (the page you get to by clicking "View" next to "Uploaded" on user profile pages (/torrents.php?type=uploaded&userid=xxxxxx))
+    - Filtering will be disabled on your own user uploaded page, but you can still use NSEs other features such as right-click management there
+
 v2.5.4
 
   - Features:
