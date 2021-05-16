@@ -1,4 +1,12 @@
 # Changelog
+v2.5.6
+
+  - Features:
+    - You can now define the background color of hidden torrents when using a custom theme. This color is the background color shown on hidden torrents when you click the toggle button. The default for all built-in themes is still #aaf (purple). (Options > Settings > Interface > Theme > Custom >  Hidden torrent background color)
+
+  - Bugfixes:
+    - Fixed a bug where NSE would run on Top X Users/Tags/Taggers (and crash silently) and not just on Top X Torrents like it's supposed to, by adding an exclude for the affected pages
+
 v2.5.5
 
   - Features:

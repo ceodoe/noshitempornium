@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.5
+// @version      2.5.6
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -11,6 +11,7 @@
 // @include      /^https?://www\.empornium\.(me|sx|is)/torrents\.php*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/collages\.php.*id=*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
+// @exclude      /^https?://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
 // @exclude      /^https?://www\.empornium\.(me|sx|is)/torrents\.php.*(\?|&)(id=)/
 // @run-at       document-end
 // @grant        GM_getValue
@@ -26,16 +27,16 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-
+//
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let nseVersion = "v2.5.5";
+let nseVersion = "v2.5.6";
 
 // Load saved lists and options
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
@@ -84,8 +85,14 @@ let nseCustomTheme = GM_getValue("nseCustomTheme", {
     backgroundHighlightColor: "#cfe7ff",
     foregroundColor: "#000",
     accentColor: "#0af",
-    highlightColor: "#0071b0"
+    highlightColor: "#0071b0",
+    hiddenBackgroundColor: "#aaf"
 });
+
+// Avoid an "undefined" error for people upgrading from a version before hiddenBackgroundColor was added in 2.5.6
+if(nseCustomTheme.hiddenBackgroundColor == undefined) {
+    nseCustomTheme.hiddenBackgroundColor = "#aaf";
+}
 
 let nseCustomCSSEnabled = GM_getValue("nseCustomCSSEnabled", false);
 let nseCustomCSS = GM_getValue("nseCustomCSS", "/* With great power comes great responsibility */");
@@ -131,7 +138,8 @@ let themes = {
             backgroundHighlightColor: "#cfe7ff",
             foregroundColor: "#000",
             accentColor: "#0af",
-            highlightColor: "#0071b0"
+            highlightColor: "#0071b0",
+            hiddenBackgroundColor: "#aaf"
         },
     nseThemeLegacy:
         {
@@ -139,7 +147,8 @@ let themes = {
             backgroundHighlightColor: "#44f",
             foregroundColor: "#fff",
             accentColor: "#ddd",
-            highlightColor: "#fff"
+            highlightColor: "#fff",
+            hiddenBackgroundColor: "#aaf"
         },
     nseThemeEdgy:
         {
@@ -147,7 +156,8 @@ let themes = {
             backgroundHighlightColor: "#333",
             foregroundColor: "#f00",
             accentColor: "#f22",
-            highlightColor: "#f22"
+            highlightColor: "#f22",
+            hiddenBackgroundColor: "#aaf"
         },
     nseThemeBaked:
         {
@@ -155,7 +165,8 @@ let themes = {
             backgroundHighlightColor: "#087300",
             foregroundColor: "#0a8700",
             accentColor: "#b669ff",
-            highlightColor: "#b669ff"
+            highlightColor: "#b669ff",
+            hiddenBackgroundColor: "#aaf"
         },
     nseThemeCustom:
         {
@@ -163,7 +174,8 @@ let themes = {
             backgroundHighlightColor: nseCustomTheme.backgroundHighlightColor,
             foregroundColor: nseCustomTheme.foregroundColor,
             accentColor: nseCustomTheme.accentColor,
-            highlightColor: nseCustomTheme.highlightColor
+            highlightColor: nseCustomTheme.highlightColor,
+            hiddenBackgroundColor: nseCustomTheme.hiddenBackgroundColor
         }
 };
 
@@ -599,6 +611,11 @@ htmlContent.innerHTML = `
                             Highlight color:<br />
                             <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme.highlightColor}' />
                         </p>
+                        <p>
+                            Hidden torrent background color:<br />
+                            <input type="text" id="nseCustomThemeHiddenBgCol" value='${nseCustomTheme.hiddenBackgroundColor}' />
+                        </p>
+
 
                         <p>Remember to click the [Save] button to save your changes!</p>
                     </div>
@@ -782,7 +799,7 @@ if(currentPage !== "My uploaded") {
 
                     torrentParent.classList.toggle("hidden");
                     torrentParent.setAttribute("isNSEHidden", "1");
-                    torrentParent.style.backgroundColor = "#AAF";
+                    torrentParent.style.backgroundColor = themes[nseSelectedTheme].hiddenBackgroundColor;
 
                     adjustHiddenHeaderCount(1);
 
@@ -1018,7 +1035,7 @@ if(currentPage !== "My uploaded") {
             torrents[i].setAttribute("isNSEHidden", "0");
         } else if(currentHidden === true) {
             if(russianRouletteBulletInChamber == false) {
-                torrents[i].style.backgroundColor = "#AAF";
+                torrents[i].style.backgroundColor = themes[nseSelectedTheme].hiddenBackgroundColor;
                 torrents[i].classList.add("hidden");
                 torrents[i].setAttribute("isNSEHidden", "1");
 
@@ -1682,7 +1699,8 @@ function saveData() {
             backgroundHighlightColor: document.getElementById("nseCustomThemeBgHighCol").value,
             foregroundColor: document.getElementById("nseCustomThemeForeCol").value,
             accentColor: document.getElementById("nseCustomThemeAccentCol").value,
-            highlightColor: document.getElementById("nseCustomThemeHighCol").value
+            highlightColor: document.getElementById("nseCustomThemeHighCol").value,
+            hiddenBackgroundColor: document.getElementById("nseCustomThemeHiddenBgCol").value
         };
 
         GM_setValue("nseCustomTheme", nseCustomTheme);
