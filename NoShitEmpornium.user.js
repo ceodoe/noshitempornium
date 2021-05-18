@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.6
+// @version      2.5.7
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -36,7 +36,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let nseVersion = "v2.5.6";
+let nseVersion = "v2.5.7";
 
 // Load saved lists and options
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
@@ -78,6 +78,7 @@ let nseHardPassEnabled = GM_getValue("nseHardPassEnabled", false);
 let nseRemoveHardPassResults = GM_getValue("nseRemoveHardPassResults", false);
 let nseHideUnseededEnabled = GM_getValue("nseHideUnseededEnabled", false);
 let nseHideCategoryIconsEnabled = GM_getValue("nseHideCategoryIconsEnabled", false);
+let nseArrowNavigationEnabled = GM_getValue("nseArrowNavigationEnabled", false);
 
 let nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
 let nseCustomTheme = GM_getValue("nseCustomTheme", {
@@ -568,13 +569,7 @@ htmlContent.innerHTML = `
                     <label for="nseCheckEmojiEnabled" class="nseSettingsCheckbox">
                         <span class="nseEmoji">🖼️</span> Enable extended Unicode icons ("emoji")
                     </label>
-                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br />
-                    
-                    <input type="checkbox" id="nseCheckHideCategoryIcons"${nseHideCategoryIconsEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideCategoryIcons" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">🔢</span> Hide category icons
-                    </label>
-                    <span class="nseExplanationSpan">(Hides category icons/links in torrent lists)</span><br /><br />
+                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br /><br />
 
                     Theme:<br />
                     <select name="nseThemeDropdown" id="nseThemeDropdown">
@@ -616,9 +611,23 @@ htmlContent.innerHTML = `
                             <input type="text" id="nseCustomThemeHiddenBgCol" value='${nseCustomTheme.hiddenBackgroundColor}' />
                         </p>
 
-
                         <p>Remember to click the [Save] button to save your changes!</p>
                     </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <b>Extras</b><br />
+                    <input type="checkbox" id="nseCheckHideCategoryIcons"${nseHideCategoryIconsEnabled ? ' checked' : ''} />
+                    <label for="nseCheckHideCategoryIcons" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🔢</span> Hide category icons
+                    </label>
+                    <span class="nseExplanationSpan">(Hides category icons/links in torrent lists)</span><br />
+                    
+                    <input type="checkbox" id="nseCheckArrowNavigation"${nseArrowNavigationEnabled ? ' checked' : ''} />
+                    <label for="nseCheckArrowNavigation" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">⌨️</span> Navigate pages with arrow keys
+                    </label>
+                    <span class="nseExplanationSpan">(Press left/right arrow key to go to prev/next page)</span>
                 </div>
 
                 <div style="margin-top: 20px; margin-bottom: 20px;">
@@ -1111,6 +1120,38 @@ if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploade
     }
 }
 
+if(nseArrowNavigationEnabled) {
+    document.onkeydown = function(event) {
+        if(event.target.nodeName !== "TEXTAREA" && event.target.nodeName !== "INPUT") {
+            if (event.code == "ArrowLeft") {
+                let prevLink = document.getElementsByClassName("pager_prev")[0];
+                if(prevLink) {
+                    event.preventDefault();
+                    prevLink.click();
+                } else {
+                    let firstLink = document.getElementsByClassName("pager_first")[0];
+                    if(firstLink) {
+                        event.preventDefault();
+                        firstLink.click();
+                    }
+                }
+            } else if (event.code == "ArrowRight") {
+                let nextLink = document.getElementsByClassName("pager_next")[0];
+                if(nextLink) {
+                    event.preventDefault();
+                    nextLink.click();
+                } else {
+                    let lastLink = document.getElementsByClassName("pager_last")[0];
+                    if(lastLink) {
+                        event.preventDefault();
+                        lastLink.click();
+                    }
+                }
+            }
+        }
+    };
+}
+
 let headerNode = document.getElementById("nseHeaderText");
 
 if(currentPage == "My uploaded") {
@@ -1181,9 +1222,9 @@ document.getElementById("nseThemeDropdown").onchange = function() {
 let nseTextAreas = new Array("nseBlacklistTaglistArea", "nseHardPassTaglistArea", "nseWhitelistTaglistArea","nseBlacklistTitleListArea","nseWhitelistTitleListArea","nseBlacklistUploadersArea","nseWhitelistUploadersArea");
 
 for(let textAreaCounter = 0; textAreaCounter < nseTextAreas.length; textAreaCounter++) {
-    document.getElementById(nseTextAreas[textAreaCounter]).addEventListener("keydown", function(e) {
-        if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && e.keyCode == 83) {
-            e.preventDefault();
+    document.getElementById(nseTextAreas[textAreaCounter]).addEventListener("keydown", function(event) {
+        if ((window.navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)  && event.code == "KeyS") {
+            event.preventDefault();
             saveData();
         }
      }, false);
@@ -1201,30 +1242,24 @@ for(let i = 0; i < explanationTogglers.length; i++) {
 if(nseRightClickManagementEnabled) {
     let allTagElements = document.querySelectorAll(".nseTagElement");
     for(let i = 0; i < allTagElements.length; i++) {
-        allTagElements[i].addEventListener('contextmenu', function(ev) {
-            ev.preventDefault();
-
-            showRCMBox("tag", this.innerHTML.trim(), ev.pageX, ev.pageY);
-
-            return false;
+        allTagElements[i].addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+            showRCMBox("tag", this.innerHTML.trim(), event.pageX, event.pageY);
         }, false);
     }
 
     let allUploaderElements = document.querySelectorAll(".nseUploaderElement");
     for(let j = 0; j < allUploaderElements.length; j++) {
-        allUploaderElements[j].addEventListener('contextmenu', function(ev) {
-            ev.preventDefault();
-
-            showRCMBox("uploader", this.innerHTML.trim(), ev.pageX, ev.pageY);
-
-            return false;
+        allUploaderElements[j].addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+            showRCMBox("uploader", this.innerHTML.trim(), event.pageX, event.pageY);
         }, false);
     }
 
     let allTitleElements = document.querySelectorAll(".nseTitleElement");
     for(let k = 0; k < allTitleElements.length; k++) {
-        allTitleElements[k].addEventListener('contextmenu', function(ev) {
-            ev.preventDefault();
+        allTitleElements[k].addEventListener('contextmenu', function(event) {
+            event.preventDefault();
 
             // Strip already hidden title fragments, if any
             let currTitle = this.innerHTML;
@@ -1234,9 +1269,7 @@ if(nseRightClickManagementEnabled) {
                 currTitle = currTitle.substring(0, colorIndex);
             }
 
-            showRCMBox("title", currTitle.trim(), ev.pageX, ev.pageY);
-
-            return false;
+            showRCMBox("title", currTitle.trim(), event.pageX, event.pageY);
         }, false);
     }
 
@@ -1687,6 +1720,7 @@ function saveData() {
     GM_setValue("nseRemoveHardPassResults", document.getElementById("nseCheckRemoveHardPassResults").checked);
     GM_setValue("nseHideUnseededEnabled", document.getElementById("nseCheckHideUnseeded").checked);
     GM_setValue("nseHideCategoryIconsEnabled", document.getElementById("nseCheckHideCategoryIcons").checked);
+    GM_setValue("nseArrowNavigationEnabled", document.getElementById("nseCheckArrowNavigation").checked);
 
     let nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
