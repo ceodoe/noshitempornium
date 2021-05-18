@@ -1,3 +1,4 @@
+# Older versions
 ## v2.5.6
 ### Features
 - You can now define the background color of hidden torrents when using a custom theme. This color is the background color shown on hidden torrents when you click the toggle button. The default for all built-in themes is still #aaf (purple). (Options > Settings > Interface > Theme > Custom >  Hidden torrent background color)

@@ -8,4 +8,4 @@
 - Moved "Hide category icons" to Interface > Extras
 - Cleaned up some messy event handling
 ---
-[(Older versions)](https://www.github.com/ceoedoe/noshitempornium/CHANGELOG_OLD.md)
+[(Older versions)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG_OLD.md)
