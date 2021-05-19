@@ -1,4 +1,17 @@
 # Older versions
+[(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+
+## v2.5.7
+### Features
+- Added an option to navigate to previous/next pages in torrent lists with the keyboard arrow keys (Disabled by default, enable in Options > Settings > Interface > Extras)
+
+### Other
+- New settings section: Interface > Extras. Will be used for interface features that don't directly relate to the script's main purpose of filtering uploads, or to the interface of NSE itself
+- Moved "Hide category icons" to Interface > Extras
+- Cleaned up some messy event handling
+
+<p>&nbsp;</p>
+
 ## v2.5.6
 ### Features
 - You can now define the background color of hidden torrents when using a custom theme. This color is the background color shown on hidden torrents when you click the toggle button. The default for all built-in themes is still #aaf (purple). (Options > Settings > Interface > Theme > Custom >  Hidden torrent background color)

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.7
+// @version      2.5.8
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -36,7 +36,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let nseVersion = "v2.5.7";
+let nseVersion = "v2.5.8";
+let nseVersionNum = 20508;
 
 // Load saved lists and options
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
@@ -79,6 +80,12 @@ let nseRemoveHardPassResults = GM_getValue("nseRemoveHardPassResults", false);
 let nseHideUnseededEnabled = GM_getValue("nseHideUnseededEnabled", false);
 let nseHideCategoryIconsEnabled = GM_getValue("nseHideCategoryIconsEnabled", false);
 let nseArrowNavigationEnabled = GM_getValue("nseArrowNavigationEnabled", false);
+
+let nseUpdateToastsEnabled = GM_getValue("nseUpdateToastsEnabled", true);
+let nseSavedVersion = GM_getValue("nseSavedVersion", nseVersionNum);
+
+// Make sure current version gets written to storage
+GM_setValue("nseSavedVersion", nseSavedVersion);
 
 let nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
 let nseCustomTheme = GM_getValue("nseCustomTheme", {
@@ -200,28 +207,22 @@ if(window.location.href.includes("top10.php")) {
     }
 }
 
-// Reenable torrent icon box and hide comments if GCD mode is on, using a timer is the best I can do
+// Reenable torrent icon box and hide comments if GCD mode is on
 if(currentPage == "Torrents") { //torrents.php is the only page we have in common
     if(nseEnableGCDCompatibilityMode) {
-        window.setTimeout(function () {
-            // Reenable all torrent icon boxes
-            let iconContainers = document.querySelectorAll("span.torrent_icon_container");
-            for(let a = 0; a < iconContainers.length; a++) {
-                iconContainers[a].style.display = "flex";
+        GM_addStyle(`
+            span.torrent_icon_container {
+                display: flex !important;
             }
 
-            // Hide all comment icons GCD creates
-            let commentElements = document.querySelectorAll("a.comment");
-            for(let b = 0; b < commentElements.length; b++) {
-                commentElements[b].style.display = "none";
+            a.comment {
+                display: none !important;
             }
 
-            // Bring all eyes to the front of the z-index as they are obscured by the div.version element
-            let allEyes = document.querySelectorAll(".nseToggleHideButton");
-            for(let c = 0; c < allEyes.length; c++) {
-                allEyes[c].style.zIndex = "1";
+            .nseToggleHideButton {
+                z-index: 0 !important;
             }
-        },1500); // This should be enough time for any modern-ish machine to run through GCD's code before we look for its elements
+        `);
     }
 }
 
@@ -242,6 +243,58 @@ if(currentPage == "Top 10") {
     referenceNode = document.querySelector("div.clear:nth-child(6)");
 } else if(currentPage == "Uploaded" || currentPage == "My uploaded") {
     referenceNode = document.querySelector(".submit");
+}
+
+if(!referenceNode) {
+    throw "Note: NSE died on the way back to his home planet";
+}
+
+// Check if we've just updated
+if(nseUpdateToastsEnabled) {
+    if(nseVersionNum > nseSavedVersion) {
+        GM_setValue("nseSavedVersion", nseVersionNum); // Update saved version so toast is only shown once
+
+        let updateToast = document.createElement("div");
+        updateToast.innerHTML = `
+            <div id="nseUpdateToast">  
+                <div style="margin-top: 10px;">
+                    <big>Hooray! NoShitEmpornium was just updated to <b>${nseVersion}</b>!</big>
+                </div>
+
+                <div style="margin-top: 10px;">
+                    <span class="nseNiceButton" id="nseSeeWhatsNewButton">
+                        <span class="nseEmoji">📋</span> See what's new!
+                    </span>
+                    
+                    <span class="nseNiceButton" id="nseCloseUpdateToastButton">
+                        <span class="nseEmoji">❌</span> Close
+                    </span>
+                    
+                    <span class="nseNiceButton" id="nseNeverShowUpdateToastButton">
+                        <span class="nseEmoji">🚫</span> Don't show again
+                    </span>
+                </div>
+            </div>
+        `;
+
+        let reference = document.querySelector("body > :last-child");
+        reference.after(updateToast);
+
+        document.getElementById("nseSeeWhatsNewButton").onclick = function() {
+            window.open("https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes",'_blank');
+            this.parentNode.parentNode.remove();
+        };
+
+        document.getElementById("nseCloseUpdateToastButton").onclick = function() {
+            this.parentNode.parentNode.remove();
+        };
+
+        document.getElementById("nseNeverShowUpdateToastButton").onclick = function() {
+            document.getElementById("nseCheckUpdateToasts").checked = false;
+            saveData();
+            this.parentNode.parentNode.remove();
+        };
+    }
 }
 
 // Start HTML section
@@ -569,10 +622,16 @@ htmlContent.innerHTML = `
                     <label for="nseCheckEmojiEnabled" class="nseSettingsCheckbox">
                         <span class="nseEmoji">🖼️</span> Enable extended Unicode icons ("emoji")
                     </label>
-                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br /><br />
+                    <span class="nseExplanationSpan">(Disable if you see garbled characters)</span><br />
+                    
+                    <input type="checkbox" id="nseCheckUpdateToasts"${nseUpdateToastsEnabled ? ' checked' : ''} />
+                    <label for="nseCheckUpdateToasts" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">❗</span> Notify me when NSE is updated
+                    </label>
+                    <span class="nseExplanationSpan">(Get changelog info on update)</span><br /><br />
 
                     Theme:<br />
-                    <select name="nseThemeDropdown" id="nseThemeDropdown">
+                    <select name="nseThemeDropdown" id="nseThemeDropdown" class="nseInput">
                         <option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
                         <option value="nseThemeLegacy" ${nseSelectedTheme=="nseThemeLegacy" ? "selected='selected'" : ''}>Legacy</option>
                         <option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
@@ -588,27 +647,27 @@ htmlContent.innerHTML = `
                         </p>
                         <p>
                             Background color:<br />
-                            <input type="text" id="nseCustomThemeBgCol" value='${nseCustomTheme.backgroundColor}' />
+                            <input type="text" class="nseInput" id="nseCustomThemeBgCol" value='${nseCustomTheme.backgroundColor}' />
                         </p>
                         <p>
                             Background highlight color:<br />
-                            <input type="text" id="nseCustomThemeBgHighCol" value='${nseCustomTheme.backgroundHighlightColor}' />
+                            <input type="text" class="nseInput" id="nseCustomThemeBgHighCol" value='${nseCustomTheme.backgroundHighlightColor}' />
                         </p>
                         <p>
                             Foreground color:<br />
-                            <input type="text" id="nseCustomThemeForeCol" value='${nseCustomTheme.foregroundColor}' />
+                            <input type="text" class="nseInput" id="nseCustomThemeForeCol" value='${nseCustomTheme.foregroundColor}' />
                         </p>
                         <p>
                             Accent color:<br />
-                            <input type="text" id="nseCustomThemeAccentCol" value='${nseCustomTheme.accentColor}' />
+                            <input type="text" class="nseInput" id="nseCustomThemeAccentCol" value='${nseCustomTheme.accentColor}' />
                         </p>
                         <p>
                             Highlight color:<br />
-                            <input type="text" id="nseCustomThemeHighCol" value='${nseCustomTheme.highlightColor}' />
+                            <input type="text" class="nseInput" id="nseCustomThemeHighCol" value='${nseCustomTheme.highlightColor}' />
                         </p>
                         <p>
                             Hidden torrent background color:<br />
-                            <input type="text" id="nseCustomThemeHiddenBgCol" value='${nseCustomTheme.hiddenBackgroundColor}' />
+                            <input type="text" class="nseInput" id="nseCustomThemeHiddenBgCol" value='${nseCustomTheme.hiddenBackgroundColor}' />
                         </p>
 
                         <p>Remember to click the [Save] button to save your changes!</p>
@@ -625,9 +684,10 @@ htmlContent.innerHTML = `
                     
                     <input type="checkbox" id="nseCheckArrowNavigation"${nseArrowNavigationEnabled ? ' checked' : ''} />
                     <label for="nseCheckArrowNavigation" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">⌨️</span> Navigate pages with arrow keys
-                    </label>
-                    <span class="nseExplanationSpan">(Press left/right arrow key to go to prev/next page)</span>
+                        <span class="nseEmoji">⌨️</span> Navigate paginated torrent lists with keyboard arrow keys
+                    </label><br />
+                    <span class="nseExplanationSpan" style="margin-left: 60px;">(Note that NSE only runs on torrent lists, if you want</span><br />
+                    <span class="nseExplanationSpan" style="margin-left: 60px;">arrow key navigation globally on Empornium, use <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/GlobalArrowKeyNavigation.user.js" target="_blank"><b><u>this script</u></b></a>)</span>
                 </div>
 
                 <div style="margin-top: 20px; margin-bottom: 20px;">
@@ -651,7 +711,7 @@ htmlContent.innerHTML = `
                 <p>
                     <span class="nseExplanationSpan">Use these functions to import, export or reset all your NSE lists and settings.</span>
                     <div class="nseNiceBox"><span class="nseEmoji">⤵️</span> Import NSE data<br />
-                        <input type="file" accept=".json,text/plain" id="nseImportFilePicker">
+                        <input type="file" accept=".json,text/plain" id="nseImportFilePicker" class="nseInput">
                     </div><br />
                     <span class="nseNiceButton" id="nseExportButton"><span class="nseEmoji">⤴️</span> Export NSE data</span> 
                     <span class="nseNiceButton" id="nseEraseDataButton"><span class="nseEmoji">🔄</span> Reset NSE data</span><br /><br />
@@ -663,17 +723,17 @@ htmlContent.innerHTML = `
             <section id="nseSettingsContent4">
                 <h3>About</h3>
                 <p>
-                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
+                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a class="nseLink" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
 
                 <h3>Resources</h3>
                 <p>
                     <b>
+                        <span class="nseEmoji">🧵</span> <a class="nseLink" href="/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official thread on the Empornium forums</a><br />
+
                         <span class="nseEmoji">🐙</span> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium" target="_blank">Report a bug or view commit history on GitHub</a><br />
                         
-                        <span class="nseEmoji">📋</span> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md" target="_blank">Read the NSE changelog</a><br />
-                        
-                        <span class="nseEmoji">🧵</span> <a class="nseLink" href="/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official forum thread on Emp</a>
+                        <span class="nseEmoji">📋</span> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes" target="_blank">Read the changelog</a><br />
                     </b>
                 </p>
             </section>
@@ -701,7 +761,7 @@ htmlContent.innerHTML = `
 </div>
 `;
 
-referenceNode.parentNode.insertBefore(htmlContent, referenceNode.nextSibling);
+referenceNode.after(htmlContent);
 // End HTML section
 
 if(nseScrollToNSEEnabled) {
@@ -1064,11 +1124,8 @@ if(currentPage !== "My uploaded") {
 if(nseRightClickManagementEnabled) {
     for(let i = 0; i < torrents.length; i++) {
         // Tags
-        let tagElement = torrents[i].querySelector("td > div.tags");
-
-        if(tagElement !== null && tagElement !== undefined) {
-            let tagList = tagElement.querySelectorAll("a");
-
+        let tagList = torrents[i].querySelectorAll("td > div.tags > a");
+        if(tagList !== null && tagList !== undefined) {
             for(let j = 0; j < tagList.length; j++) {
                 tagList[j].classList.add("nseTagElement");    
             }
@@ -1076,18 +1133,15 @@ if(nseRightClickManagementEnabled) {
 
         // Titles
         let titleElement;
-
         if(currentPage == "Collage") {
             titleElement = torrents[i].querySelector("td > strong > a");
         } else {
             titleElement = torrents[i].querySelector("td > a");
         }
-
         titleElement.classList.add("nseTitleElement");
 
         // Uploaders
         let uploaderElement = torrents[i].querySelector("td.user > a");
-
         if(currentPage !== "Collage" && currentPage !== "Uploaded" && uploaderElement !== null) { 
             uploaderElement.classList.add("nseUploaderElement");
         }
@@ -1113,9 +1167,11 @@ if(nseHideCategoryIconsEnabled) {
 // Remove Hard Pass results if Black Hole is enabled
 if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploaded") {
     let elementsToRemove = document.querySelectorAll(".nseHardPassRemove");
-    for(let i = 0; i < elementsToRemove.length; i++) {
-        if(elementsToRemove[i]) {
-            elementsToRemove[i].remove();
+    if(elementsToRemove) {
+        for(let i = 0; i < elementsToRemove.length; i++) {
+            if(elementsToRemove[i]) {
+                elementsToRemove[i].remove();
+            }
         }
     }
 }
@@ -1549,7 +1605,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
         nseRCMBoxInfoText.innerHTML = infoText;
     } else if(boxType == "title") {
         let infoText = `Customize the title phrase you would like to filter in the text box below. You can use a semicolon <span class="nseRCMMonospace">;</span> to separate multiple phrases:<br /><br />
-        <input type="text" style="width:95%;" id="nseRCMTitlePhraseText" value="${elementValue.replace(/"/g, '&quot;')}"></input><br />`;
+        <input type="text" class="nseInput" style="width:95%;" id="nseRCMTitlePhraseText" value="${elementValue.replace(/"/g, '&quot;')}"></input><br />`;
         nseRCMBoxInfoText.innerHTML = infoText;
 
         let nseRCMBoxChoices = document.getElementById("nseRCMBoxChoices");
@@ -1721,6 +1777,8 @@ function saveData() {
     GM_setValue("nseHideUnseededEnabled", document.getElementById("nseCheckHideUnseeded").checked);
     GM_setValue("nseHideCategoryIconsEnabled", document.getElementById("nseCheckHideCategoryIcons").checked);
     GM_setValue("nseArrowNavigationEnabled", document.getElementById("nseCheckArrowNavigation").checked);
+    
+    GM_setValue("nseUpdateToastsEnabled", document.getElementById("nseCheckUpdateToasts").checked);
 
     let nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
@@ -1768,7 +1826,7 @@ GM_addStyle(`
     border-radius: 20px;
 }
 
-.nseOuterDiv {
+#nseOuter {
     width: 600px;
     margin-top: 10px;
 }
@@ -1781,6 +1839,17 @@ section {
     display: none;
     padding: 20px 0 0;
     border-top: 1px solid ${themes[nseSelectedTheme].accentColor};
+}
+
+#nseUpdateToast {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: 80px;
+    text-align: center;
+    color: ${themes[nseSelectedTheme].foregroundColor};
+    background-color: ${themes[nseSelectedTheme].backgroundColor};
+    border-top: 3px solid ${themes[nseSelectedTheme].accentColor};
 }
 
 .nseRadioButton {
@@ -1902,6 +1971,13 @@ a.nseLink, a.nseLink:visited {
 .nseTextArea {
     width: 99%;
     max-width: 99%;
+}
+
+.nseTextArea, .nseInput {
+    color: ${themes[nseSelectedTheme].foregroundColor};
+    background: none !important;
+    background-color: ${themes[nseSelectedTheme].backgroundColor};
+    border: 1px solid ${themes[nseSelectedTheme].accentColor};
 }
 
 .nseFieldDiv, .nseExplanationNode, .nseExplanationBox, #nseCustomThemeDiv, #nseCustomCSSDiv, .nseOuterDiv {
