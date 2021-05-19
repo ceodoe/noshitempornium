@@ -687,7 +687,7 @@ htmlContent.innerHTML = `
                         <span class="nseEmoji">⌨️</span> Navigate paginated torrent lists with keyboard arrow keys
                     </label><br />
                     <span class="nseExplanationSpan" style="margin-left: 60px;">(Note that NSE only runs on torrent lists, if you want</span><br />
-                    <span class="nseExplanationSpan" style="margin-left: 60px;">arrow key navigation globally on Empornium, use <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/GlobalArrowKeyNavigation.user.js" target="_blank"><b><u>this script</u></b></a>)</span>
+                    <span class="nseExplanationSpan" style="margin-left: 60px;">arrow key navigation globally on Empornium, use <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/raw/master/GlobalArrowKeyNavigation.user.js" target="_blank"><b><u>this script</u></b></a>)</span>
                 </div>
 
                 <div style="margin-top: 20px; margin-bottom: 20px;">
