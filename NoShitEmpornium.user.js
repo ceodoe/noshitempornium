@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.8
+// @version      2.5.9
 // @description  Fully featured torrent filtering solution for Empornium
-// @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
+// @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @supportURL   https://github.com/ceodoe/noshitempornium/issues
 // @homepageURL  https://github.com/ceodoe/noshitempornium/
@@ -36,8 +36,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let nseVersion = "v2.5.8";
-let nseVersionNum = 20508;
+let nseVersion = GM_info.script.version.split(".");
+let nseVersionNum = Number(nseVersion[0] + nseVersion[1].padStart(2, "0") + nseVersion[2].padStart(2, "0"));
 
 // Load saved lists and options
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.illegal.tags.here separated.by.spaces.only no.newlines scat puke blood"); // 3 unchanged names to allow backwards comp
@@ -101,6 +101,8 @@ let nseCustomTheme = GM_getValue("nseCustomTheme", {
 if(nseCustomTheme.hiddenBackgroundColor == undefined) {
     nseCustomTheme.hiddenBackgroundColor = "#aaf";
 }
+
+let nseUIFont = GM_getValue("nseUIFont", "Helvetica");
 
 let nseCustomCSSEnabled = GM_getValue("nseCustomCSSEnabled", false);
 let nseCustomCSS = GM_getValue("nseCustomCSS", "/* With great power comes great responsibility */");
@@ -176,6 +178,15 @@ let themes = {
             highlightColor: "#b669ff",
             hiddenBackgroundColor: "#aaf"
         },
+    nseThemeDarkPurple:
+        {
+            backgroundColor: "#31363b",
+            backgroundHighlightColor: "#495057",
+            foregroundColor: "#ffffff",
+            accentColor: "#7b68ee",
+            highlightColor: "#7b68ee",
+            hiddenBackgroundColor: "#aaf"
+        },
     nseThemeCustom:
         {
             backgroundColor: nseCustomTheme.backgroundColor,
@@ -185,6 +196,15 @@ let themes = {
             highlightColor: nseCustomTheme.highlightColor,
             hiddenBackgroundColor: nseCustomTheme.hiddenBackgroundColor
         }
+};
+
+let nseThemeDescriptions = {
+    nseThemeDefault: "White background with black text and blue accents",
+    nseThemeLegacy: "Ye Olde Theme with a blue background and white text",
+    nseThemeEdgy: "For the edgelord in all of us, red text on a black background",
+    nseThemeBaked: "Ayyyy 420 blaze it &mdash; Green and purple",
+    nseThemeDarkPurple: "A dark mode theme with purple highlights",
+    nseThemeCustom: "Define your own colors using the text boxes below"
 };
 
 // Figure out what page we're on
@@ -258,7 +278,7 @@ if(nseUpdateToastsEnabled) {
         updateToast.innerHTML = `
             <div id="nseUpdateToast">  
                 <div style="margin-top: 10px;">
-                    <big>Hooray! NoShitEmpornium was just updated to <b>${nseVersion}</b>!</big>
+                    <big>Hooray! NoShitEmpornium was just updated to <b>v${GM_info.script.version}</b>!</big>
                 </div>
 
                 <div style="margin-top: 10px;">
@@ -630,15 +650,21 @@ htmlContent.innerHTML = `
                     </label>
                     <span class="nseExplanationSpan">(Get changelog info on update)</span><br /><br />
 
+                    Font family: <br />
+                    <input type="text" class="nseInput" value="${nseUIFont}" id="nseUIFont" /> <span class="nseExplanationSpan">(Corresponds to the <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family" target="_blank"><b><u>CSS font-family attribute</u></b></a>)</span>
+                    <br /><br />
+
+
                     Theme:<br />
                     <select name="nseThemeDropdown" id="nseThemeDropdown" class="nseInput">
                         <option value="nseThemeDefault" ${nseSelectedTheme=="nseThemeDefault" ? "selected='selected'" : ''}>Default</option>
                         <option value="nseThemeLegacy" ${nseSelectedTheme=="nseThemeLegacy" ? "selected='selected'" : ''}>Legacy</option>
                         <option value="nseThemeEdgy" ${nseSelectedTheme=="nseThemeEdgy" ? "selected='selected'" : ''}>Edgy</option>
                         <option value="nseThemeBaked" ${nseSelectedTheme=="nseThemeBaked" ? "selected='selected'" : ''}>Baked</option>
+                        <option value="nseThemeDarkPurple" ${nseSelectedTheme=="nseThemeDarkPurple" ? "selected='selected'" : ''}>Dark Purple</option>
                         <option value="nseThemeCustom" ${nseSelectedTheme=="nseThemeCustom" ? "selected='selected'" : ''}>Custom</option>
                     </select>
-                    <span id="nseThemeDescription" class="nseExplanationSpan">${nseSelectedTheme=="nseThemeDefault" ? "White background with black text and blue accents" : ''}${nseSelectedTheme=="nseThemeLegacy" ? "Ye Olde Theme with a blue background and white text" : ''}${nseSelectedTheme=="nseThemeEdgy" ? "For the edgelord in all of us, red text on a black background" : ''}${nseSelectedTheme=="nseThemeBaked" ? "Ayyyy 420 blaze it &mdash; Green and purple" : ''}${nseSelectedTheme=="nseThemeCustom" ? "Define your own colors using the text boxes below" : ''}</span>
+                    <span id="nseThemeDescription" class="nseExplanationSpan">${nseThemeDescriptions[nseSelectedTheme]}</span>
 
                     <div id="nseCustomThemeDiv" ${nseSelectedTheme=="nseThemeCustom" ? '' : 'class="hidden"'}>
                         <p>
@@ -723,7 +749,7 @@ htmlContent.innerHTML = `
             <section id="nseSettingsContent4">
                 <h3>About</h3>
                 <p>
-                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium ${nseVersion} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a class="nseLink" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
+                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium v${GM_info.script.version} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a class="nseLink" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
 
                 <h3>Resources</h3>
@@ -1249,17 +1275,7 @@ document.getElementById("nseThemeDropdown").onchange = function() {
         document.getElementById("nseCustomThemeDiv").classList.add("hidden");
     }
 
-    if(selectedTheme == "nseThemeDefault") {
-        descriptionNode.innerHTML = "White background with black text and blue accents";
-    } else if(selectedTheme == "nseThemeLegacy") {
-        descriptionNode.innerHTML = "Ye Olde Theme with a blue background and white text";
-    } else if(selectedTheme == "nseThemeEdgy") {
-        descriptionNode.innerHTML = "For the edgelord in all of us, red text on a black background";
-    } else if(selectedTheme == "nseThemeBaked") {
-        descriptionNode.innerHTML = "Ayyyy 420 blaze it &mdash; Green and purple";
-    } else if(selectedTheme == "nseThemeCustom") {
-        descriptionNode.innerHTML = "Define your own colors using the text boxes below";
-    }
+    descriptionNode.innerHTML = nseThemeDescriptions[selectedTheme];
 };
 
 // We like to have fun around here 😏
@@ -1798,6 +1814,8 @@ function saveData() {
         GM_setValue("nseCustomTheme", nseCustomTheme);
     }
 
+    GM_setValue("nseUIFont", document.getElementById("nseUIFont").value);
+
     // We need to escape backslashes in the custom CSS as it will be included in a back-ticked CSS block
     let css = document.getElementById("nseCustomCSSArea").value;
     css = css.replace(/\\/gi, "\\\\");
@@ -1816,7 +1834,7 @@ function saveData() {
 GM_addStyle(`
 
 .nseOuterDiv, #nseRCMBox {
-    font-family: Helvetica;
+    font-family: ${nseUIFont} !important;
     margin:auto;
     color: ${themes[nseSelectedTheme].foregroundColor};
     padding: 10px;
@@ -1842,6 +1860,7 @@ section {
 }
 
 #nseUpdateToast {
+    font-family: ${nseUIFont} !important;
     position: fixed;
     bottom: 0px;
     width: 100%;

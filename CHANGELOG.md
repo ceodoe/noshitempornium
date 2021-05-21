@@ -1,20 +1,13 @@
 # Latest changes
-## v2.5.8
+## v2.5.9
 ### Features
-- All NSE UI elements are now affected by your theme (textareas, textboxes, dropdowns, etc)
-- Added a companion script to the repository that will add arrow key navigation globally on Emp. This is linked to next to the arrow key option in Settings > Options > Interface > Extras
-- Added an update notification that will display when NSE is updated, with a link to see the new changes! Note that this won't actually show up until the next version is released, because NSE did not previously store version information in user storage before this change. The update notification is also affected by your theme.
-- Added an accompanying option to toggle the update notification (Enabled by default, disable in Settings > Options > Interface)
-
-### Bugfixes
-- NSE will now gracefully die if it can't get a reference node to base HTML insertion on. This usually happens if Emp shows an error page (like a bad gateway error)
+- Added a new built-in theme: "Dark Purple". With a nice dark gray background color lifted straight from KDE's Breeze Dark theme and purple highlights, this refreshing theme will surely give you a new outlook on filtering content on Empornium
+- Added an option to change the font used by the NSE user interface (Default is Helvetica like it's always been, change it in Settings > Options > Interface).
 
 ### Other
-- Changelog split into two parts - "Latest changes" and "Older versions" (they are linked together)
-- Properly classed GPL link so it is affected by theming
-- Reordered and reworded links on About page
-- Simplified GCD support code
-- Added some sanity checks
+- Update URLs for NSE and GlobalArrowKeyNavigation.user.js changed to their respective meta.js-files, so we don't hammer GitHub with requests to download the full script every time an update check is done
+- Now getting all version information from script metadata block
+- Simplify theme descriptions code
 
 ---
 
