@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.5.9
+// @version      2.5.10
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -240,7 +240,7 @@ if(currentPage == "Torrents") { //torrents.php is the only page we have in commo
             }
 
             .nseToggleHideButton {
-                z-index: 0 !important;
+                z-index: 1 !important;
             }
         `);
     }
@@ -651,7 +651,7 @@ htmlContent.innerHTML = `
                     <span class="nseExplanationSpan">(Get changelog info on update)</span><br /><br />
 
                     Font family: <br />
-                    <input type="text" class="nseInput" value="${nseUIFont}" id="nseUIFont" /> <span class="nseExplanationSpan">(Corresponds to the <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family" target="_blank"><b><u>CSS font-family attribute</u></b></a>)</span>
+                    <input type="text" class="nseInput" value="${nseUIFont}" id="nseUIFont" /> <span class="nseExplanationSpan">(Corresponds to the <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family" target="_blank"><b><u>CSS font-family property</u></b></a>)</span>
                     <br /><br />
 
 
@@ -1861,6 +1861,7 @@ section {
 
 #nseUpdateToast {
     font-family: ${nseUIFont} !important;
+    z-index: 9001 !important;
     position: fixed;
     bottom: 0px;
     width: 100%;
