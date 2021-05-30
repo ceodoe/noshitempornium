@@ -1,5 +1,14 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.5.10
+### Bugfixes
+- Fixed a regression that would render part of the individual filtering button (eye icon) unclickable when using GCD compatibility mode
+
+### Others
+- Reworded font selection help text
+
+<p>&nbsp;</p>
+
 ## v2.5.9
 ### Features
 - Added a new built-in theme: "Dark Purple". With a nice dark gray background color lifted straight from KDE's Breeze Dark theme and purple highlights, this refreshing theme will surely give you a new outlook on filtering content on Empornium
