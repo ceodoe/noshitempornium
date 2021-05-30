@@ -54,4 +54,14 @@ You can also do it through Tampermonkey:
 * Select the "Storage" tab, and copy-paste all that text into a file, save it to your computer or on cloud storage
 * You have now backed up your settings. To restore them, paste your settings back into the Storage text box and click "Save"
 
-# [Click here for changelog](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md)
+# Contribute
+If you enjoy NSE, consider a donation! I've spent a lot of time making this, and any sum is hugely appreciated.
+
+Bitcoin (BTC): `15YM9XCe5isbf1T8TBjku1BYmyNTj1ZyX9`<br />
+Bitcoin Cash (BCH): `qqcuude6a6q09r0a6ujvvklzm6qjrxtr5vfwkxrk34`<br />
+Ethereum (ETH): `0xD66eB1CafE88f299929b4FCedCCac3B3D9d7Bee1`<br />
+Stellar (XLM): `GD7KXIYO3FTINLBXIJCBMOXVMO4DCXNSLFJTEAIILZAODEMDQRSOT532`
+
+You can also contribute by reporting bugs, submitting feature requests, pull requests, or just generally using NSE to its fullest. Thanks for considering my software.
+
+# [Changelog](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md)
