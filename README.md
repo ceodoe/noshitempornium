@@ -15,7 +15,7 @@ Fully featured filtering solution for Empornium. Hide torrents based on tags, ti
 # Prerequisites
 - A supported browser:
   - [Firefox](https://getfirefox.com/) (Recommended!)
-  - Chromium-based browsers are also supported
+  - Chromium-based browsers are also supported (Chrome, Edge, Vivaldi, Brave, etc.)
 - The [Tampermonkey](https://tampermonkey.net/) userscript engine addon for your browser
 
 # Note on browsers and userscript engines

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.0
+// @version      2.6.1
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -798,6 +798,21 @@ htmlContent.innerHTML = `
                         <span class="nseEmoji">📋</span> <a class="nseLink" href="https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes" target="_blank">Read the changelog</a><br />
                     </b>
                 </p>
+
+                <h3>Contribute</h3>
+                <p>
+                    If you love NSE, consider a donation! I've spent a lot of time making this, and any sum is hugely appreciated. Credits on the site is also appreciated.<br /> <br />
+
+                    Bitcoin (BTC): <span class="nseMonospace"><small>15YM9XCe5isbf1T8TBjku1BYmyNTj1ZyX9</small></span><br />
+                    Bitcoin Cash (BCH): <span class="nseMonospace"><small>qqcuude6a6q09r0a6ujvvklzm6qjrxtr5vfwkxrk34</small></span><br />
+                    Ethereum (ETH): <span class="nseMonospace"><small>0xD66eB1CafE88f299929b4FCedCCac3B3D9d7Bee1</small></span><br />
+                    Stellar (XLM): <span class="nseMonospace"><small>GD7KXIYO3FTINLBXIJCBMOXVMO4DCXNSLFJTEAIILZAODEMDQRSOT532</small></span>
+                    <br /><br />
+
+                    You can also contribute by reporting bugs, submitting feature requests, pull requests, or just generally using NSE to its fullest. Thanks for using my software!
+                </p>
+
+                <p></p>
             </section>
         </section>
 
@@ -1215,6 +1230,11 @@ if(nseRightClickManagementEnabled) {
 
         // Uploaders
         let uploaderElement = torrents[i].querySelector("td.user > a");
+
+        if(currentPage == "Top 10") {
+            uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
+        }
+
         if(currentPage !== "Collage" && currentPage !== "Uploaded" && uploaderElement !== null) { 
             uploaderElement.classList.add("nseUploaderElement");
         }
