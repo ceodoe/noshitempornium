@@ -1,10 +1,7 @@
 # Latest changes
-## v2.6.1
-### Bugfixes
-- Fixed a bug where Right-Click Management wouldn't work on uploaders on TopX pages
-
-### Other
-- Added Contribute section to About page under Options
+## v2.6.2
+### Features
+- Added the ability to import your NSE lists into notification filters on the "edit notification filters" page (user.php?action=notify)
 
 ---
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.1
+// @version      2.6.2
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -11,6 +11,7 @@
 // @include      /^https?://www\.empornium\.(me|sx|is)/torrents\.php*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/collages\.php.*id=*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
+// @include      /^https?://www\.empornium\.(me|sx|is)/user\.php\?action=notify/
 // @exclude      /^https?://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
 // @exclude      /^https?://www\.empornium\.(me|sx|is)/torrents\.php.*(\?|&)(id=)/
 // @run-at       document-end
@@ -226,7 +227,9 @@ let nseEveryDayIsApril1st = GM_getValue("nseEveryDayIsApril1st", false);
 let currentPage = "Torrents";
 if(window.location.href.includes("top10.php")) {
     currentPage = "Top 10";
-} else if(window.location.href.includes("action=notify")) {
+} else if(window.location.href.includes("user.php?action=notify")) {
+    currentPage = "Notification filters";
+} else if(window.location.href.includes("torrents.php?action=notify")) {
     currentPage = "Notifications";
 } else if(window.location.href.includes("collages.php?")) {
     currentPage = "Collage";
@@ -328,6 +331,8 @@ let referenceNode = document.querySelector("div#filter_slidetoggle"); // Torrent
 
 if(currentPage == "Top 10") {
     referenceNode = document.querySelector("#content > div > form");
+} else if(currentPage == "Notification filters") {
+    referenceNode = document.querySelector("div.linkbox");
 } else if(currentPage == "Notifications") {
     referenceNode = document.querySelector("#content > div > h2");
 } else if(currentPage == "Collage") {
@@ -338,7 +343,7 @@ if(currentPage == "Top 10") {
 
 // Die if we can't get a reference node, most likely the site is borked or changed its code
 if(!referenceNode) {
-    throw "Note: NSE died on the way back to his home planet";
+    throw "Note: NSE died on the way back to his home planet (referenceNode is null)";
 }
 
 let htmlContent = document.createElement("div");
@@ -845,6 +850,51 @@ if(nseScrollToNSEEnabled) {
     document.getElementById("nseOuter").scrollIntoView();
 }
 
+// Set up elements for "Notification filters" page
+if(currentPage == "Notification filters") {
+    let textareas = document.querySelectorAll("textarea.long");
+
+    for(let i = 0; i < textareas.length; i++) {
+        let newElement = document.createElement("p");
+        newElement.classList.add("min_padding");
+        newElement.style.marginTop = "10px";
+        
+        if(textareas[i].name == "tags") {    
+            newElement.innerHTML = `
+                <span class="nseNiceButton" id="nseImportListButton${i}">
+                    <span class="nseEmoji">⤵️</span>
+                    Import your NSE tag whitelist into the above field
+                </span>
+            `;
+        } else if(textareas[i].name == "nottags") {
+            newElement.innerHTML = `
+                <span class="nseNiceButton" id="nseImportListButton${i}">
+                    <span class="nseEmoji">⤵️</span>
+                    Import your NSE tag blacklist${nseHardPassEnabled ? " and Hard Pass list" : ""} into the above field
+                </span>
+            `;
+        }
+
+        newElement.onclick = function() {
+            let coupledTextarea = this.parentNode.parentNode.querySelector("textarea.long");
+
+            if(coupledTextarea.name == "tags") {
+                coupledTextarea.innerHTML = document.getElementById("nseWhitelistTaglistArea").innerHTML;
+            } else if(coupledTextarea.name == "nottags") {
+                if(nseHardPassEnabled) {
+                    coupledTextarea.innerHTML = document.getElementById("nseHardPassTaglistArea").innerHTML + " ";
+                } else {
+                    coupledTextarea.innerHTML = "";
+                }
+
+                coupledTextarea.innerHTML = coupledTextarea.innerHTML + document.getElementById("nseBlacklistTaglistArea").innerHTML;
+            }
+        };
+
+        textareas[i].parentNode.querySelector("textarea.long + p").appendChild(newElement);
+    }
+}
+
 // +---------------------+
 // | Main filtering loop |
 // +---------------------+
@@ -852,7 +902,7 @@ let count = 0;
 let torrents = document.querySelectorAll("tr.torrent");
 
 if(torrents) {
-    if(currentPage !== "My uploaded") {
+    if(currentPage !== "My uploaded" && currentPage !== "Notification filters") { // Skip filtering where it doesn't apply
         for(let i = 0; i < torrents.length; i++) {
             let tagElement = torrents[i].querySelector("td > div.tags");
     
@@ -1209,7 +1259,7 @@ if(torrents) {
 // +-----------------------------------------+
 
 // Add classes for Right-Click Management if enabled
-if(nseRightClickManagementEnabled) {
+if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     for(let i = 0; i < torrents.length; i++) {
         // Tags
         let tagList = torrents[i].querySelectorAll("td > div.tags > a");
@@ -1242,7 +1292,7 @@ if(nseRightClickManagementEnabled) {
 }
 
 // Remove categories if enabled
-if(nseHideCategoryIconsEnabled) {
+if(nseHideCategoryIconsEnabled && currentPage !== "Notification filters") {
     let selector = ".cats_col";
     if(currentPage == "Collage" || currentPage == "Uploaded") {
         selector = "#torrent_table > tbody > tr > td:nth-child(1)";
@@ -1258,7 +1308,7 @@ if(nseHideCategoryIconsEnabled) {
 }
 
 // Remove Hard Pass results if Black Hole is enabled
-if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploaded") {
+if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploaded" && currentPage !== "Notification filters") {
     let elementsToRemove = document.querySelectorAll(".nseHardPassRemove");
     if(elementsToRemove) {
         for(let i = 0; i < elementsToRemove.length; i++) {
@@ -1269,7 +1319,7 @@ if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploade
     }
 }
 
-if(nseArrowNavigationEnabled) {
+if(nseArrowNavigationEnabled && currentPage !== "Notification filters") {
     document.onkeydown = function(event) {
         if(event.target.nodeName !== "TEXTAREA" && event.target.nodeName !== "INPUT") {
             if (event.code == "ArrowLeft") {
@@ -1303,17 +1353,20 @@ if(nseArrowNavigationEnabled) {
 
 let headerNode = document.getElementById("nseHeaderText");
 
-if(currentPage == "My uploaded") {
-    headerNode.innerHTML = "Filtering is disabled on your own uploads page";
+if(currentPage == "My uploaded" || currentPage == "Notification filters") {
+    headerNode.innerHTML = "Filtering is disabled on this page";
+    headerNode.style.cursor = "auto";
 } else {
     adjustHiddenHeaderCount(count);    
 }
 
-headerNode.onclick = function() {
-    if(headerNode.innerHTML.match(/([0-9]+)/) !== null && currentPage !== "My uploaded") {
-        toggleTorrents();
-    }
-};
+if(currentPage !== "Notification filters") {
+    headerNode.onclick = function() {
+        if(headerNode.innerHTML.match(/([0-9]+)/) !== null && currentPage !== "My uploaded") {
+            toggleTorrents();
+        }
+    };
+}
 
 document.getElementById("nseToggleOptionsNode").onclick = function() {
     document.getElementById("nseMainDiv").classList.toggle("hidden");
@@ -1378,7 +1431,7 @@ for(let i = 0; i < explanationTogglers.length; i++) {
     };
 }
 
-if(nseRightClickManagementEnabled) {
+if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     let allTagElements = document.querySelectorAll(".nseTagElement");
     for(let i = 0; i < allTagElements.length; i++) {
         allTagElements[i].addEventListener('contextmenu', function(event) {

@@ -1,5 +1,14 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.1
+### Bugfixes
+- Fixed a bug where Right-Click Management wouldn't work on uploaders on TopX pages
+
+### Other
+- Added Contribute section to About page under Options
+
+<p>&nbsp;</p>
+
 ## v2.6
 ### Features
 - Added an option to change the filter list (textarea) font (Options > Settings > Interface)
