@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.3
+// @version      2.6.4
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -337,7 +337,7 @@ if(currentPage == "Top 10") {
 } else if(currentPage == "Notifications") {
     referenceNode = document.querySelector("#content > div > h2");
 } else if(currentPage == "Collage") {
-    referenceNode = document.querySelector("div.clear:nth-child(6)");
+    referenceNode = document.querySelector("div.thin > div.clear:nth-child(6)");
 } else if(currentPage == "Uploaded" || currentPage == "My uploaded") {
     referenceNode = document.querySelector(".submit");
 }

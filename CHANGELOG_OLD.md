@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.3
+### Bugfixes
+- Fixed a bug where NSE would not load on notifications pages past the first page
+
+<p>&nbsp;</p>
+
 ## v2.6.2
 ### Features
 - Added the ability to import your NSE lists into notification filters on the "edit notification filters" page (user.php?action=notify)

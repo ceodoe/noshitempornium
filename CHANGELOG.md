@@ -1,7 +1,7 @@
 # Latest changes
-## v2.6.3
+## v2.6.4
 ### Bugfixes
-- Fixed a bug where NSE would not load on notifications pages past the first page
+- Fixed a bug where NSE would appear in the wrong place on collage pages if torrent covers are enabled
 
 ---
 
