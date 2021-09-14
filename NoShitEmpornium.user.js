@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.4
+// @version      2.6.5
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -13,7 +13,6 @@
 // @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/user\.php\?action=notify/
 // @exclude      /^https?://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
-// @exclude      /^https?://www\.empornium\.(me|sx|is)/torrents\.php.*(\?|&)(id=)/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -129,6 +128,9 @@ let nseUpdateToastsEnabled = GM_getValue("nseUpdateToastsEnabled", true);
 let nseUIFont = GM_getValue("nseUIFont", "Helvetica");
 let nseTextAreaFont = GM_getValue("nseTextAreaFont", "Monospace");
 
+// Custom timeout
+let nseTimeout = GM_getValue("nseTimeout", 1500);
+
 //   Theme
 let nseSelectedTheme = GM_getValue("nseSelectedTheme", "nseThemeDefault");
 let nseCustomTheme = GM_getValue("nseCustomTheme", {
@@ -229,9 +231,10 @@ if(window.location.href.includes("top10.php")) {
     currentPage = "Top 10";
 } else if(window.location.href.includes("user.php?action=notify")) {
     currentPage = "Notification filters";
-//} else if(window.location.href.includes("torrents.php?action=notify")) {
 } else if(window.location.href.match(/torrents\.php.*(\?|&)(action=notify)/)) {
     currentPage = "Notifications";
+} else if(window.location.href.match(/torrents\.php.*(\?|&)(id=)/)) {
+    currentPage = "Torrent details";
 } else if(window.location.href.includes("collages.php?")) {
     currentPage = "Collage";
 } else if(window.location.href.includes("type=uploaded")) {
@@ -246,9 +249,12 @@ if(window.location.href.includes("top10.php")) {
     }
 }
 
+// Define which of our pages where filtering doesn't apply, but other functionality should work
+let nseUnfilteredPages = ["My uploaded", "Notification filters", "Torrent details"];
+
 // Reenable torrent icon box and hide comments if GCD is running, check for its unique elements a.comment
-window.setTimeout(function() {
-    if(currentPage == "Torrents") { //torrents.php is the only page we have in common
+if(currentPage == "Torrents") { //torrents.php is the only page we have in common
+    window.setTimeout(function() {
         if(document.querySelector("a.comment")) {
             GM_addStyle(`
                 span.torrent_icon_container {
@@ -267,8 +273,8 @@ window.setTimeout(function() {
                 
             }
         }
-    }
-}, 1500);
+    }, nseTimeout);
+}
 
 let nseEnableApril1stOption = false;
 if(nseBlacklistTags.includes("hehehehehe")) {
@@ -336,6 +342,8 @@ if(currentPage == "Top 10") {
     referenceNode = document.querySelector("div.linkbox");
 } else if(currentPage == "Notifications") {
     referenceNode = document.querySelector("#content > div > h2");
+} else if(currentPage == "Torrent details") {
+    referenceNode = document.querySelector(".linkbox");
 } else if(currentPage == "Collage") {
     referenceNode = document.querySelector("div.thin > div.clear:nth-child(6)");
 } else if(currentPage == "Uploaded" || currentPage == "My uploaded") {
@@ -680,6 +688,10 @@ htmlContent.innerHTML = `
                     <input type="text" class="nseInput" value="${nseTextAreaFont}" id="nseTextAreaFont" /> <span class="nseExplanationSpan">(Font for black/whitelists textareas)</span>
                     <br /><br />
 
+                    Timeout for timed functions (milliseconds): <br />
+                    <input type="text" class="nseInput" style="width: 50px;" value="${nseTimeout}" id="nseTimeout" /> <span class="nseExplanationSpan">(Used for GCD support and taglists on torrent detail pages)</span>
+                    <br /><br />
+
 
                     Theme:<br />
                     <select name="nseThemeDropdown" id="nseThemeDropdown" class="nseInput">
@@ -903,7 +915,7 @@ let count = 0;
 let torrents = document.querySelectorAll("tr.torrent");
 
 if(torrents) {
-    if(currentPage !== "My uploaded" && currentPage !== "Notification filters") { // Skip filtering where it doesn't apply
+    if(!nseUnfilteredPages.includes(currentPage)) { // Skip filtering where it doesn't apply
         for(let i = 0; i < torrents.length; i++) {
             let tagElement = torrents[i].querySelector("td > div.tags");
     
@@ -1261,39 +1273,61 @@ if(torrents) {
 
 // Add classes for Right-Click Management if enabled
 if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
-    for(let i = 0; i < torrents.length; i++) {
-        // Tags
-        let tagList = torrents[i].querySelectorAll("td > div.tags > a");
-        if(tagList !== null && tagList !== undefined) {
-            for(let j = 0; j < tagList.length; j++) {
-                tagList[j].classList.add("nseTagElement");    
+    if(currentPage == "Torrent details") {
+        window.setTimeout(function() { // Tags are loaded by js by the site, so set a 1.5s timeout for that to happen
+            let tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");        
+            if(tagList !== null && tagList !== undefined) {
+                for(let i = 0; i < tagList.length; i++) {
+                    tagList[i].classList.add("nseTagElement");
+
+                    // Color by status while we're already iterating through this list
+                    if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
+                        tagList[i].classList.add("nseHiddenTag");
+                    } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
+                        tagList[i].classList.add("nseHardPassTag");
+                    } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
+                        tagList[i].classList.add("nseWhitelistedTag");
+                    }
+                }
+            }
+        }, nseTimeout);
+    } else {
+        for(let i = 0; i < torrents.length; i++) {
+            // Tags
+            let tagList = torrents[i].querySelectorAll("td > div.tags > a");
+            if(tagList !== null && tagList !== undefined) {
+                for(let j = 0; j < tagList.length; j++) {
+                    tagList[j].classList.add("nseTagElement");    
+                }
+            }
+    
+            // Titles
+            let titleElement;
+            if(currentPage == "Collage") {
+                titleElement = torrents[i].querySelector("td > strong > a");
+            } else {
+                titleElement = torrents[i].querySelector("td > a");
+            }
+            titleElement.classList.add("nseTitleElement");
+
+            // Uploaders
+            let uploaderElement = torrents[i].querySelector("td.user > a");
+    
+            if(currentPage == "Top 10") {
+                uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
+            }
+    
+            if(currentPage !== "Collage" && currentPage !== "Uploaded" && uploaderElement !== null) { 
+                uploaderElement.classList.add("nseUploaderElement");
             }
         }
-
-        // Titles
-        let titleElement;
-        if(currentPage == "Collage") {
-            titleElement = torrents[i].querySelector("td > strong > a");
-        } else {
-            titleElement = torrents[i].querySelector("td > a");
-        }
-        titleElement.classList.add("nseTitleElement");
-
-        // Uploaders
-        let uploaderElement = torrents[i].querySelector("td.user > a");
-
-        if(currentPage == "Top 10") {
-            uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
-        }
-
-        if(currentPage !== "Collage" && currentPage !== "Uploaded" && uploaderElement !== null) { 
-            uploaderElement.classList.add("nseUploaderElement");
-        }
     }
+
+    
 }
 
 // Remove categories if enabled
-if(nseHideCategoryIconsEnabled && currentPage !== "Notification filters") {
+if(nseHideCategoryIconsEnabled && currentPage !== "Notification filters" && currentPage !== "Torrent details") {
     let selector = ".cats_col";
     if(currentPage == "Collage" || currentPage == "Uploaded") {
         selector = "#torrent_table > tbody > tr > td:nth-child(1)";
@@ -1309,7 +1343,7 @@ if(nseHideCategoryIconsEnabled && currentPage !== "Notification filters") {
 }
 
 // Remove Hard Pass results if Black Hole is enabled
-if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploaded" && currentPage !== "Notification filters") {
+if(nseHardPassEnabled && nseRemoveHardPassResults && !nseUnfilteredPages.includes(currentPage)) {
     let elementsToRemove = document.querySelectorAll(".nseHardPassRemove");
     if(elementsToRemove) {
         for(let i = 0; i < elementsToRemove.length; i++) {
@@ -1320,7 +1354,7 @@ if(nseHardPassEnabled && nseRemoveHardPassResults && currentPage !== "My uploade
     }
 }
 
-if(nseArrowNavigationEnabled && currentPage !== "Notification filters") {
+if(nseArrowNavigationEnabled && currentPage !== "Notification filters" && currentPage !== "Torrent details") {
     document.onkeydown = function(event) {
         if(event.target.nodeName !== "TEXTAREA" && event.target.nodeName !== "INPUT") {
             if (event.code == "ArrowLeft") {
@@ -1354,16 +1388,14 @@ if(nseArrowNavigationEnabled && currentPage !== "Notification filters") {
 
 let headerNode = document.getElementById("nseHeaderText");
 
-if(currentPage == "My uploaded" || currentPage == "Notification filters") {
+if(nseUnfilteredPages.includes(currentPage)) {
     headerNode.innerHTML = "Filtering is disabled on this page";
     headerNode.style.cursor = "auto";
 } else {
-    adjustHiddenHeaderCount(count);    
-}
+    adjustHiddenHeaderCount(count);
 
-if(currentPage !== "Notification filters") {
     headerNode.onclick = function() {
-        if(headerNode.innerHTML.match(/([0-9]+)/) !== null && currentPage !== "My uploaded") {
+        if(headerNode.innerHTML.match(/([0-9]+)/) !== null) {
             toggleTorrents();
         }
     };
@@ -1433,12 +1465,24 @@ for(let i = 0; i < explanationTogglers.length; i++) {
 }
 
 if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
-    let allTagElements = document.querySelectorAll(".nseTagElement");
-    for(let i = 0; i < allTagElements.length; i++) {
-        allTagElements[i].addEventListener('contextmenu', function(event) {
-            event.preventDefault();
-            showRCMBox("tag", this.innerHTML.trim(), event.pageX, event.pageY);
-        }, false);
+    if(currentPage == "Torrent details") {
+        window.setTimeout(function() {
+            let allTagElements = document.querySelectorAll(".nseTagElement");
+            for(let i = 0; i < allTagElements.length; i++) {
+                allTagElements[i].addEventListener('contextmenu', function(event) {
+                    event.preventDefault();
+                    showRCMBox("tag", this.innerHTML.trim(), event.pageX, event.pageY);
+                }, false);
+            }
+        }, nseTimeout);
+    } else {
+        let allTagElements = document.querySelectorAll(".nseTagElement");
+        for(let i = 0; i < allTagElements.length; i++) {
+            allTagElements[i].addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+                showRCMBox("tag", this.innerHTML.trim(), event.pageX, event.pageY);
+            }, false);
+        }
     }
 
     let allUploaderElements = document.querySelectorAll(".nseUploaderElement");
@@ -1923,7 +1967,7 @@ function saveData() {
 
 
     if(nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value == "nseThemeCustom") {
-        // save custom colors
+        // Save custom colors
         nseCustomTheme = {
             backgroundColor: document.getElementById("nseCustomThemeBgCol").value,
             backgroundHighlightColor: document.getElementById("nseCustomThemeBgHighCol").value,
@@ -1938,6 +1982,7 @@ function saveData() {
 
     GM_setValue("nseUIFont", document.getElementById("nseUIFont").value);
     GM_setValue("nseTextAreaFont", document.getElementById("nseTextAreaFont").value);
+    GM_setValue("nseTimeout", Number(document.getElementById("nseTimeout").value));
 
     // We need to escape backslashes in the custom CSS as it will be included in a back-ticked CSS block
     let css = document.getElementById("nseCustomCSSArea").value;
