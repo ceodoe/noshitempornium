@@ -1,12 +1,15 @@
 # Latest changes
-## v2.6.5
+## v2.6.6
 ### Features
-- NSE now runs on individual torrent details pages. It does not filter out anything on these pages, but all other applicable features work, like Right-Click Management on the taglist, and coloring of tags based on your lists. This is handy for instance for blocking tags from within a torrent details page
-- Added an option to control the timeout for GCD support and loading of taglists on torrent detail pages. This is useful if these functions fail for you due to a slower connection/machine (Default is 1500ms, Options > Settings > Interface > Timeout for timed functions)
+- NSE will now remove duplicate entries from your filter lists when you save your settings
+
+### Bugfixes
+- NSE now correctly converts all your filter lists to lower case when they are saved
 
 ### Other
-- Don't set a timeout for GCD compatibility if we're not on the Torrents page
-- Remove leftover comment
+- Upon saving, the new state of your filter lists are immediately reflected in the textareas representing those lists
+- Your custom theme changes will now be saved even if you switch back to a predefined theme before saving your settings
+- Minor code efficiency changes (L.O.O.P.S!)
 
 ---
 

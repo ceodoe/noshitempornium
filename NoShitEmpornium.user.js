@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.5
+// @version      2.6.6
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -1924,61 +1924,78 @@ function resetSettings() {
 }
 
 function saveData() {
-    GM_setValue("nseTaglist", document.getElementById("nseBlacklistTaglistArea").value); // Legacy name for BC
-    GM_setValue("nseHardPassTaglist", document.getElementById("nseHardPassTaglistArea").value);
-    GM_setValue("nseWhitelist", document.getElementById("nseWhitelistTaglistArea").value); // ^
+    let listsToSave = {
+        nseTaglist: "nseBlacklistTaglistArea",
+        nseHardPassTaglist: "nseHardPassTaglistArea",
+        nseWhitelist: "nseWhitelistTaglistArea",
+        nseBlacklistTitles: "nseBlacklistTitleListArea",
+        nseWhitelistTitles: "nseWhitelistTitleListArea",
+        nseUploaders: "nseBlacklistUploadersArea",
+        nseWhitelistUploaders: "nseWhitelistUploadersArea"
+    };
 
-    GM_setValue("nseBlacklistTitles", document.getElementById("nseBlacklistTitleListArea").value);
-    GM_setValue("nseWhitelistTitles", document.getElementById("nseWhitelistTitleListArea").value);
+    // Convert to lower case, trim whitespace, remove duplicates and save filter lists
+    for(const setting in listsToSave) {
+        let strList = document.getElementById(listsToSave[setting]).value.trim().toLowerCase();
+        let delimiter = " ";
+        
+        if(listsToSave[setting].includes("TitleList")) { 
+            delimiter = ";";
+        }
 
-    GM_setValue("nseUploaders", document.getElementById("nseBlacklistUploadersArea").value); // ^
-    GM_setValue("nseWhitelistUploaders", document.getElementById("nseWhitelistUploadersArea").value);
+        let arrList = strList.split(delimiter);
+        arrList = [...new Set(arrList)];
+        strList = arrList.join(delimiter);
+        GM_setValue(setting, strList);
 
-    GM_setValue("nseObliviousModeEnabled", document.getElementById("nseCheckObliviousMode").checked);
-    GM_setValue("nseRussianRouletteEnabled", document.getElementById("nseCheckRussianRouletteMode").checked);
-    GM_setValue("nseHideAnonUploadsEnabled", document.getElementById("nseCheckHideAnonUploads").checked);
-    GM_setValue("nseHideWarnedEnabled", document.getElementById("nseCheckHideWarned").checked);
-    GM_setValue("nseHideReportedEnabled", document.getElementById("nseCheckHideReported").checked);
-    GM_setValue("nseHideSnatchedEnabled", document.getElementById("nseCheckHideSnatched").checked);
-    GM_setValue("nseHideSeedingEnabled", document.getElementById("nseCheckHideSeeding").checked);
-    GM_setValue("nseHideLeechingEnabled", document.getElementById("nseCheckHideLeeching").checked);
-    GM_setValue("nseHideGrabbedEnabled", document.getElementById("nseCheckHideGrabbed").checked);
-    GM_setValue("nseBypassWhitelistsEnabled", document.getElementById("nseCheckBypassWhitelists").checked);
-    GM_setValue("nseIndividualUploadHidingEnabled", document.getElementById("nseCheckIndividualHide").checked);
-    GM_setValue("nseRightClickManagementEnabled", document.getElementById("nseCheckRightClickManagementEnabled").checked);
-    GM_setValue("nseEmojiEnabled", document.getElementById("nseCheckEmojiEnabled").checked);
+        // Reflect updated list in textarea
+        document.getElementById(listsToSave[setting]).value = strList;
+    }
+
+    let checkboxes = {
+        nseObliviousModeEnabled: "nseCheckObliviousMode",
+        nseRussianRouletteEnabled: "nseCheckRussianRouletteMode",
+        nseHideAnonUploadsEnabled: "nseCheckHideAnonUploads",
+        nseHideWarnedEnabled: "nseCheckHideWarned",
+        nseHideReportedEnabled: "nseCheckHideReported",
+        nseHideSnatchedEnabled: "nseCheckHideSnatched",
+        nseHideSeedingEnabled: "nseCheckHideSeeding",
+        nseHideLeechingEnabled: "nseCheckHideLeeching",
+        nseHideGrabbedEnabled: "nseCheckHideGrabbed",
+        nseBypassWhitelistsEnabled: "nseCheckBypassWhitelists",
+        nseIndividualUploadHidingEnabled: "nseCheckIndividualHide",
+        nseRightClickManagementEnabled: "nseCheckRightClickManagementEnabled",
+        nseEmojiEnabled: "nseCheckEmojiEnabled",
+        nseScrollToNSEEnabled: "nseCheckScrollToNSEEnabled",
+        nseHardPassEnabled: "nseCheckHardPassEnabled",
+        nseRemoveHardPassResults: "nseCheckRemoveHardPassResults",
+        nseHideUnseededEnabled: "nseCheckHideUnseeded",
+        nseHideCategoryIconsEnabled: "nseCheckHideCategoryIcons",
+        nseArrowNavigationEnabled: "nseCheckArrowNavigation",
+        nseUpdateToastsEnabled: "nseCheckUpdateToasts",
+        nseCustomCSSEnabled: "nseCheckCustomCSS"
+    };
+
+    for(const setting in checkboxes) {
+        GM_setValue(setting, document.getElementById(checkboxes[setting]).checked);
+    }
 
     if(nseEnableApril1stOption) {
         GM_setValue("nseEveryDayIsApril1st", document.getElementById("nseCheckApril1stAllYear").checked);
     }
-    
-    GM_setValue("nseScrollToNSEEnabled", document.getElementById("nseCheckScrollToNSEEnabled").checked);
-    
-    GM_setValue("nseHardPassEnabled", document.getElementById("nseCheckHardPassEnabled").checked);
-    GM_setValue("nseRemoveHardPassResults", document.getElementById("nseCheckRemoveHardPassResults").checked);
-    GM_setValue("nseHideUnseededEnabled", document.getElementById("nseCheckHideUnseeded").checked);
-    GM_setValue("nseHideCategoryIconsEnabled", document.getElementById("nseCheckHideCategoryIcons").checked);
-    GM_setValue("nseArrowNavigationEnabled", document.getElementById("nseCheckArrowNavigation").checked);
-    
-    GM_setValue("nseUpdateToastsEnabled", document.getElementById("nseCheckUpdateToasts").checked);
 
     let nseThemeDropdown = document.getElementById("nseThemeDropdown");
     GM_setValue("nseSelectedTheme", nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value);
 
-
-    if(nseThemeDropdown.options[nseThemeDropdown.selectedIndex].value == "nseThemeCustom") {
-        // Save custom colors
-        nseCustomTheme = {
-            backgroundColor: document.getElementById("nseCustomThemeBgCol").value,
-            backgroundHighlightColor: document.getElementById("nseCustomThemeBgHighCol").value,
-            foregroundColor: document.getElementById("nseCustomThemeForeCol").value,
-            accentColor: document.getElementById("nseCustomThemeAccentCol").value,
-            highlightColor: document.getElementById("nseCustomThemeHighCol").value,
-            hiddenBackgroundColor: document.getElementById("nseCustomThemeHiddenBgCol").value
-        };
-
-        GM_setValue("nseCustomTheme", nseCustomTheme);
-    }
+    nseCustomTheme = {
+        backgroundColor: document.getElementById("nseCustomThemeBgCol").value,
+        backgroundHighlightColor: document.getElementById("nseCustomThemeBgHighCol").value,
+        foregroundColor: document.getElementById("nseCustomThemeForeCol").value,
+        accentColor: document.getElementById("nseCustomThemeAccentCol").value,
+        highlightColor: document.getElementById("nseCustomThemeHighCol").value,
+        hiddenBackgroundColor: document.getElementById("nseCustomThemeHiddenBgCol").value
+    };
+    GM_setValue("nseCustomTheme", nseCustomTheme);
 
     GM_setValue("nseUIFont", document.getElementById("nseUIFont").value);
     GM_setValue("nseTextAreaFont", document.getElementById("nseTextAreaFont").value);
@@ -1988,7 +2005,6 @@ function saveData() {
     let css = document.getElementById("nseCustomCSSArea").value;
     css = css.replace(/\\/gi, "\\\\");
     GM_setValue("nseCustomCSS", css);
-    GM_setValue("nseCustomCSSEnabled", document.getElementById("nseCheckCustomCSS").checked);
 
     let time = new Date().toLocaleTimeString();
     document.getElementById("nseSaveDiv").innerHTML = "Saved at " + time + "!";
