@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.6
+// @version      2.6.7
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -280,6 +280,18 @@ let nseEnableApril1stOption = false;
 if(nseBlacklistTags.includes("hehehehehe")) {
     nseEnableApril1stOption = true;
 }
+
+// Get storage size
+window.setTimeout(function() {
+    let bytesUsed = exportSettings(true);
+
+    if(bytesUsed < 1024) {
+        document.getElementById("nseDataUsage").innerHTML = bytesUsed + " bytes";
+    } else {
+        document.getElementById("nseDataUsage").innerHTML = Math.round((bytesUsed / 1024) * 100) / 100 + " KiB";
+    }
+}, nseTimeout);
+
 
 // Check if we've just updated
 if(nseUpdateToastsEnabled) {
@@ -773,7 +785,10 @@ htmlContent.innerHTML = `
             <section id="nseSettingsContent3">
                 <h3>Data management</h3>
                 <p>
-                    <span class="nseExplanationSpan">Use these functions to import, export or reset all your NSE lists and settings.</span>
+                    <span class="nseExplanationSpan">Use these functions to import, export or reset all your NSE lists and settings.</span><br /><br />
+
+                    NSE is currently using <span id="nseDataUsage"></span> of data in your LocalStorage.
+
                     <div class="nseNiceBox"><span class="nseEmoji">⤵️</span> Import NSE data<br />
                         <input type="file" accept=".json,text/plain" id="nseImportFilePicker" class="nseInput">
                     </div><br />
@@ -1033,6 +1048,52 @@ if(torrents) {
                         }
                     };
 
+                    // Clear list status on right-click
+                    actualIcon.addEventListener('contextmenu', function(event) {
+                        event.preventDefault();
+
+                        let torrentParent = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+        
+                        if(torrentParent) {
+                            // Remove from both lists
+                            let wasRemovedFromWL = false;
+                            let wasRemovedFromBL = false;
+                            
+                            let currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
+                            if(currindex > -1) {
+                                nseIndividualUploadHidingWhitelist.splice(currindex, 1);
+                                wasRemovedFromWL = true;
+                            }
+
+                            currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
+                            if(currindex > -1) {
+                                nseIndividualUploadHidingBlacklist.splice(currindex, 1);
+                                wasRemovedFromBL = true;
+                            }
+        
+                            if(wasRemovedFromWL || wasRemovedFromBL) {
+                                if(!wasRemovedFromWL) {
+                                    torrentParent.classList.toggle("hidden");
+                                }
+
+                                if(wasRemovedFromBL) {
+                                    adjustHiddenHeaderCount(-1);
+                                }
+
+                                torrentParent.setAttribute("isNSEHidden", "0");
+                                torrentParent.style.backgroundColor = null;
+
+                                this.classList.remove("nseIndividuallyWhitelisted");
+                                this.classList.remove("nseIndividuallyBlacklisted");
+                                this.classList.add("nseIndividuallyUntouched");
+    
+                                // Save lists immediately after manipulating them
+                                GM_setValue("nseIndividualUploadHidingBlacklist", nseIndividualUploadHidingBlacklist);
+                                GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
+                            }
+                        }
+                    }, false);
+
                     torrentIconContainer.appendChild(nseToggleHideElement);
 
                     // Check if torrent is black/whitelisted this way
@@ -1263,7 +1324,111 @@ if(torrents) {
                 }
             }
         }
-    }        
+    } else if(currentPage == "Torrent details") {
+        // Add individual filter icon to torrent details page, a lot of duplicated code, will function-ize later
+        if(nseIndividualUploadHidingEnabled) {
+            let torrentIconContainer = document.querySelector("td > span.torrent_icon_container");
+
+            if(torrentIconContainer) {
+                let nseToggleHideElement = document.createElement("span");
+                nseToggleHideElement.className = "icon";
+                nseToggleHideElement.innerHTML = `
+                <div class="icon_container">
+                    <div class="icon_stack">
+                        <i class="font_icon torrent_icons clickable">
+                            <img src="data:image/png;base64,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" />
+                        </i>
+                    </div>
+                </div>
+                `;
+    
+                nseToggleHideElement.title = "Filter this torrent with NSE";
+                nseToggleHideElement.classList.add("nseToggleHideButton");
+    
+                let actualIcon = nseToggleHideElement.querySelector("div > div > i");
+                let torrentID = window.location.href.match(/id=([0-9]+)/)[1];
+                actualIcon.torrentID = torrentID;
+                actualIcon.onclick = function() {   
+                    if(nseIndividualUploadHidingBlacklist.includes(torrentID)) {
+                        // Blacklisted, move to whitelist and unhide
+                        let currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
+                        if(currindex > -1) {
+                            nseIndividualUploadHidingBlacklist.splice(currindex, 1);
+                        }
+    
+                        currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
+                        if(currindex == -1) { // Only add if not already whitelisted to avoid duplicates
+                            nseIndividualUploadHidingWhitelist.push(this.torrentID);
+                        }
+    
+                        this.classList.add("nseIndividuallyWhitelisted");
+                        this.classList.remove("nseIndividuallyBlacklisted");
+                        this.classList.remove("nseIndividuallyUntouched");
+                    } else {
+                        // Not hidden or is whitelisted, move to blacklist and hide
+                        let currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
+                        if(currindex > -1) {
+                            nseIndividualUploadHidingWhitelist.splice(currindex, 1);
+                        }
+    
+                        currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
+                        if(currindex == -1) { // Only add if not already blacklisted to avoid duplicates
+                            nseIndividualUploadHidingBlacklist.push(this.torrentID);
+                        }
+    
+                        this.classList.remove("nseIndividuallyWhitelisted");
+                        this.classList.remove("nseIndividuallyUntouched");
+                        this.classList.add("nseIndividuallyBlacklisted");
+                    }
+    
+                    //Save lists immediately after manipulating them
+                    GM_setValue("nseIndividualUploadHidingBlacklist", nseIndividualUploadHidingBlacklist);
+                    GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
+                };
+
+                // Clear list status on right-click
+                actualIcon.addEventListener('contextmenu', function(event) {
+                    event.preventDefault();
+
+                    // Remove from both lists
+                    let currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
+                    if(currindex > -1) {
+                        nseIndividualUploadHidingWhitelist.splice(currindex, 1);
+                    }
+
+                    currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
+                    if(currindex > -1) {
+                        nseIndividualUploadHidingBlacklist.splice(currindex, 1);
+                    }
+
+                    this.classList.remove("nseIndividuallyWhitelisted");
+                    this.classList.remove("nseIndividuallyBlacklisted");
+                    this.classList.add("nseIndividuallyUntouched");
+
+                    //Save lists immediately after manipulating them
+                    GM_setValue("nseIndividualUploadHidingBlacklist", nseIndividualUploadHidingBlacklist);
+                    GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
+                }, false);
+
+                torrentIconContainer.appendChild(nseToggleHideElement);
+
+                // Check if torrent is black/whitelisted this way
+                let currentBLIndex = nseIndividualUploadHidingBlacklist.indexOf(torrentID);
+                if(currentBLIndex > -1) {
+                    actualIcon.classList.add("nseIndividuallyBlacklisted");
+                }
+    
+                let currentWLIndex = nseIndividualUploadHidingWhitelist.indexOf(torrentID);
+                if(currentWLIndex > -1) {
+                    actualIcon.classList.add("nseIndividuallyWhitelisted");
+                }
+
+                if(currentBLIndex == -1 && currentWLIndex == -1) {
+                    actualIcon.classList.add("nseIndividuallyUntouched");
+                }
+            }
+        }
+    }
 }
 
 
@@ -1879,7 +2044,7 @@ function downloadFile(filename, text) {
     document.body.removeChild(element);
 }
 
-function exportSettings() {
+function exportSettings(getSize = false) {
     saveData();
 
     let settingsNames = GM_listValues();
@@ -1892,7 +2057,11 @@ function exportSettings() {
     let jsonOutput = JSON.stringify(settings);
     let dateString = Date.now();
 
-    downloadFile(`nseExport-${dateString}.json`, jsonOutput);
+    if(getSize) {
+        return String(jsonOutput.length);
+    } else {
+        downloadFile(`nseExport-${dateString}.json`, jsonOutput);
+    }
 }
 
 function importSettings(event) {
@@ -2238,7 +2407,7 @@ a.nseLink, a.nseLink:visited {
     margin-top: 20px;
 }
 
-#nseSaveDiv {
+#nseSaveDiv, #nseDataUsage {
     font-weight: bold;
 }
 

@@ -1,5 +1,19 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.6
+### Features
+- NSE will now remove duplicate entries from your filter lists when you save your settings
+
+### Bugfixes
+- NSE now correctly converts all your filter lists to lower case when they are saved
+
+### Other
+- Upon saving, the new state of your filter lists are immediately reflected in the textareas representing those lists
+- Your custom theme changes will now be saved even if you switch back to a predefined theme before saving your settings
+- Minor code efficiency changes (L.O.O.P.S!)
+
+<p>&nbsp;</p>
+
 ## v2.6.5
 ### Features
 - NSE now runs on individual torrent details pages. It does not filter out anything on these pages, but all other applicable features work, like Right-Click Management on the taglist, and coloring of tags based on your lists. This is handy for instance for blocking tags from within a torrent details page
