@@ -1643,7 +1643,14 @@ if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
     
         if(torrentLinks) {
             for(let i = 0; i < torrentLinks.length; i++) {
-                let hiddenStatus = torrentLinks[i].parentNode.parentNode.getAttribute("isNSEHidden");
+                let hiddenStatus;
+
+                if(currentPage == "Collage") {
+                    hiddenStatus = torrentLinks[i].parentNode.parentNode.parentNode.getAttribute("isNSEHidden");
+                } else {
+                    hiddenStatus = torrentLinks[i].parentNode.parentNode.getAttribute("isNSEHidden");
+                }
+
                 if(hiddenStatus == 0 || hiddenStatus == "" || hiddenStatus == null) {
                     window.open(torrentLinks[i].href, "_blank");
                 }
