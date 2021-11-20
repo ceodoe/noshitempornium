@@ -6,6 +6,9 @@
 ### Bugfixes
 - Fixed a bug where settings wouldn't be properly saved if you tried to individually filter several torrents from several open tabs at the same time (each page had its own local cached lists that weren't updated before taking action on a torrent)
 
+### Other
+- Greatly expanded readme with additional information and troubleshooting steps
+
 ---
 
 [(Older versions)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG_OLD.md#older-versions)
