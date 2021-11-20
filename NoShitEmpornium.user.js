@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.7
+// @version      2.6.8
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -123,6 +123,9 @@ let nseEmojiEnabled = GM_getValue("nseEmojiEnabled", true);
 
 //   Update toasts
 let nseUpdateToastsEnabled = GM_getValue("nseUpdateToastsEnabled", true);
+
+//   Open all button
+let nseOpenAllButtonEnabled = GM_getValue("nseOpenAllButtonEnabled", true);
 
 //   Fonts
 let nseUIFont = GM_getValue("nseUIFont", "Helvetica");
@@ -690,7 +693,14 @@ htmlContent.innerHTML = `
                     <label for="nseCheckUpdateToasts" class="nseSettingsCheckbox">
                         <span class="nseEmoji">❗</span> Notify me when NSE is updated
                     </label>
-                    <span class="nseExplanationSpan">(Get changelog info on update)</span><br /><br />
+                    <span class="nseExplanationSpan">(Get changelog info on update)</span><br />
+                    
+                    <input type="checkbox" id="nseCheckOpenAllButton"${nseOpenAllButtonEnabled ? ' checked' : ''} />
+                    <label for="nseCheckOpenAllButton" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">📂</span> Enable the "Open all unfiltered results" button
+                    </label><br />
+                    <span class="nseExplanationSpan nseESOffset">(Appears under the NSE options area. If your browser tells you it blocked Emp</span><br />
+                    <span class="nseExplanationSpan nseESOffset">from opening popups, click the Preferences button and allow popups for Emp)</span><br /><br />
 
                     User interface font family: <br />
                     <input type="text" class="nseInput" value="${nseUIFont}" id="nseUIFont" /> <span class="nseExplanationSpan">(Corresponds to the <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family" target="_blank"><b><u>CSS font-family property</u></b></a>)</span>
@@ -861,6 +871,15 @@ htmlContent.innerHTML = `
     </div>
 </div>
 
+${nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage) ? `
+    <div class="nseTopAiryDiv nseBtmAiryDiv nseCenterDiv">
+        <span class="nseNiceButton" id="nseOpenAllButton">
+            <span class="nseEmoji">📂</span>
+            Open all unfiltered results
+        </span>
+    </div>
+` : ''}
+
 <div id="nseRCMBox" class="hidden">
     <div id="nseRCMClose">${nseEmojiEnabled ? '❌' : '<span class="nseHiddenTag"><b><big>X</big></b></span>'}</div>
     <p id="nseRCMBoxInfoText">Tag/uploader placeholder text</p>
@@ -992,6 +1011,10 @@ if(torrents) {
                     actualIcon.torrentID = torrentID;
                     actualIcon.onclick = function() {
                         let torrentParent = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+
+                        // Refresh lists, they might have been changed in other tabs
+                        nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", new Array(0));
+                        nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", new Array(0));
         
                         if(torrentParent) {
                             if(!torrentParent.getAttribute("isNSEHidden")) {
@@ -1053,6 +1076,10 @@ if(torrents) {
                         event.preventDefault();
 
                         let torrentParent = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+
+                        // Refresh lists, they might have been changed in other tabs
+                        nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", new Array(0));
+                        nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", new Array(0));
         
                         if(torrentParent) {
                             // Remove from both lists
@@ -1349,6 +1376,10 @@ if(torrents) {
                 let torrentID = window.location.href.match(/id=([0-9]+)/)[1];
                 actualIcon.torrentID = torrentID;
                 actualIcon.onclick = function() {   
+                    // Refresh lists, they might have been changed in other tabs
+                    nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", new Array(0));
+                    nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", new Array(0));
+
                     if(nseIndividualUploadHidingBlacklist.includes(torrentID)) {
                         // Blacklisted, move to whitelist and unhide
                         let currindex = nseIndividualUploadHidingBlacklist.indexOf(this.torrentID);
@@ -1389,6 +1420,10 @@ if(torrents) {
                 // Clear list status on right-click
                 actualIcon.addEventListener('contextmenu', function(event) {
                     event.preventDefault();
+
+                    // Refresh lists, they might have been changed in other tabs
+                    nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", new Array(0));
+                    nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", new Array(0));
 
                     // Remove from both lists
                     let currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
@@ -1595,6 +1630,27 @@ document.getElementById("nseThemeDropdown").onchange = function() {
 
     descriptionNode.innerHTML = nseThemeDescriptions[selectedTheme];
 };
+
+if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
+    document.getElementById("nseOpenAllButton").onclick = function() {
+        let torrentLinks = document.querySelectorAll("tr.torrent > td:nth-child(2) > a.nseTitleElement");
+
+        if(currentPage == "Collage") {
+            torrentLinks = document.querySelectorAll("tr.torrent > td > strong > a.nseTitleElement");
+        } else {
+            torrentLinks = document.querySelectorAll("tr.torrent > td > a.nseTitleElement");
+        }
+    
+        if(torrentLinks) {
+            for(let i = 0; i < torrentLinks.length; i++) {
+                let hiddenStatus = torrentLinks[i].parentNode.parentNode.getAttribute("isNSEHidden");
+                if(hiddenStatus == 0 || hiddenStatus == "" || hiddenStatus == null) {
+                    window.open(torrentLinks[i].href, "_blank");
+                }
+            }
+        }
+    };
+}
 
 // We like to have fun around here 😏
 {
@@ -2142,6 +2198,7 @@ function saveData() {
         nseHideCategoryIconsEnabled: "nseCheckHideCategoryIcons",
         nseArrowNavigationEnabled: "nseCheckArrowNavigation",
         nseUpdateToastsEnabled: "nseCheckUpdateToasts",
+        nseOpenAllButtonEnabled: "nseCheckOpenAllButton",
         nseCustomCSSEnabled: "nseCheckCustomCSS"
     };
 
@@ -2315,7 +2372,7 @@ a.nseLink, a.nseLink:visited {
     width: 75%;
 }
 
-#nseHeader {
+#nseHeader, .nseCenterDiv {
     width: 100%;
     margin: auto;
     text-align: center;
