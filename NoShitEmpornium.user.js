@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.8
+// @version      2.6.9
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -126,6 +126,7 @@ let nseUpdateToastsEnabled = GM_getValue("nseUpdateToastsEnabled", true);
 
 //   Open all button
 let nseOpenAllButtonEnabled = GM_getValue("nseOpenAllButtonEnabled", true);
+let nseOpenAllGoNextEnabled = GM_getValue("nseOpenAllGoNextEnabled", false);
 
 //   Fonts
 let nseUIFont = GM_getValue("nseUIFont", "Helvetica");
@@ -700,7 +701,14 @@ htmlContent.innerHTML = `
                         <span class="nseEmoji">📂</span> Enable the "Open all unfiltered results" button
                     </label><br />
                     <span class="nseExplanationSpan nseESOffset">(Appears under the NSE options area. If your browser tells you it blocked Emp</span><br />
-                    <span class="nseExplanationSpan nseESOffset">from opening popups, click the Preferences button and allow popups for Emp)</span><br /><br />
+                    <span class="nseExplanationSpan nseESOffset">from opening popups, click the Preferences button and allow popups for Emp)</span><br />
+                    
+                    <input type="checkbox" id="nseCheckOpenAllGoNext"${nseOpenAllGoNextEnabled ? ' checked' : ''} />
+                    <label for="nseCheckOpenAllGoNext" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">➡️</span> Automatically go to next results page after clicking "Open all" button
+                    </label><br /><br />
+
+                    <br />
 
                     User interface font family: <br />
                     <input type="text" class="nseInput" value="${nseUIFont}" id="nseUIFont" /> <span class="nseExplanationSpan">(Corresponds to the <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family" target="_blank"><b><u>CSS font-family property</u></b></a>)</span>
@@ -1558,29 +1566,9 @@ if(nseArrowNavigationEnabled && currentPage !== "Notification filters" && curren
     document.onkeydown = function(event) {
         if(event.target.nodeName !== "TEXTAREA" && event.target.nodeName !== "INPUT") {
             if (event.code == "ArrowLeft") {
-                let prevLink = document.getElementsByClassName("pager_prev")[0];
-                if(prevLink) {
-                    event.preventDefault();
-                    prevLink.click();
-                } else {
-                    let firstLink = document.getElementsByClassName("pager_first")[0];
-                    if(firstLink) {
-                        event.preventDefault();
-                        firstLink.click();
-                    }
-                }
+                nseGoBack(event);
             } else if (event.code == "ArrowRight") {
-                let nextLink = document.getElementsByClassName("pager_next")[0];
-                if(nextLink) {
-                    event.preventDefault();
-                    nextLink.click();
-                } else {
-                    let lastLink = document.getElementsByClassName("pager_last")[0];
-                    if(lastLink) {
-                        event.preventDefault();
-                        lastLink.click();
-                    }
-                }
+                nseGoForward(event);
             }
         }
     };
@@ -1633,7 +1621,7 @@ document.getElementById("nseThemeDropdown").onchange = function() {
 
 if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
     document.getElementById("nseOpenAllButton").onclick = function() {
-        let torrentLinks = document.querySelectorAll("tr.torrent > td:nth-child(2) > a.nseTitleElement");
+        let torrentLinks;
 
         if(currentPage == "Collage") {
             torrentLinks = document.querySelectorAll("tr.torrent > td > strong > a.nseTitleElement");
@@ -1653,6 +1641,10 @@ if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
 
                 if(hiddenStatus == 0 || hiddenStatus == "" || hiddenStatus == null) {
                     window.open(torrentLinks[i].href, "_blank");
+
+                    if(nseOpenAllGoNextEnabled) {
+                        nseGoForward();
+                    }
                 }
             }
         }
@@ -2108,7 +2100,7 @@ function downloadFile(filename, text) {
 }
 
 function exportSettings(getSize = false) {
-    saveData();
+    if(!getSize) { saveData(); }
 
     let settingsNames = GM_listValues();
     let settings = {};
@@ -2175,13 +2167,111 @@ function saveData() {
             delimiter = ";";
         }
 
-        let arrList = strList.split(delimiter);
-        arrList = [...new Set(arrList)];
-        strList = arrList.join(delimiter);
+        // Empty diff lists
+        let removedList = new Array(0);
+        let addedList = new Array(0);
+
+        // List from text boxes
+        let freshList = strList.split(delimiter);
+
+        // Stored list (might have changed since we made our cache at the start of the script)
+        let storedList = GM_getValue(setting).split(delimiter);
+
+        // Cached copy of stored list
+        let cachedList;
+        switch(setting) {
+            case "nseTaglist":
+                cachedList = nseBlacklistTags;
+                break;
+            case "nseHardPassTaglist":
+                cachedList = nseHardPassTags;
+                break;
+            case "nseWhitelist":
+                cachedList = nseWhitelistTags;
+                break;
+            case "nseBlacklistTitles":
+                cachedList = nseBlacklistTitlePhrases;
+                break;
+            case "nseWhitelistTitles":
+                cachedList = nseWhitelistTitlePhrases;
+                break;
+            case "nseUploaders":
+                cachedList = nseBlacklistUploaders;
+                break;
+            case "nseWhitelistUploaders":
+                cachedList = nseWhitelistUploaders;
+                break;
+        }
+
+        // Compute additions and removals from OG array
+        freshList.forEach(function(item){
+            if(cachedList.indexOf(item) == -1) {
+                addedList.push(item);
+            }
+        });
+
+        cachedList.forEach(function(item) {
+            if(freshList.indexOf(item) == -1) {
+                removedList.push(item);
+            }
+        });
+
+        // Remove removals and add additions to the stored list
+        removedList.forEach(function(item) {
+            let foundIndex = storedList.indexOf(item);
+            if(foundIndex > -1) {
+                storedList.splice(foundIndex, 1);
+            }
+        });
+        
+        addedList.forEach(function(item) {
+            let foundIndex = storedList.indexOf(item);
+            if(foundIndex == -1) {
+                if(item !== "" && item !== null) {
+                    storedList.push(item);
+                }
+            }
+        });
+
+        // Turning it into a set and back into an array will automagically kill dupes
+        storedList = [...new Set(storedList)];
+        strList = storedList.join(delimiter);
         GM_setValue(setting, strList);
 
         // Reflect updated list in textarea
         document.getElementById(listsToSave[setting]).value = strList;
+
+        // Update cached copy of list
+        switch(setting) {
+            case "nseTaglist":
+                nseBlacklistTaglist = strList;
+                nseBlacklistTags = storedList;
+                break;
+            case "nseHardPassTaglist":
+                nseHardPassTaglist = strList;
+                nseHardPassTags = storedList;
+                break;
+            case "nseWhitelist":
+                nseWhitelistTaglist = strList;
+                nseWhitelistTags = storedList;
+                break;
+            case "nseBlacklistTitles":
+                nseBlacklistTitleList = strList;
+                nseBlacklistTitlePhrases = storedList;
+                break;
+            case "nseWhitelistTitles":
+                nseWhitelistTitleList = strList;
+                nseWhitelistTitlePhrases = storedList;
+                break;
+            case "nseUploaders":
+                nseBlacklistUploadersList = strList;
+                nseBlacklistUploaders = storedList;
+                break;
+            case "nseWhitelistUploaders":
+                nseWhitelistUploadersList = strList;
+                nseWhitelistUploaders = storedList;
+                break;
+        }
     }
 
     let checkboxes = {
@@ -2206,6 +2296,7 @@ function saveData() {
         nseArrowNavigationEnabled: "nseCheckArrowNavigation",
         nseUpdateToastsEnabled: "nseCheckUpdateToasts",
         nseOpenAllButtonEnabled: "nseCheckOpenAllButton",
+        nseOpenAllGoNextEnabled: "nseCheckOpenAllGoNext",
         nseCustomCSSEnabled: "nseCheckCustomCSS"
     };
 
@@ -2242,6 +2333,34 @@ function saveData() {
     let time = new Date().toLocaleTimeString();
     document.getElementById("nseSaveDiv").innerHTML = "Saved at " + time + "!";
     document.getElementById("nseSaveDiv").classList.remove("hidden");
+}
+
+function nseGoBack(event = null) {
+    let prevLink = document.getElementsByClassName("pager_prev")[0];
+    if(prevLink) {
+        if(event) { event.preventDefault(); }
+        prevLink.click();
+    } else {
+        let firstLink = document.getElementsByClassName("pager_first")[0];
+        if(firstLink) {
+            if(event) { event.preventDefault(); }
+            firstLink.click();
+        }
+    }
+}
+
+function nseGoForward(event = null) {
+    let nextLink = document.getElementsByClassName("pager_next")[0];
+    if(nextLink) {
+        if(event) { event.preventDefault(); }
+        nextLink.click();
+    } else {
+        let lastLink = document.getElementsByClassName("pager_last")[0];
+        if(lastLink) {
+            if(event) { event.preventDefault(); }
+            lastLink.click();
+        }
+    }
 }
 
 // +-----+
