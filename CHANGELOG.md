@@ -1,5 +1,5 @@
 # Latest changes
-## v2.6.19
+## v2.6.10
 ### Bugfixes
 - Fixed a bug where NSE wouldn't save on fresh installs (initialized lists weren't saved back to storage)
 
