@@ -1,5 +1,12 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.9
+### Features
+- Added an option to automatically proceed to the next results page when clicking the "Open all unfiltered results" button. This is disabled by default, enable it in Options > Settings > Interface. Useful when you want to browse all the results of several pages with fewer clicks.
+- Added multi-tab support for editing filter lists. When you save your lists, NSE will now compare the additions and removals to those lists with the tab's cached copy, then perform those same modifications to the saved copy. What this means for you as a user is that you can now edit and save your filter lists in other tabs, and don't have to worry about other tabs overwriting your changes. Changes in lists from other tabs will be imported, merged and reflected in your lists once you save (does not update in real time, you still need to save)
+
+<p>&nbsp;</p>
+
 ## v2.6.8
 ### Features
 - Added an "Open all unfiltered results" button. As the name implies, this button can be used to quickly open all unfiltered results in new tabs. The first time you use this function, your browser will likely only open one tab. Go back to the results tab and it will tell you that the browser blocked the website from opening a bunch of popups. In Firefox, click the "Preferences" button next to the notice, and select the option to always allow popups from Emp. In Chromium-based browsers, click the "Pop-up blocked" button that appears in the address bar, choose the option to always allow popups from Emp, then click "Done". Now the button will function normally on subsequent clicks. The button is enabled by default, but you can deactivate it from Options > Settings > Interface.

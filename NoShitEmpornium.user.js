@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.9
+// @version      2.6.10
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -51,30 +51,37 @@ GM_setValue("nseSavedVersion", nseSavedVersion);
 let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.tags.here separated.by.spaces no.newlines scat puke blood").trim();
 let nseBlacklistTags = nseBlacklistTaglist.split(" ");
 if(nseBlacklistTags.length === 1 && nseBlacklistTags[0] === "") { nseBlacklistTags = new Array(0); }
+GM_setValue("nseTaglist", nseBlacklistTaglist);
 
 let nseHardPassTaglist = GM_getValue("nseHardPassTaglist", "enter.hard.pass.tags.here big.poopies gushing.blood").trim();
 let nseHardPassTags = nseHardPassTaglist.split(" ");
 if(nseHardPassTags.length === 1 && nseHardPassTags[0] === "") { nseHardPassTags = new Array(0); }
+GM_setValue("nseHardPassTaglist", nseHardPassTaglist);
 
 let nseWhitelistTaglist = GM_getValue("nseWhitelist", "whitelist.tags go.here").trim();
 let nseWhitelistTags = nseWhitelistTaglist.split(" ");
 if(nseWhitelistTags.length === 1 && nseWhitelistTags[0] === "") { nseWhitelistTags = new Array(0); }
+GM_setValue("nseWhitelist", nseWhitelistTaglist);
 
 let nseBlacklistTitleList = GM_getValue("nseBlacklistTitles", "this is a title phrase;this is another title phrase").trim();
 let nseBlacklistTitlePhrases = nseBlacklistTitleList.split(";");
 if(nseBlacklistTitlePhrases.length === 1 && nseBlacklistTitlePhrases[0] === "") { nseBlacklistTitlePhrases = new Array(0); }
+GM_setValue("nseBlacklistTitles", nseBlacklistTitleList);
 
 let nseWhitelistTitleList = GM_getValue("nseWhitelistTitles", "this is a title phrase;this is another title phrase").trim();
 let nseWhitelistTitlePhrases = nseWhitelistTitleList.split(";");
 if(nseWhitelistTitlePhrases.length === 1 && nseWhitelistTitlePhrases[0] === "") { nseWhitelistTitlePhrases = new Array(0); }
+GM_setValue("nseWhitelistTitles", nseWhitelistTitleList);
 
 let nseBlacklistUploadersList = GM_getValue("nseUploaders", "PutUserNamesHere SeparatedBySpaces NoNewlines").trim();
 let nseBlacklistUploaders = nseBlacklistUploadersList.split(" ");
 if(nseBlacklistUploaders.length === 1 && nseBlacklistUploaders[0] === "") { nseBlacklistUploaders = new Array(0); }
+GM_setValue("nseUploaders", nseBlacklistUploadersList);
 
 let nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders", "PutUserNamesHere SeparatedBySpaces NoNewlines").trim();
 let nseWhitelistUploaders = nseWhitelistUploadersList.split(" ");
 if(nseWhitelistUploaders.length === 1 && nseWhitelistUploaders[0] === "") { nseWhitelistUploaders = new Array(0); }
+GM_setValue("nseWhitelistUploaders", nseWhitelistUploadersList);
 
 
 // Delete obsolete options
