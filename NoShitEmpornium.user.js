@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.10
+// @version      2.6.11
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -96,6 +96,9 @@ let nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingW
 
 //   Right-Click Management
 let nseRightClickManagementEnabled = GM_getValue("nseRightClickManagementEnabled", true);
+let nseRCMTagsEnabled = GM_getValue("nseRCMTagsEnabled", true);
+let nseRCMTitlesEnabled = GM_getValue("nseRCMTitlesEnabled", true);
+let nseRCMUploadersEnabled = GM_getValue("nseRCMUploadersEnabled", true);
 
 //   Torrent site status
 let nseHideAnonUploadsEnabled = GM_getValue("nseHideAnonUploadsEnabled", false);
@@ -580,89 +583,111 @@ htmlContent.innerHTML = `
 
             <section id="nseSettingsContent1">
                 <h3>Filtering</h3>
-                <p>
-                    <b>Individual uploads</b><br />
-                    <input type="checkbox" id="nseCheckIndividualHide"${nseIndividualUploadHidingEnabled ? ' checked' : ''} />
-                    <label for="nseCheckIndividualHide" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">👁️</span> Enable individual upload filtering
-                    </label><br />
-                    <span class="nseExplanationSpan nseESOffset">(Click the eye icon next to the torrent name to blacklist/whitelist uploads</span><br />
-                    <span class="nseExplanationSpan nseESOffset">individually, ignoring <b>all</b> other rules. These filters are automatically saved)</span><br /><br />
+                <b>Individual uploads</b><br />
+                <input type="checkbox" id="nseCheckIndividualHide"${nseIndividualUploadHidingEnabled ? ' checked' : ''} />
+                <label for="nseCheckIndividualHide" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">👁️</span> Enable individual upload filtering
+                </label><br />
+                <span class="nseExplanationSpan nseESOffset">(Click the eye icon next to the torrent name to blacklist/whitelist uploads</span><br />
+                <span class="nseExplanationSpan nseESOffset">individually, ignoring <b>all</b> other rules. These filters are automatically saved)</span><br /><br />
 
-                    <b>List management</b><br />
-                    <input type="checkbox" id="nseCheckRightClickManagementEnabled"${nseRightClickManagementEnabled ? ' checked' : ''} />
-                    <label for="nseCheckRightClickManagementEnabled" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">🖱️</span> Enable Right-Click Management
-                    </label><br />
-                    <span class="nseExplanationSpan nseESOffset">(Right-click a tag/title/uploader in the torrent list to add/remove from your lists)</span><br /><br />
+                <b>List management</b><br />
+                <input type="checkbox" id="nseCheckRightClickManagementEnabled"${nseRightClickManagementEnabled ? ' checked' : ''} />
+                <label for="nseCheckRightClickManagementEnabled" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">🖱️</span> Enable Right-Click Management (RCM)
+                </label>
+                
+                <div id="nseRCMCustomizationDiv" ${nseRightClickManagementEnabled ? '' : 'class="hidden"'}>
+                    <span class="nseESOffset">
+                        <input type="checkbox" id="nseCheckRCMTagsEnabled"${nseRCMTagsEnabled ? ' checked' : ''} />
+                        <label for="nseCheckRCMTagsEnabled" class="nseSettingsCheckbox">
+                            <span class="nseEmoji">🏷️</span> Enable for tags
+                        </label><br />
+                    </span>
+                        
+                    <span class="nseESOffset">
+                        <input type="checkbox" id="nseCheckRCMTitlesEnabled"${nseRCMTitlesEnabled ? ' checked' : ''} />
+                        <label for="nseCheckRCMTitlesEnabled" class="nseSettingsCheckbox">
+                            <span class="nseEmoji">📚</span> Enable for titles
+                        </label><br />
+                    </span>
+                    
+                    <span class="nseESOffset">
+                        <input type="checkbox" id="nseCheckRCMUploadersEnabled"${nseRCMUploadersEnabled ? ' checked' : ''} />
+                        <label for="nseCheckRCMUploadersEnabled" class="nseSettingsCheckbox">
+                            <span class="nseEmoji">👥</span> Enable for uploaders
+                        </label>
+                    </span>
+                </div><br />
 
-                    <b>Torrent site status</b><br />
-                    <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideAnonUploads" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">👤</span> Hide all anonymous uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Will still be overridden by whitelist rules)</span><br />
+                <span class="nseExplanationSpan">Right-click a tag/title/uploader in the torrent list to add/remove from your lists.</span><br /><br />
+                
+                <b>Torrent site status</b><br />
+                <input type="checkbox" id="nseCheckHideAnonUploads"${nseHideAnonUploadsEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideAnonUploads" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">👤</span> Hide all anonymous uploads
+                </label>
+                <span class="nseExplanationSpan">(Will still be overridden by whitelist rules)</span><br />
 
-                    <input type="checkbox" id="nseCheckHideReported"${nseHideReportedEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideReported" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">⛔</span> Hide reported uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents with active reports, whitelists will override)</span><br />
+                <input type="checkbox" id="nseCheckHideReported"${nseHideReportedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideReported" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">⛔</span> Hide reported uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents with active reports, whitelists will override)</span><br />
 
-                    <input type="checkbox" id="nseCheckHideWarned"${nseHideWarnedEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideWarned" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">⚔️</span> Hide warned uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents with active warning, whitelists will override)</span><br />
+                <input type="checkbox" id="nseCheckHideWarned"${nseHideWarnedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideWarned" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">⚔️</span> Hide warned uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents with active warning, whitelists will override)</span><br />
 
-                    <input type="checkbox" id="nseCheckHideUnseeded"${nseHideUnseededEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideUnseeded" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">🏜️</span> Hide unseeded uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents with zero seeders, whitelists will override)</span><br /><br />
+                <input type="checkbox" id="nseCheckHideUnseeded"${nseHideUnseededEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideUnseeded" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">🏜️</span> Hide unseeded uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents with zero seeders, whitelists will override)</span><br /><br />
 
-                    <b>Torrent personal status</b><br />
-                    <input type="checkbox" id="nseCheckHideGrabbed"${nseHideGrabbedEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideGrabbed" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">💾</span> Hide grabbed uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents you have previously grabbed)</span><br />
+                <b>Torrent personal status</b><br />
+                <input type="checkbox" id="nseCheckHideGrabbed"${nseHideGrabbedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideGrabbed" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">💾</span> Hide grabbed uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents you have previously grabbed)</span><br />
 
-                    <input type="checkbox" id="nseCheckHideLeeching"${nseHideLeechingEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideLeeching" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">⏬</span> Hide leeching uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents you are currently leeching)</span><br />
+                <input type="checkbox" id="nseCheckHideLeeching"${nseHideLeechingEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideLeeching" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">⏬</span> Hide leeching uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents you are currently leeching)</span><br />
 
-                    <input type="checkbox" id="nseCheckHideSeeding"${nseHideSeedingEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideSeeding" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">⏫</span> Hide seeding uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents you are currently seeding)</span><br />
+                <input type="checkbox" id="nseCheckHideSeeding"${nseHideSeedingEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideSeeding" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">⏫</span> Hide seeding uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents you are currently seeding)</span><br />
 
-                    <input type="checkbox" id="nseCheckHideSnatched"${nseHideSnatchedEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHideSnatched" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">💽</span> Hide snatched uploads
-                    </label>
-                    <span class="nseExplanationSpan">(Hide torrents you have already downloaded/snatched)</span><br /><br />
+                <input type="checkbox" id="nseCheckHideSnatched"${nseHideSnatchedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideSnatched" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">💽</span> Hide snatched uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents you have already downloaded/snatched)</span><br /><br />
 
-                    <input type="checkbox" id="nseCheckBypassWhitelists"${nseBypassWhitelistsEnabled ? ' checked' : ''} />
-                    <label for="nseCheckBypassWhitelists" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">💫</span> Bypass whitelists for personal status filtering
-                    </label><br />
-                    <span class="nseExplanationSpan nseESOffset">(Ignore all whitelists when filtering grabbed/leeching/seeding/snatched torrents)</span><br /><br />
+                <input type="checkbox" id="nseCheckBypassWhitelists"${nseBypassWhitelistsEnabled ? ' checked' : ''} />
+                <label for="nseCheckBypassWhitelists" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">💫</span> Bypass whitelists for personal status filtering
+                </label><br />
+                <span class="nseExplanationSpan nseESOffset">(Ignore all whitelists when filtering grabbed/leeching/seeding/snatched torrents)</span><br /><br />
 
-                    <b>Hard Pass</b><br />
-                    <input type="checkbox" id="nseCheckHardPassEnabled"${nseHardPassEnabled ? ' checked' : ''} />
-                    <label for="nseCheckHardPassEnabled" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">🚫</span> Hard Pass
-                    </label><span class="nseExplanationSpan">(Enable the Hard Pass blacklist, found in the "Tags" tab)</span><br />
-                    <input type="checkbox" id="nseCheckRemoveHardPassResults"${nseRemoveHardPassResults ? ' checked' : ''} />
-                    <label for="nseCheckRemoveHardPassResults" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">⚫</span> Black Hole
-                    </label><span class="nseExplanationSpan">(Remove results instead of hiding them behind the toggle)</span><br /><br />
-                    <span class="nseExplanationSpan">Hard Pass enables an extra tag blacklist that will make sure that torrents with the given tags will be hidden no matter what. The only thing that can override Hard Pass is whitelisting a torrent through individual filtering when Black Hole is disabled. Enable the Black Hole option to remove results from the page entirely.</span><br /><br />
-                </p>
+                <b>Hard Pass</b><br />
+                <input type="checkbox" id="nseCheckHardPassEnabled"${nseHardPassEnabled ? ' checked' : ''} />
+                <label for="nseCheckHardPassEnabled" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">🚫</span> Hard Pass
+                </label><span class="nseExplanationSpan">(Enable the Hard Pass blacklist, found in the "Tags" tab)</span><br />
+                <input type="checkbox" id="nseCheckRemoveHardPassResults"${nseRemoveHardPassResults ? ' checked' : ''} />
+                <label for="nseCheckRemoveHardPassResults" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">⚫</span> Black Hole
+                </label><span class="nseExplanationSpan">(Remove results instead of hiding them behind the toggle)</span><br /><br />
+                <span class="nseExplanationSpan">Hard Pass enables an extra tag blacklist that will make sure that torrents with the given tags will be hidden no matter what. The only thing that can override Hard Pass is whitelisting a torrent through individual filtering when Black Hole is disabled. Enable the Black Hole option to remove results from the page entirely.</span><br /><br />
             </section>
 
             <section id="nseSettingsContent2">
@@ -1489,56 +1514,86 @@ if(torrents) {
 // Add classes for Right-Click Management if enabled
 if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     if(currentPage == "Torrent details") {
-        window.setTimeout(function() { // Tags are loaded by js by the site, so set a 1.5s timeout for that to happen
-            let tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");        
-            if(tagList !== null && tagList !== undefined) {
-                for(let i = 0; i < tagList.length; i++) {
-                    tagList[i].classList.add("nseTagElement");
+        if(nseRCMTagsEnabled) {
+            window.setTimeout(function() { // Tags are loaded by js by the site, so set a 1.5s timeout for that to happen
+                let tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");        
+                if(tagList !== null && tagList !== undefined) {
+                    for(let i = 0; i < tagList.length; i++) {
+                        tagList[i].classList.add("nseTagElement");
 
-                    // Color by status while we're already iterating through this list
-                    if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
-                        tagList[i].classList.add("nseHiddenTag");
-                    } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
-                        tagList[i].classList.add("nseHardPassTag");
-                    } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
-                        tagList[i].classList.add("nseWhitelistedTag");
+                        // Color by status while we're already iterating through this list
+                        if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
+                            tagList[i].classList.add("nseHiddenTag");
+                        } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
+                            tagList[i].classList.add("nseHardPassTag");
+                        } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
+                            tagList[i].classList.add("nseWhitelistedTag");
+                        }
                     }
                 }
+            }, nseTimeout);
+        }
+
+        if(nseRCMTitlesEnabled) {
+            // "Torrent Info" box
+            let titleElement = document.querySelector(".group_torrent > td:nth-child(2) > strong");
+            titleElement.classList.add("nseTitleElement");
+
+            // Header text
+            titleElement = document.querySelector("#content > div:nth-child(1) > h2:nth-child(1)");
+            let firstSpan = document.querySelector("#content > div:nth-child(1) > h2:nth-child(1) > span:nth-child(1)");
+            let h2textChild = Array.from(titleElement.childNodes).filter(node => node.nodeType === 3 && node.textContent.trim().length > 1)[0];
+
+            let newSpan = document.createElement('span');
+            h2textChild.after(newSpan);
+            newSpan.appendChild(h2textChild);
+
+            newSpan.classList.add("nseTitleElement");
+        }
+
+        if(nseRCMUploadersEnabled) {
+            let uploaderElement = document.querySelector("table.boxstat > tbody > tr > td:nth-child(1) > a");
+            if(uploaderElement) {
+                uploaderElement.classList.add("nseUploaderElement");
             }
-        }, nseTimeout);
+        }
     } else {
         for(let i = 0; i < torrents.length; i++) {
             // Tags
-            let tagList = torrents[i].querySelectorAll("td > div.tags > a");
-            if(tagList !== null && tagList !== undefined) {
-                for(let j = 0; j < tagList.length; j++) {
-                    tagList[j].classList.add("nseTagElement");    
+            if(nseRCMTagsEnabled) {
+                let tagList = torrents[i].querySelectorAll("td > div.tags > a");
+                if(tagList !== null && tagList !== undefined) {
+                    for(let j = 0; j < tagList.length; j++) {
+                        tagList[j].classList.add("nseTagElement");    
+                    }
                 }
             }
     
             // Titles
-            let titleElement;
-            if(currentPage == "Collage") {
-                titleElement = torrents[i].querySelector("td > strong > a");
-            } else {
-                titleElement = torrents[i].querySelector("td > a");
+            if(nseRCMTitlesEnabled) {
+                let titleElement;
+                if(currentPage == "Collage") {
+                    titleElement = torrents[i].querySelector("td > strong > a");
+                } else {
+                    titleElement = torrents[i].querySelector("td > a");
+                }
+                titleElement.classList.add("nseTitleElement");
             }
-            titleElement.classList.add("nseTitleElement");
 
             // Uploaders
-            let uploaderElement = torrents[i].querySelector("td.user > a");
+            if(nseRCMUploadersEnabled) {
+                let uploaderElement = torrents[i].querySelector("td.user > a");
     
-            if(currentPage == "Top 10") {
-                uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
-            }
-    
-            if(currentPage !== "Collage" && currentPage !== "Uploaded" && uploaderElement !== null) { 
-                uploaderElement.classList.add("nseUploaderElement");
+                if(currentPage == "Top 10") {
+                    uploaderElement = torrents[i].querySelector("td:nth-child(10) > a");
+                }
+        
+                if(currentPage !== "Collage" && currentPage !== "Uploaded" && uploaderElement !== null) { 
+                    uploaderElement.classList.add("nseUploaderElement");
+                }
             }
         }
     }
-
-    
 }
 
 // Remove categories if enabled
@@ -1610,6 +1665,14 @@ document.getElementById("nseCheckCustomCSS").onclick = function() {
         document.getElementById("nseCustomCSSDiv").classList.remove("hidden");
     } else {
         document.getElementById("nseCustomCSSDiv").classList.add("hidden");
+    }
+};
+
+document.getElementById("nseCheckRightClickManagementEnabled").onclick = function() {
+    if(this.checked) {
+        document.getElementById("nseRCMCustomizationDiv").classList.remove("hidden");
+    } else {
+        document.getElementById("nseRCMCustomizationDiv").classList.add("hidden");
     }
 };
 
@@ -2294,6 +2357,9 @@ function saveData() {
         nseBypassWhitelistsEnabled: "nseCheckBypassWhitelists",
         nseIndividualUploadHidingEnabled: "nseCheckIndividualHide",
         nseRightClickManagementEnabled: "nseCheckRightClickManagementEnabled",
+        nseRCMTagsEnabled: "nseCheckRCMTagsEnabled",
+        nseRCMTitlesEnabled: "nseCheckRCMTitlesEnabled",
+        nseRCMUploadersEnabled: "nseCheckRCMUploadersEnabled",
         nseEmojiEnabled: "nseCheckEmojiEnabled",
         nseScrollToNSEEnabled: "nseCheckScrollToNSEEnabled",
         nseHardPassEnabled: "nseCheckHardPassEnabled",
@@ -2499,6 +2565,10 @@ a.nseLink, a.nseLink:visited {
     border: 1px solid ${themes[nseSelectedTheme].accentColor};
     padding: 10px;
     border-radius: 10px;
+}
+
+#nseRCMCustomizationDiv {
+    margin-top: 0px;
 }
 
 .nseNiceBox {

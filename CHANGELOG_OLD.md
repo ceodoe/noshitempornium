@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.10
+### Bugfixes
+- Fixed a bug where NSE wouldn't save on fresh installs (initialized lists weren't saved back to storage)
+
+<p>&nbsp;</p>
+
 ## v2.6.9
 ### Features
 - Added an option to automatically proceed to the next results page when clicking the "Open all unfiltered results" button. This is disabled by default, enable it in Options > Settings > Interface. Useful when you want to browse all the results of several pages with fewer clicks.
