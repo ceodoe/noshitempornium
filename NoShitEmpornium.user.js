@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.11
+// @version      2.6.12
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -1515,23 +1515,18 @@ if(torrents) {
 if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     if(currentPage == "Torrent details") {
         if(nseRCMTagsEnabled) {
-            window.setTimeout(function() { // Tags are loaded by js by the site, so set a 1.5s timeout for that to happen
+            let currTaglist = document.querySelector("#torrent_tags");
+            let observerOptions = {subtree: true, childList: true};
+            let mObserver = new MutationObserver(function() {
                 let tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");        
                 if(tagList !== null && tagList !== undefined) {
                     for(let i = 0; i < tagList.length; i++) {
                         tagList[i].classList.add("nseTagElement");
-
-                        // Color by status while we're already iterating through this list
-                        if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
-                            tagList[i].classList.add("nseHiddenTag");
-                        } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
-                            tagList[i].classList.add("nseHardPassTag");
-                        } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
-                            tagList[i].classList.add("nseWhitelistedTag");
-                        }
                     }
                 }
-            }, nseTimeout);
+            });
+
+            mObserver.observe(currTaglist, observerOptions);
         }
 
         if(nseRCMTitlesEnabled) {
@@ -1596,6 +1591,28 @@ if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     }
 }
 
+// Keep torrent details taglist colored when it changes
+if(currentPage == "Torrent details") {
+    let currTaglist = document.querySelector("#torrent_tags");
+    let observerOptions = {subtree: true, childList: true};
+    let mObserver = new MutationObserver(function() {
+        let tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");        
+        if(tagList !== null && tagList !== undefined) {
+            for(let i = 0; i < tagList.length; i++) {
+                if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
+                    tagList[i].classList.add("nseHiddenTag");
+                } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
+                    tagList[i].classList.add("nseHardPassTag");
+                } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
+                    tagList[i].classList.add("nseWhitelistedTag");
+                }
+            }
+        }
+    });  
+
+    mObserver.observe(currTaglist, observerOptions);
+}
+
 // Remove categories if enabled
 if(nseHideCategoryIconsEnabled && currentPage !== "Notification filters" && currentPage !== "Torrent details") {
     let selector = ".cats_col";
@@ -1624,6 +1641,7 @@ if(nseHardPassEnabled && nseRemoveHardPassResults && !nseUnfilteredPages.include
     }
 }
 
+// Assign event handlers if arrow key navigation is enabled
 if(nseArrowNavigationEnabled && currentPage !== "Notification filters" && currentPage !== "Torrent details") {
     document.onkeydown = function(event) {
         if(event.target.nodeName !== "TEXTAREA" && event.target.nodeName !== "INPUT") {
@@ -1748,15 +1766,16 @@ for(let textAreaCounter = 0; textAreaCounter < nseTextAreas.length; textAreaCoun
 let explanationTogglers = new Array("nseBLE", "nseHPE", "nseWLE","nseTitleBLE", "nseTitleWLE", "nseUBLE", "nseUWLE");
 
 for(let i = 0; i < explanationTogglers.length; i++) {
-    let currentElement = explanationTogglers[i];
-    document.getElementById(currentElement + "Toggler").onclick = function() {
+    document.getElementById(explanationTogglers[i] + "Toggler").onclick = function() {
         document.getElementById(this.id.substring(0, this.id.length - 7)).classList.toggle("hidden");
     };
 }
 
 if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     if(currentPage == "Torrent details") {
-        window.setTimeout(function() {
+        let currTaglist = document.querySelector("#torrent_tags");
+        let observerOptions = {subtree: true, childList: true};
+        let mObserver = new MutationObserver(function() {
             let allTagElements = document.querySelectorAll(".nseTagElement");
             for(let i = 0; i < allTagElements.length; i++) {
                 allTagElements[i].addEventListener('contextmenu', function(event) {
@@ -1764,7 +1783,9 @@ if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
                     showRCMBox("tag", this.innerHTML.trim(), event.pageX, event.pageY);
                 }, false);
             }
-        }, nseTimeout);
+        });
+
+        mObserver.observe(currTaglist, observerOptions);
     } else {
         let allTagElements = document.querySelectorAll(".nseTagElement");
         for(let i = 0; i < allTagElements.length; i++) {
@@ -1864,7 +1885,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
 
     let nseRCMBoxInfoText = box.querySelector("#nseRCMBoxInfoText");
     if(boxType == "tag") {
-        let infoText = "<b>Tag:</b> <span class=\"nseMonospace\" id=\"nseRCMBoxTag\">" + elementValue + "</span><br /><br />";
+        let infoText = `<b>Tag:</b> <span class="nseMonospace" id="nseRCMBoxTag">${elementValue}</span><br /><br />`;
 
         let currTagBlacklist = document.getElementById("nseBlacklistTaglistArea").value.split(" ");
         let currTagHardPassList = document.getElementById("nseHardPassTaglistArea").value.split(" ");
@@ -2180,12 +2201,11 @@ function exportSettings(getSize = false) {
     }
 
     let jsonOutput = JSON.stringify(settings);
-    let dateString = Date.now();
 
     if(getSize) {
         return String(jsonOutput.length);
     } else {
-        downloadFile(`nseExport-${dateString}.json`, jsonOutput);
+        downloadFile(`nseExport-${Date.now()}.json`, jsonOutput);
     }
 }
 

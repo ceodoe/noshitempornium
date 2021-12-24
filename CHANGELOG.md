@@ -1,8 +1,8 @@
 # Latest changes
-## v2.6.11
-### Features
-- Added options to selectively control which parts Right-Click Management applies to
-- RCM now works on both uploaders and titles on torrent detail pages
+## v2.6.12
+### Bugfixes
+- Right-Click Management now works on tags within torrent details pages after tags have been added
+- Tags within torrent details pages will keep their coloration after tags have been added
 
 ---
 

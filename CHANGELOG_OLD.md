@@ -1,5 +1,12 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.11
+### Features
+- Added options to selectively control which parts Right-Click Management applies to
+- RCM now works on both uploaders and titles on torrent detail pages
+
+<p>&nbsp;</p>
+
 ## v2.6.10
 ### Bugfixes
 - Fixed a bug where NSE wouldn't save on fresh installs (initialized lists weren't saved back to storage)
