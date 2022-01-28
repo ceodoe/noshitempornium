@@ -1,5 +1,12 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.12
+### Bugfixes
+- Right-Click Management now works on tags within torrent details pages after tags have been added
+- Tags within torrent details pages will keep their coloration after tags have been added
+
+<p>&nbsp;</p>
+
 ## v2.6.11
 ### Features
 - Added options to selectively control which parts Right-Click Management applies to

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.12
+// @version      2.6.13
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -582,7 +582,7 @@ htmlContent.innerHTML = `
             <label class="nseLabel" for="nseSettingsTab4"><span class="nseEmoji">ℹ️</span> About</label>
 
             <section id="nseSettingsContent1">
-                <h3>Filtering</h3>
+                <h3 class="nseH3">Filtering</h3>
                 <b>Individual uploads</b><br />
                 <input type="checkbox" id="nseCheckIndividualHide"${nseIndividualUploadHidingEnabled ? ' checked' : ''} />
                 <label for="nseCheckIndividualHide" class="nseSettingsCheckbox">
@@ -691,7 +691,7 @@ htmlContent.innerHTML = `
             </section>
 
             <section id="nseSettingsContent2">
-                <h3>Interface</h3>
+                <h3 class="nseH3">Interface</h3>
 
                 <div>
                     <input type="checkbox" id="nseCheckObliviousMode"${nseObliviousModeEnabled ? ' checked' : ''} />
@@ -833,7 +833,7 @@ htmlContent.innerHTML = `
             </section>
 
             <section id="nseSettingsContent3">
-                <h3>Data management</h3>
+                <h3 class="nseH3">Data management</h3>
                 <p>
                     <span class="nseExplanationSpan">Use these functions to import, export or reset all your NSE lists and settings.</span><br /><br />
 
@@ -850,12 +850,12 @@ htmlContent.innerHTML = `
             </section>
 
             <section id="nseSettingsContent4">
-                <h3>About</h3>
+                <h3 class="nseH3">About</h3>
                 <p>
                     Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium v${GM_info.script.version} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a class="nseLink" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
 
-                <h3>Statistics</h3>
+                <h3 class="nseH3">Statistics</h3>
                 <p>
                     <span class="nseExplanationSpan">This section is populated when the page loads, and does not reflect changes done thereafter.</span><br />
                     <br />
@@ -871,7 +871,7 @@ htmlContent.innerHTML = `
                     ${nseIndividualUploadHidingEnabled ? `Number of individually whitelisted torrents: <span class="nseWhitelistedTag">${nseIndividualUploadHidingWhitelist.length}</span><br />` : ""}
                 </p>
 
-                <h3>Resources</h3>
+                <h3 class="nseH3">Resources</h3>
                 <p>
                     <b>
                         <span class="nseEmoji">🧵</span> <a class="nseLink" href="/forum/thread/44258?postid=956045#post956045" target="_blank">Read the official thread on the Empornium forums</a><br />
@@ -882,7 +882,7 @@ htmlContent.innerHTML = `
                     </b>
                 </p>
 
-                <h3>Contribute</h3>
+                <h3 class="nseH3">Contribute</h3>
                 <p>
                     If you love NSE, consider a donation! I've spent a lot of time making this, and any sum is hugely appreciated. Credits on the site is also appreciated.<br /> <br />
 
@@ -2695,7 +2695,7 @@ a.nseLink, a.nseLink:visited {
     margin-top: 10px;
 }
 
-h3 {
+h3.nseH3 {
     color: ${themes[nseSelectedTheme].foregroundColor} !important;
 }
 

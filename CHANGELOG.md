@@ -1,8 +1,7 @@
 # Latest changes
-## v2.6.12
+## v2.6.13
 ### Bugfixes
-- Right-Click Management now works on tags within torrent details pages after tags have been added
-- Tags within torrent details pages will keep their coloration after tags have been added
+- Fixed a bug where collage cover headers would erroneously have their colors changed to the NSE theme color
 
 ---
 
