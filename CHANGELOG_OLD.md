@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.6.13
+### Bugfixes
+- Fixed a bug where collage cover headers would erroneously have their colors changed to the NSE theme color
+
+<p>&nbsp;</p>
+
 ## v2.6.12
 ### Bugfixes
 - Right-Click Management now works on tags within torrent details pages after tags have been added

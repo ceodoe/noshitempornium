@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.6.13
+// @version      2.7.0
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -1215,6 +1215,7 @@ if(torrents) {
                 if(seeders.classList.contains("r00")) {
                     currentHidden = true;
                     seeders.innerHTML = "(0)";
+                    seeders.title = "Filtered with NSE: Unseeded";
                 }
             }
     
@@ -1272,6 +1273,7 @@ if(torrents) {
                             currentHidden = true;
                             if(russianRouletteBulletInChamber == false) {
                                 anonName.classList.add("nseHiddenUploader");
+                                anonName.title = "Filtered with NSE: Anonymous upload";
                             }
                         }
                     }
@@ -1283,7 +1285,11 @@ if(torrents) {
                         if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
                             hiddenByUploader = true;
                             currentHidden = true;
-                            if(russianRouletteBulletInChamber == false) { uploaderElement.classList.add("nseHiddenUploader"); }
+                            if(russianRouletteBulletInChamber == false) { 
+                                uploaderElement.classList.add("nseHiddenUploader"); 
+                                uploaderElement.title = "Filtered with NSE: Uploader is in your blacklist";
+                            }
+                            break;
                         }
                     }
     
@@ -1295,6 +1301,8 @@ if(torrents) {
                                 if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
                                     currentWhitelisted = true;
                                     uploaderElement.classList.add("nseWhitelistedUploader");
+                                    uploaderElement.title = "Unfiltered with NSE: Uploader is in your whitelist";
+                                    break;
                                 }
                             }
                         }
@@ -1311,7 +1319,10 @@ if(torrents) {
                 if(currentTBLPhrase != "") {
                     if(torrentTitle.includes(currentTBLPhrase)) {
                         currentHidden = true;
-                        if(russianRouletteBulletInChamber == false) { titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`; }
+                        if(russianRouletteBulletInChamber == false) { 
+                            titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`;
+                            titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
+                        }
                     }
                 }
             }
@@ -1327,6 +1338,7 @@ if(torrents) {
                         if(torrentTitle.includes(currentTWLPhrase)) {
                             currentWhitelisted = true;
                             titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+                            titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
                         }
                     }
                 }
@@ -1346,6 +1358,8 @@ if(torrents) {
                                 if(nseRemoveHardPassResults) {
                                     torrents[i].classList.add("nseHardPassRemove");
                                     countMe = false;
+                                } else {
+                                    taglist[k].title = "Filtered with NSE: Found in your Hard Pass list";
                                 }
                             }
                         }
@@ -1355,6 +1369,7 @@ if(torrents) {
                         currentHidden = true;
                         if(russianRouletteBulletInChamber == false) { 
                             tagList[k].classList.add("nseHiddenTag"); 
+                            tagList[k].title = "Filtered with NSE: Found in your blacklist";
                         }
                     }
         
@@ -1362,6 +1377,7 @@ if(torrents) {
                         if(nseWhitelistTags.includes(tagList[k].innerHTML) === true) {
                             currentWhitelisted = true;
                             tagList[k].classList.add("nseWhitelistedTag");
+                            tagList[k].title = "Unfiltered with NSE: Found in your whitelist";
                         }
                     }
                 }
@@ -1392,6 +1408,106 @@ if(torrents) {
             }
         }
     } else if(currentPage == "Torrent details") {
+        if(nseHideUnseededEnabled) {
+            let seedersElement = document.querySelector("div.top_info > table.boxstat > tbody > tr > td:nth-child(4)");
+            let seedersElement2 = document.querySelector("tr.group_torrent > td:nth-child(5)");
+            let currSeeders = seedersElement2.innerHTML;
+
+            if(currSeeders.trim() === "0") {
+                console.log("unseeded");
+                seedersElement.classList.add("nseBlacklistIdentifier");
+                seedersElement2.classList.add("nseBlacklistIdentifier");
+
+                seedersElement.title = "Filtered with NSE: Unseeded";
+                seedersElement2.title = "Filtered with NSE: Unseeded";
+
+                seedersElement.innerHTML = "(" + seedersElement.innerHTML + ")"; // This has a div element also
+                seedersElement2.innerHTML = "(0)";
+            }
+        }
+
+        // Highlight if uploader is anon and user has NSE set to hide anon uploads
+        let anonName = document.querySelectorAll(".anon_name");
+        if(anonName.length) {
+            if(nseHideAnonUploadsEnabled) {
+                for(let anon = 0; anon < anonName.length; anon++) {
+                    anonName[anon].classList.add("nseHiddenUploader");
+                    anonName[anon].title = "Filtered with NSE: Anonymous upload";
+                }
+            }
+        // Highlight if uploader is any of the lists
+        } else {
+            let uploaderElement = document.querySelector("table.boxstat > tbody > tr > td:nth-child(1) > a");
+            let uploaderElement2 = document.querySelector(".torrent_table > tbody > tr:nth-child(5) > td > em > a");
+
+            if(uploaderElement) {
+                let uploader = uploaderElement.innerHTML.trim().toLowerCase();
+    
+                for(let l = 0; l < nseBlacklistUploaders.length; l++) {
+                    if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
+                        uploaderElement.classList.add("nseHiddenUploader"); 
+                        uploaderElement2.classList.add("nseHiddenUploader"); 
+                        uploaderElement.title = "Filtered with NSE: Uploader is in your blacklist";
+                        uploaderElement2.title = "Filtered with NSE: Uploader is in your blacklist";
+                        break;
+                    }
+                }
+    
+                for(let m = 0; m < nseWhitelistUploaders.length; m++) {
+                    if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
+                        uploaderElement.classList.add("nseWhitelistedUploader");
+                        uploaderElement2.classList.add("nseWhitelistedUploader");
+                        uploaderElement.title = "Unfiltered with NSE: Uploader is in your whitelist";
+                        uploaderElement2.title = "Unfiltered with NSE: Uploader is in your whitelist";
+                        break;
+                    }
+                }
+            }
+        }
+
+        let titleElement2 = document.querySelector(".torrent_table > tbody > tr:nth-child(2) > td:nth-child(2) > strong");
+        let titleElement = document.querySelector("#content > div:nth-child(1) > h2:nth-child(1)");
+        let firstSpan = document.querySelector("#content > div:nth-child(1) > h2:nth-child(1) > span:nth-child(1)");
+        let h2textChild = Array.from(titleElement.childNodes).filter(node => node.nodeType === 3 && node.textContent.trim().length > 1)[0];
+
+        let newSpan = document.createElement('span');
+        h2textChild.after(newSpan);
+        newSpan.appendChild(h2textChild);
+        titleElement = newSpan;
+
+        // Scan title for nseBlacklistTitlePhrases
+        // ...For every blacklisted phrase:
+        for(let tblCount = 0; tblCount < nseBlacklistTitlePhrases.length; tblCount++) {
+            let currentTBLPhrase = nseBlacklistTitlePhrases[tblCount].trim().toLowerCase();
+            let torrentTitle = titleElement.innerHTML.trim().toLowerCase();
+
+            if(currentTBLPhrase != "") {
+                if(torrentTitle.includes(currentTBLPhrase)) {
+                    titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`;
+                    titleElement2.innerHTML = titleElement2.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`;
+                    titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
+                    titleElement2.title = "Filtered with NSE: Phrase(s) found in your list(s)";
+                }
+            }
+        }
+
+        // Scan title for nseWhitelistTitlePhrases
+        // ...For every whitelisted phrase:
+        for(let tblCount = 0; tblCount < nseWhitelistTitlePhrases.length; tblCount++) {
+            let currentTWLPhrase = nseWhitelistTitlePhrases[tblCount].trim().toLowerCase();
+            let torrentTitle = titleElement.innerHTML.trim().toLowerCase();
+
+            if(currentTWLPhrase != "") {
+                if(torrentTitle.includes(currentTWLPhrase)) {
+                    titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+                    titleElement2.innerHTML = titleElement2.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
+                    titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
+                    titleElement2.title = "Filtered with NSE: Phrase(s) found in your list(s)";
+                }
+            }
+        }
+
+
         // Add individual filter icon to torrent details page, a lot of duplicated code, will function-ize later
         if(nseIndividualUploadHidingEnabled) {
             let torrentIconContainer = document.querySelector("td > span.torrent_icon_container");
@@ -1536,18 +1652,18 @@ if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
 
             // Header text
             titleElement = document.querySelector("#content > div:nth-child(1) > h2:nth-child(1)");
-            let firstSpan = document.querySelector("#content > div:nth-child(1) > h2:nth-child(1) > span:nth-child(1)");
-            let h2textChild = Array.from(titleElement.childNodes).filter(node => node.nodeType === 3 && node.textContent.trim().length > 1)[0];
-
-            let newSpan = document.createElement('span');
-            h2textChild.after(newSpan);
-            newSpan.appendChild(h2textChild);
-
-            newSpan.classList.add("nseTitleElement");
+            titleElement.classList.add("nseTitleElement");
         }
 
         if(nseRCMUploadersEnabled) {
+            // First uploader element in torrent stats/controls near top of page
             let uploaderElement = document.querySelector("table.boxstat > tbody > tr > td:nth-child(1) > a");
+            if(uploaderElement) {
+                uploaderElement.classList.add("nseUploaderElement");
+            }
+
+            // Second uploader element in "Torrent Info" box
+            uploaderElement = document.querySelector(".torrent_table > tbody > tr:nth-child(5) > td > em > a");
             if(uploaderElement) {
                 uploaderElement.classList.add("nseUploaderElement");
             }
@@ -1601,10 +1717,13 @@ if(currentPage == "Torrent details") {
             for(let i = 0; i < tagList.length; i++) {
                 if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
                     tagList[i].classList.add("nseHiddenTag");
+                    tagList[i].title = "Filtered with NSE: Tag is in your blacklist";
                 } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
                     tagList[i].classList.add("nseHardPassTag");
+                    tagList[i].title = "Filtered with NSE: Tag is in your Hard Pass list";
                 } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
                     tagList[i].classList.add("nseWhitelistedTag");
+                    tagList[i].title = "Unfiltered with NSE: Tag is in your whitelist";
                 }
             }
         }
