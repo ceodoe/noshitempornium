@@ -1,5 +1,5 @@
 # NoShitEmpornium
-Fully featured filtering solution for Empornium. Hide torrents based on tags, titles, uploaders, whether you previously downloaded it, and lots more!
+NoShitEmpornium (NSE) is a fully featured filtering solution for Empornium. Hide torrents based on tags, titles, uploaders, whether you previously downloaded it, and lots more!
 
 # Features
 - Maintain a blacklist of tags, titles, and uploaders you'd like to automatically hide
@@ -20,6 +20,9 @@ Fully featured filtering solution for Empornium. Hide torrents based on tags, ti
 
 # Note on browsers and userscript engines
 Note that NSE is mainly developed on and tested with mainline Firefox and Tampermonkey, and thus Tampermonkey is the only "officially" supported userscript engine. Although I am an avid FF user, I'm not blind to the fact that most of the world uses Chrome, so every release of NSE is also tested and made sure to work on Chromium-based browsers. Waterfox and other comparably niche browser forks and userscript engines might work fully or partly, but are not supported. Thus there is no guarantee it will work on any other combination of browsers and engines aside from FF/Chromium + Tampermonkey.  
+
+# Privacy
+NSE does not collect any data, and does not send anything to any external websites or servers. The only data stored by NSE are your settings that make the script work. That data is only stored locally in your browser. NSE is free and open source software, and you can verify this claim by looking through the script itself. There is no separate privacy policy, as it is not required when no data is collected. Tampermonkey, on the other hand, collects some anonymized data, read their privacy policy [here](https://www.tampermonkey.net/privacy.php). NSE is not in any way affiliated with Tampermonkey.
 
 # How to install and use
 Make sure the checkbox for "Hide tags in lists" is **unchecked** in your user settings on Emp, the script won't be able to access tags if they're hidden (hover over your username at the top right of any page and click Settings). In addition, it is recommended that you increase the value of "Max Tags in lists" to a high number such as 1000, so that torrents with a lot of tags will be correctly handled.
