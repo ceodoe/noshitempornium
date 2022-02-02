@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.0
+// @version      2.7.1
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -1359,7 +1359,7 @@ if(torrents) {
                                     torrents[i].classList.add("nseHardPassRemove");
                                     countMe = false;
                                 } else {
-                                    taglist[k].title = "Filtered with NSE: Found in your Hard Pass list";
+                                    tagList[k].title = "Filtered with NSE: Found in your Hard Pass list";
                                 }
                             }
                         }
