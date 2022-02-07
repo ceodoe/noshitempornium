@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.7.1
+### Bugfixes
+- Fixed a bug that would break the script for some users due to a programming error
+
+<p>&nbsp;</p>
+
 ## v2.7
 ### Features
 On Torrent Detail pages:

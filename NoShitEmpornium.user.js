@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.1
+// @version      2.7.2
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -227,6 +227,7 @@ let nseThemeDescriptions = {
 };
 
 //   Extras
+let nseRenumberTorrentsEnabled = GM_getValue("nseRenumberTorrentsEnabled", true);
 let nseHideCategoryIconsEnabled = GM_getValue("nseHideCategoryIconsEnabled", false);
 let nseArrowNavigationEnabled = GM_getValue("nseArrowNavigationEnabled", false);
 
@@ -802,9 +803,15 @@ htmlContent.innerHTML = `
 
                 <div class="nseTopAiryDiv">
                     <b>Extras</b><br />
+                    <input type="checkbox" id="nseCheckRenumberTorrents"${nseRenumberTorrentsEnabled ? ' checked' : ''} />
+                    <label for="nseCheckRenumberTorrents" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🔢</span> Renumber torrents on "Top X" pages
+                    </label>
+                    <span class="nseExplanationSpan">(Fixes torrent numbering after filtering)</span><br />
+                    
                     <input type="checkbox" id="nseCheckHideCategoryIcons"${nseHideCategoryIconsEnabled ? ' checked' : ''} />
                     <label for="nseCheckHideCategoryIcons" class="nseSettingsCheckbox">
-                        <span class="nseEmoji">🔢</span> Hide category icons
+                        <span class="nseEmoji">🟪</span> Hide category icons
                     </label>
                     <span class="nseExplanationSpan">(Hides category icons/links in torrent lists)</span><br />
                     
@@ -1036,7 +1043,7 @@ if(torrents) {
                     nseToggleHideElement.innerHTML = `
                     <div class="icon_container">
                         <div class="icon_stack">
-                            <i class="font_icon torrent_icons clickable">
+                            <i class="font_icon torrent_icons clickable nseToggleIcon" id="nseToggleIcon_${i}">
                                 <img src="data:image/png;base64,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" />
                             </i>
                         </div>
@@ -1073,15 +1080,41 @@ if(torrents) {
                                     nseIndividualUploadHidingWhitelist.push(this.torrentID);
                                 }
             
-                                torrentParent.classList.toggle("hidden");
-                                torrentParent.setAttribute("isNSEHidden", "0");
-                                torrentParent.style.backgroundColor = null;
+                                if(currentPage == "Top 10") {
+                                    let count = 0;
+                                    let torrentLinks = document.querySelectorAll("tr.torrent > td > a");
+                                    for(let i = 0; i < torrentLinks.length; i++) {
+                                        let regex = "id=" + this.torrentID;
+
+                                        if(torrentLinks[i].href.match(regex)) {
+                                            let currParent = torrentLinks[i].parentNode.parentNode;
+                                            currParent.classList.toggle("hidden");
+                                            currParent.setAttribute("isNSEHidden", "0");
+                                            currParent.style.backgroundColor = null;
+
+                                            let currIcon = currParent.querySelector(".nseToggleIcon");
+                                            currIcon.classList.add("nseIndividuallyWhitelisted");
+                                            currIcon.classList.remove("nseIndividuallyBlacklisted");
+                                            currIcon.classList.remove("nseIndividuallyUntouched");
+
+                                            count--;
+                                        }
+                                    }
+
+                                    adjustHiddenHeaderCount(count);
+                                } else {
+                                    torrentParent.classList.toggle("hidden");
+                                    torrentParent.setAttribute("isNSEHidden", "0");
+                                    torrentParent.style.backgroundColor = null;
+                                    
+                                    this.classList.add("nseIndividuallyWhitelisted");
+                                    this.classList.remove("nseIndividuallyBlacklisted");
+                                    this.classList.remove("nseIndividuallyUntouched");
+
+                                    adjustHiddenHeaderCount(-1);
+                                }
             
-                                adjustHiddenHeaderCount(-1);
-            
-                                this.classList.add("nseIndividuallyWhitelisted");
-                                this.classList.remove("nseIndividuallyBlacklisted");
-                                this.classList.remove("nseIndividuallyUntouched");
+                                
                             } else if(torrentParent.getAttribute("isNSEHidden") == "0") {
                                 // Not hidden or is whitelisted, move to blacklist and hide
                                 let currindex = nseIndividualUploadHidingWhitelist.indexOf(this.torrentID);
@@ -1093,21 +1126,49 @@ if(torrents) {
                                 if(currindex == -1) { // Only add if not already blacklisted to avoid duplicates
                                     nseIndividualUploadHidingBlacklist.push(this.torrentID);
                                 }
-            
-                                torrentParent.classList.toggle("hidden");
-                                torrentParent.setAttribute("isNSEHidden", "1");
-                                torrentParent.style.backgroundColor = themes[nseSelectedTheme].hiddenBackgroundColor;
-            
-                                adjustHiddenHeaderCount(1);
-            
-                                this.classList.remove("nseIndividuallyWhitelisted");
-                                this.classList.remove("nseIndividuallyUntouched");
-                                this.classList.add("nseIndividuallyBlacklisted");
+
+                                if(currentPage == "Top 10") {
+                                    let count = 0;
+                                    let torrentLinks = document.querySelectorAll("tr.torrent > td > a");
+                                    for(let i = 0; i < torrentLinks.length; i++) {
+                                        let regex = "id=" + this.torrentID;
+
+                                        if(torrentLinks[i].href.match(regex)) {
+                                            let currParent = torrentLinks[i].parentNode.parentNode;
+                                            currParent.classList.toggle("hidden");
+                                            currParent.setAttribute("isNSEHidden", "1");
+                                            currParent.style.backgroundColor = themes[nseSelectedTheme].hiddenBackgroundColor;
+
+                                            let currIcon = currParent.querySelector(".nseToggleIcon");
+                                            currIcon.classList.remove("nseIndividuallyWhitelisted");
+                                            currIcon.classList.remove("nseIndividuallyUntouched");
+                                            currIcon.classList.add("nseIndividuallyBlacklisted");
+
+                                            count++;
+                                        }
+                                    }
+
+                                    adjustHiddenHeaderCount(count);
+                                } else {
+                                    torrentParent.classList.toggle("hidden");
+                                    torrentParent.setAttribute("isNSEHidden", "1");
+                                    torrentParent.style.backgroundColor = themes[nseSelectedTheme].hiddenBackgroundColor;
+
+                                    this.classList.remove("nseIndividuallyWhitelisted");
+                                    this.classList.remove("nseIndividuallyUntouched");
+                                    this.classList.add("nseIndividuallyBlacklisted");
+
+                                    adjustHiddenHeaderCount(1);
+                                }
                             }
             
                             //Save lists immediately after manipulating them
                             GM_setValue("nseIndividualUploadHidingBlacklist", nseIndividualUploadHidingBlacklist);
                             GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
+
+                            if(nseRenumberTorrentsEnabled && currentPage == "Top 10") {
+                                renumberTorrents();
+                            }
                         }
                     };
 
@@ -1139,24 +1200,57 @@ if(torrents) {
                             }
         
                             if(wasRemovedFromWL || wasRemovedFromBL) {
-                                if(!wasRemovedFromWL) {
-                                    torrentParent.classList.toggle("hidden");
+                                if(currentPage == "Top 10") {
+                                    let count = 0;
+                                    let torrentLinks = document.querySelectorAll("tr.torrent > td > a");
+                                    for(let i = 0; i < torrentLinks.length; i++) {
+                                        let regex = "id=" + this.torrentID;
+
+                                        if(torrentLinks[i].href.match(regex)) {
+                                            let currParent = torrentLinks[i].parentNode.parentNode;
+                                            currParent.setAttribute("isNSEHidden", "0");
+                                            currParent.style.backgroundColor = null;
+
+                                            if(!wasRemovedFromWL) {
+                                                currParent.classList.toggle("hidden");
+                                            }
+
+                                            let currIcon = currParent.querySelector(".nseToggleIcon");
+                                            currIcon.classList.remove("nseIndividuallyWhitelisted");
+                                            currIcon.classList.remove("nseIndividuallyBlacklisted");
+                                            currIcon.classList.add("nseIndividuallyUntouched");
+
+                                            count--;
+                                        }
+                                    }
+                                    
+                                    if(wasRemovedFromBL) {
+                                        adjustHiddenHeaderCount(count);
+                                    }
+                                } else {
+                                    if(!wasRemovedFromWL) {
+                                        torrentParent.classList.toggle("hidden");
+                                    }
+
+                                    torrentParent.setAttribute("isNSEHidden", "0");
+                                    torrentParent.style.backgroundColor = null;
+
+                                    this.classList.remove("nseIndividuallyWhitelisted");
+                                    this.classList.remove("nseIndividuallyBlacklisted");
+                                    this.classList.add("nseIndividuallyUntouched");
+                                    
+                                    if(wasRemovedFromBL) {
+                                        adjustHiddenHeaderCount(-1);
+                                    }
                                 }
 
-                                if(wasRemovedFromBL) {
-                                    adjustHiddenHeaderCount(-1);
-                                }
-
-                                torrentParent.setAttribute("isNSEHidden", "0");
-                                torrentParent.style.backgroundColor = null;
-
-                                this.classList.remove("nseIndividuallyWhitelisted");
-                                this.classList.remove("nseIndividuallyBlacklisted");
-                                this.classList.add("nseIndividuallyUntouched");
-    
                                 // Save lists immediately after manipulating them
                                 GM_setValue("nseIndividualUploadHidingBlacklist", nseIndividualUploadHidingBlacklist);
                                 GM_setValue("nseIndividualUploadHidingWhitelist", nseIndividualUploadHidingWhitelist);
+                            }
+
+                            if(nseRenumberTorrentsEnabled && currentPage == "Top 10") {
+                                renumberTorrents();
                             }
                         }
                     }, false);
@@ -1627,6 +1721,11 @@ if(torrents) {
 // | Event handler assignment and miscellany |
 // +-----------------------------------------+
 
+// Renumber if enabled
+if(nseRenumberTorrentsEnabled && currentPage == "Top 10") {
+    renumberTorrents();
+}
+
 // Add classes for Right-Click Management if enabled
 if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
     if(currentPage == "Torrent details") {
@@ -1837,6 +1936,7 @@ if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
         }
     
         if(torrentLinks) {
+            let visitedLinks = [];
             for(let i = 0; i < torrentLinks.length; i++) {
                 let hiddenStatus;
 
@@ -1847,12 +1947,15 @@ if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
                 }
 
                 if(hiddenStatus == 0 || hiddenStatus == "" || hiddenStatus == null) {
-                    window.open(torrentLinks[i].href, "_blank");
-
-                    if(nseOpenAllGoNextEnabled) {
-                        nseGoForward();
+                    if(!visitedLinks.includes(torrentLinks[i].href)) {
+                        window.open(torrentLinks[i].href, "_blank");
+                        visitedLinks.push(torrentLinks[i].href);
                     }
                 }
+            }
+
+            if(nseOpenAllGoNextEnabled) {
+                nseGoForward();
             }
         }
     };
@@ -1959,6 +2062,26 @@ document.getElementById("nseReloadButton").onclick = function() { location.reloa
 function toggleTorrents() {
     for(let k = 0; k < torrents.length; k++) {
         torrents[k].classList.toggle("hidden");
+    }
+}
+
+function renumberTorrents() {
+    let torrentTables = document.querySelectorAll("table.torrent_table");
+    for(let i = 0; i < torrentTables.length; i++) {
+        let currTorrents = torrentTables[i].querySelectorAll("tr.torrent");
+        if(currTorrents) {
+            let shownNum = 1;
+            let hiddenNum = 1;
+            for(let j = 0; j < currTorrents.length; j++) {
+                if(currTorrents[j].classList.contains("hidden")) {
+                    currTorrents[j].querySelector("td > strong").innerHTML = hiddenNum;
+                    hiddenNum++;
+                } else {
+                    currTorrents[j].querySelector("td > strong").innerHTML = shownNum;
+                    shownNum++;
+                }
+            }
+        }
     }
 }
 
@@ -2504,6 +2627,7 @@ function saveData() {
         nseHardPassEnabled: "nseCheckHardPassEnabled",
         nseRemoveHardPassResults: "nseCheckRemoveHardPassResults",
         nseHideUnseededEnabled: "nseCheckHideUnseeded",
+        nseRenumberTorrentsEnabled: "nseCheckRenumberTorrents",
         nseHideCategoryIconsEnabled: "nseCheckHideCategoryIcons",
         nseArrowNavigationEnabled: "nseCheckArrowNavigation",
         nseUpdateToastsEnabled: "nseCheckUpdateToasts",
