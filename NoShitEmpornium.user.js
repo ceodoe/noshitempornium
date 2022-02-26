@@ -145,7 +145,7 @@ let nseTextAreaFont = GM_getValue("nseTextAreaFont", "Monospace");
 
 // Highlight colors
 let nseBlacklistColor = GM_getValue("nseBlacklistColor", "#F00");
-let nseHardPassColor = GM_getValue("nseHardPassColor", "#F00");
+let nseHardPassColor = GM_getValue("nseHardPassColor", "#A00");
 let nseWhitelistColor = GM_getValue("nseWhitelistColor", "#0F0");
 
 // Custom timeout
