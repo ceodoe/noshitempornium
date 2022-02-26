@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.2
+// @version      2.7.3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -141,6 +141,10 @@ let nseOpenAllGoNextEnabled = GM_getValue("nseOpenAllGoNextEnabled", false);
 //   Fonts
 let nseUIFont = GM_getValue("nseUIFont", "Helvetica");
 let nseTextAreaFont = GM_getValue("nseTextAreaFont", "Monospace");
+
+// Highlight colors
+let nseBlacklistColor = GM_getValue("nseBlacklistColor", "#F00");
+let nseWhitelistColor = GM_getValue("nseWhitelistColor", "#0F0");
 
 // Custom timeout
 let nseTimeout = GM_getValue("nseTimeout", 1500);
@@ -751,8 +755,17 @@ htmlContent.innerHTML = `
                     <input type="text" class="nseInput" value="${nseTextAreaFont}" id="nseTextAreaFont" /> <span class="nseExplanationSpan">(Font for black/whitelists textareas)</span>
                     <br /><br />
 
+                    
+                    Highlight color for blacklisted elements: <br />
+                    <input type="text" class="nseInput" value="${nseBlacklistColor}" id="nseBlacklistColor" /> <span class="nseExplanationSpan">(You can use any <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value" target="_blank"><b><u>CSS color notation</u></b></a> here)</span>
+                    <br /><br />
+                    
+                    Highlight color for whitelisted elements: <br />
+                    <input type="text" class="nseInput" value="${nseWhitelistColor}" id="nseWhitelistColor" />
+                    <br /><br />
+
                     Timeout for timed functions (milliseconds): <br />
-                    <input type="text" class="nseInput" style="width: 50px;" value="${nseTimeout}" id="nseTimeout" /> <span class="nseExplanationSpan">(Used for GCD support and taglists on torrent detail pages)</span>
+                    <input type="text" class="nseInput" style="width: 50px;" value="${nseTimeout}" id="nseTimeout" /> <span class="nseExplanationSpan">(Used for GCD support and computing storage size)</span>
                     <br /><br />
 
 
@@ -2659,6 +2672,10 @@ function saveData() {
 
     GM_setValue("nseUIFont", document.getElementById("nseUIFont").value);
     GM_setValue("nseTextAreaFont", document.getElementById("nseTextAreaFont").value);
+
+    GM_setValue("nseBlacklistColor", document.getElementById("nseBlacklistColor").value);    
+    GM_setValue("nseWhitelistColor", document.getElementById("nseWhitelistColor").value);
+
     GM_setValue("nseTimeout", Number(document.getElementById("nseTimeout").value));
 
     // We need to escape backslashes in the custom CSS as it will be included in a back-ticked CSS block
@@ -2885,12 +2902,12 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseHiddenUploader, .nseHiddenTag, .nseHiddenTitle, .nseBlacklistIdentifier {
-    color: #F00 !important;
+    color: ${nseBlacklistColor} !important;
     font-weight: bold !important;
 }
 
 .nseWhitelistedUploader, .nseWhitelistedTag, .nseWhitelistedTitle, .nseWhitelistIdentifier {
-    color: #0F0 !important;
+    color: ${nseWhitelistColor} !important;
     font-weight: bold !important;
 }
 
