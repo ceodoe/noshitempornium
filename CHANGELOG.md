@@ -1,7 +1,11 @@
 # Latest changes
-## v2.7.3
+## v2.7.4
 ### Features
-- You can now change the highlight color of both blacklisted and whitelisted elements. Find the new settings in Options > Settings > Interface >  Highlight color for blacklisted/whitelisted elements.
+- You can now also change the Hard Pass highlight color in Options > Settings > Interface >  Highlight color for Hard Pass tags.
+
+### Other
+- Updated help text for filter lists to reflect the actual highlight color and not mention red/dark red/green by name
+- Added Emp's icon to the script 
 
 ---
 

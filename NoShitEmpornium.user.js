@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.3
+// @version      2.7.4
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @supportURL   https://github.com/ceodoe/noshitempornium/issues
 // @homepageURL  https://github.com/ceodoe/noshitempornium/
+// @icon         https://www.google.com/s2/favicons?domain=empornium.is
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx|is)/torrents\.php*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/collages\.php.*id=*/
@@ -144,6 +145,7 @@ let nseTextAreaFont = GM_getValue("nseTextAreaFont", "Monospace");
 
 // Highlight colors
 let nseBlacklistColor = GM_getValue("nseBlacklistColor", "#F00");
+let nseHardPassColor = GM_getValue("nseHardPassColor", "#F00");
 let nseWhitelistColor = GM_getValue("nseWhitelistColor", "#0F0");
 
 // Custom timeout
@@ -420,7 +422,7 @@ htmlContent.innerHTML = `
                         rules. The correct format for this field is the same used for tags on
                         Empornium itself: Tags are separated by spaces, and uses a period between
                         words within a tag. Character case does not matter. Blacklisted tags will be
-                        highlighted in <span class="nseHiddenTag">red</span> when viewing
+                        <span class="nseHiddenTag">highlighted</span> when viewing
                         hidden torrents.
                     </div>
 
@@ -444,9 +446,7 @@ htmlContent.innerHTML = `
                         filtering (clicking the eye icon). The correct format for this field is the
                         same used for tags on Empornium itself: Tags are separated by spaces, and
                         uses a period between words within a tag. Character case does not matter.
-                        Hard Pass tags will be highlighted in
-                        <span class="nseHardPassTag">dark red</span> when viewing hidden torrents.
-                        The torrent will be removed completely from the results if the Black Hole
+                        Hard Pass tags will be <span class="nseHardPassTag">highlighted</span> when viewing hidden torrents. The torrent will be removed completely from the results if the Black Hole
                         option is enabled.
                     </div>
 
@@ -471,8 +471,7 @@ htmlContent.innerHTML = `
                         will be shown regardless. The correct format for this field is the same used
                         for tags on Empornium itself: Tags are separated by spaces, and uses a
                         period between words within a tag. Character case does not matter.
-                        Whitelisted tags will be highlighted in
-                        <span class="nseWhitelistedTag">green</span>.
+                        Whitelisted tags will be <span class="nseWhitelistedTag">highlighted</span>.
                     </div>
 
                     <div class="nseExplanationNode">
@@ -535,7 +534,7 @@ htmlContent.innerHTML = `
                     <div class="nseExplanationNode">
                         This is where you specify the names of uploaders you want to hide all
                         uploads from, unless overriden by a whitelist rule. Uploader names will be
-                        highlighted in <span class="nseHiddenUploader">red</span> when viewing
+                        <span class="nseHiddenUploader">highlighted</span> when viewing
                         hidden torrents. Character case does not matter. Note that filtering based
                         on usernames will not function on collage or user upload pages, as torrent 
                         uploaders are not exposed on those pages.
@@ -558,7 +557,7 @@ htmlContent.innerHTML = `
                     <div class="nseExplanationNode">
                         This is where you specify the names of uploaders you want to show all
                         uploads from, regardless of any blacklist rules. Uploader names will be
-                        highlighted in <span class="nseWhitelistedUploader">green</span>. Character
+                        <span class="nseWhitelistedUploader">highlighted</span>. Character
                         case does not matter. Note that filtering based on usernames will not
                         function on collage or user upload pages, as torrent uploaders are not 
                         exposed on those pages.
@@ -758,6 +757,10 @@ htmlContent.innerHTML = `
                     
                     Highlight color for blacklisted elements: <br />
                     <input type="text" class="nseInput" value="${nseBlacklistColor}" id="nseBlacklistColor" /> <span class="nseExplanationSpan">(You can use any <a class="nseLink" href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value" target="_blank"><b><u>CSS color notation</u></b></a> here)</span>
+                    <br /><br />
+                    
+                    Highlight color for Hard Pass tags: <br />
+                    <input type="text" class="nseInput" value="${nseHardPassColor}" id="nseHardPassColor" />
                     <br /><br />
                     
                     Highlight color for whitelisted elements: <br />
@@ -2674,6 +2677,7 @@ function saveData() {
     GM_setValue("nseTextAreaFont", document.getElementById("nseTextAreaFont").value);
 
     GM_setValue("nseBlacklistColor", document.getElementById("nseBlacklistColor").value);    
+    GM_setValue("nseHardPassColor", document.getElementById("nseHardPassColor").value);    
     GM_setValue("nseWhitelistColor", document.getElementById("nseWhitelistColor").value);
 
     GM_setValue("nseTimeout", Number(document.getElementById("nseTimeout").value));
@@ -2916,7 +2920,7 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseHardPassTag {
-    color: #aa0000 !important;
+    color: ${nseHardPassColor} !important;
     font-weight: bold !important;
 }
 

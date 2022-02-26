@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.7.4
+### Features
+- You can now also change the Hard Pass highlight color in Options > Settings > Interface >  Highlight color for Hard Pass tags.
+
+<p>&nbsp;</p>
+
 ## v2.7.2
 ### Features
 - Added a feature to renumber torrents on "Top X" pages after filtering, enabled by default. You can turn it off in Options > Settings > Interface > Extras.
