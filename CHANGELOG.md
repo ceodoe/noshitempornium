@@ -1,11 +1,9 @@
 # Latest changes
-## v2.7.4
+## v2.7.5
 ### Features
-- You can now also change the Hard Pass highlight color in Options > Settings > Interface >  Highlight color for Hard Pass tags.
+- Tag coloring based on filter lists now works on your own uploads page, but still won't filter anything on that page
+- Using Right-Click Management to add or remove a tag or an uploader from your lists will now update its coloring on pages where filtering is enabled (Torrents, Top X, Collages, etc). Note that filtering these torrents still won't apply until the next page load, to avoid having to toggle back and forth between the hidden and shown torrent views to take action on several elements within the same torrent.
 
-### Other
-- Updated help text for filter lists to reflect the actual highlight color and not mention red/dark red/green by name
-- Added Emp's icon to the script 
 
 ---
 

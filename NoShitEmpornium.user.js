@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.4
+// @version      2.7.5
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -1729,6 +1729,9 @@ if(torrents) {
                 }
             }
         }
+    } else if(currentPage == "My uploaded") {
+        // Make sure colors function as expected on user uploads pages
+        recolorTags();
     }
 }
 
@@ -1826,25 +1829,77 @@ if(nseRightClickManagementEnabled && currentPage !== "Notification filters") {
 if(currentPage == "Torrent details") {
     let currTaglist = document.querySelector("#torrent_tags");
     let observerOptions = {subtree: true, childList: true};
-    let mObserver = new MutationObserver(function() {
-        let tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");        
-        if(tagList !== null && tagList !== undefined) {
-            for(let i = 0; i < tagList.length; i++) {
-                if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
-                    tagList[i].classList.add("nseHiddenTag");
-                    tagList[i].title = "Filtered with NSE: Tag is in your blacklist";
-                } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
-                    tagList[i].classList.add("nseHardPassTag");
-                    tagList[i].title = "Filtered with NSE: Tag is in your Hard Pass list";
-                } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
-                    tagList[i].classList.add("nseWhitelistedTag");
-                    tagList[i].title = "Unfiltered with NSE: Tag is in your whitelist";
-                }
+    let mObserver = new MutationObserver(function() { recolorTags(); });  
+    mObserver.observe(currTaglist, observerOptions);
+}
+
+function recolorTags() {
+    let tagList;
+    if(currentPage == "Torrent details") {
+        tagList = document.querySelectorAll("ul#torrent_tags_list > li > a");
+    } else if(currentPage == "My uploaded") {    
+        tagList = document.querySelectorAll("div.tags > a");
+    } else if(nseUnfilteredPages.includes(currentPage)) {
+        return;
+    } else {
+        tagList = document.querySelectorAll("a.nseTagElement");
+    }
+    
+    if(tagList !== null && tagList !== undefined) {
+        for(let i = 0; i < tagList.length; i++) {
+            if(nseBlacklistTags.includes(tagList[i].innerHTML.trim())) {
+                tagList[i].classList.remove("nseHardPassTag");
+                tagList[i].classList.remove("nseWhitelistedTag");
+                tagList[i].classList.add("nseHiddenTag");
+                tagList[i].title = "Filtered with NSE: Tag is in your blacklist";
+            } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
+                tagList[i].classList.remove("nseHiddenTag");
+                tagList[i].classList.remove("nseWhitelistedTag");
+                tagList[i].classList.add("nseHardPassTag");
+                tagList[i].title = "Filtered with NSE: Tag is in your Hard Pass list";
+            } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
+                tagList[i].classList.remove("nseHiddenTag");
+                tagList[i].classList.remove("nseHardPassTag");
+                tagList[i].classList.add("nseWhitelistedTag");
+                tagList[i].title = "Unfiltered with NSE: Tag is in your whitelist";
+            } else {
+                tagList[i].classList.remove("nseHiddenTag");
+                tagList[i].classList.remove("nseHardPassTag");
+                tagList[i].classList.remove("nseWhitelistedTag");
+                tagList[i].title = "";
             }
         }
-    });  
+    }
+}
 
-    mObserver.observe(currTaglist, observerOptions);
+function recolorUploaders() {
+    let uploaderElements;
+
+    if(currentPage == "Top 10") {
+        uploaderElements = document.querySelectorAll("td:nth-child(10) > a");
+    } else if(nseUnfilteredPages.includes(currentPage) || currentPage == "Collage"|| currentPage == "Uploaded") {
+        return;
+    } else {
+        uploaderElements = document.querySelectorAll("td.user > a");
+    }
+
+    if(uploaderElements) {
+        for(let i = 0; i < uploaderElements.length; i++) {
+            if(nseBlacklistUploaders.includes(uploaderElements[i].innerHTML.trim())) {
+                uploaderElements[i].classList.remove("nseWhitelistedUploader");
+                uploaderElements[i].classList.add("nseHiddenUploader");
+                uploaderElements[i].title = "Filtered with NSE: Uploader is in your blacklist";
+            } else if(nseWhitelistUploaders.includes(uploaderElements[i].innerHTML.trim())) {
+                uploaderElements[i].classList.remove("nseHiddenUploader");
+                uploaderElements[i].classList.add("nseWhitelistedUploader");
+                uploaderElements[i].title = "Unfiltered with NSE: Uploader is in your whitelist";
+            } else {
+                uploaderElements[i].classList.remove("nseHiddenUploader");
+                uploaderElements[i].classList.remove("nseWhitelistedUploader");
+                uploaderElements[i].title = "";
+            }
+        }
+    }
 }
 
 // Remove categories if enabled
@@ -2165,6 +2220,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                 removeItemFromList("nseBlacklistTaglistArea", currTag);
                 saveData();
+                recolorTags();
                 closeRCMBox();
             };
 
@@ -2173,6 +2229,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                     let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                     addItemToList("nseHardPassTaglistArea", "nseBlacklistTaglistArea", currTag);
                     saveData();
+                    recolorTags();
                     closeRCMBox();
                 }; 
             }
@@ -2181,6 +2238,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                 addItemToList("nseWhitelistTaglistArea", "nseBlacklistTaglistArea", currTag);
                 saveData();
+                recolorTags();
                 closeRCMBox();
             };
         } else if(currTagWhitelist.includes(elementValue)) { // Current tag is in whitelist
@@ -2198,6 +2256,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                 removeItemFromList("nseWhitelistTaglistArea", currTag);
                 saveData();
+                recolorTags();
                 closeRCMBox();
             };
 
@@ -2205,6 +2264,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                 addItemToList("nseBlacklistTaglistArea", "nseWhitelistTaglistArea", currTag);
                 saveData();
+                recolorTags();
                 closeRCMBox();
             };
 
@@ -2213,6 +2273,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                      let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                      addItemToList("nseHardPassTaglistArea", "nseWhitelistTaglistArea", currTag);
                      saveData();
+                     recolorTags();
                      closeRCMBox();
                  }; 
              }
@@ -2230,6 +2291,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                     let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                     removeItemFromList("nseHardPassTaglistArea", currTag);
                     saveData();
+                    recolorTags();
                     closeRCMBox();
                 };
     
@@ -2237,6 +2299,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                     let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                     addItemToList("nseBlacklistTaglistArea", "nseHardPassTaglistArea", currTag);
                     saveData();
+                    recolorTags();
                     closeRCMBox();
                 };
     
@@ -2244,6 +2307,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                     let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                     addItemToList("nseWhitelistTaglistArea", "nseHardPassTaglistArea", currTag);
                     saveData();
+                    recolorTags();
                     closeRCMBox();
                 };
         } else { // Current tag is in no list
@@ -2261,6 +2325,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                 addItemToList("nseBlacklistTaglistArea", "nseWhitelistTaglistArea", currTag);
                 saveData();
+                recolorTags();
                 closeRCMBox();
             };
 
@@ -2269,6 +2334,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                      let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                      addItemToList("nseHardPassTaglistArea", "nseWhitelistTaglistArea", currTag);
                      saveData();
+                     recolorTags();
                      closeRCMBox();
                  }; 
              }
@@ -2277,6 +2343,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxTag").innerHTML;
                 addItemToList("nseWhitelistTaglistArea", "nseBlacklistTaglistArea", currTag);
                 saveData();
+                recolorTags();
                 closeRCMBox();
             };
         }
@@ -2301,6 +2368,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
                 removeItemFromList("nseBlacklistUploadersArea", currTag);
                 saveData();
+                recolorUploaders();
                 closeRCMBox();
             };
 
@@ -2308,6 +2376,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
                 addItemToList("nseWhitelistUploadersArea", "nseBlacklistUploadersArea", currTag);
                 saveData();
+                recolorUploaders();
                 closeRCMBox();
             };
         } else if(currUploaderWhitelist.includes(elementValue)) { // Current uploader is in whitelist
@@ -2322,6 +2391,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
                 removeItemFromList("nseWhitelistUploadersArea", currTag);
                 saveData();
+                recolorUploaders();
                 closeRCMBox();
             };
 
@@ -2329,6 +2399,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
                 addItemToList("nseBlacklistUploadersArea", "nseWhitelistUploadersArea", currTag);
                 saveData();
+                recolorUploaders();
                 closeRCMBox();
             };
         } else { // Current uploader is in no list
@@ -2343,6 +2414,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
                 addItemToList("nseBlacklistUploadersArea", "nseWhitelistUploadersArea", currTag);
                 saveData();
+                recolorUploaders();
                 closeRCMBox();
             };
 
@@ -2350,6 +2422,7 @@ function showRCMBox(boxType, elementValue, mouseX, mouseY) {
                 let currTag = document.getElementById("nseRCMBoxUploader").innerHTML;
                 addItemToList("nseWhitelistUploadersArea", "nseBlacklistUploadersArea", currTag);
                 saveData();
+                recolorUploaders();
                 closeRCMBox();
             };
         }

@@ -4,6 +4,17 @@
 ### Features
 - You can now also change the Hard Pass highlight color in Options > Settings > Interface >  Highlight color for Hard Pass tags.
 
+### Other
+- Updated help text for filter lists to reflect the actual highlight color and not mention red/dark red/green by name
+- Added Emp's icon to the script 
+
+<p>&nbsp;</p>
+
+
+## v2.7.4
+### Features
+- You can now also change the Hard Pass highlight color in Options > Settings > Interface >  Highlight color for Hard Pass tags.
+
 <p>&nbsp;</p>
 
 ## v2.7.2
