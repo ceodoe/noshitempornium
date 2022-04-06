@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.5
+// @version      2.7.6
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -1851,22 +1851,18 @@ function recolorTags() {
                 tagList[i].classList.remove("nseHardPassTag");
                 tagList[i].classList.remove("nseWhitelistedTag");
                 tagList[i].classList.add("nseHiddenTag");
-                tagList[i].title = "Filtered with NSE: Tag is in your blacklist";
             } else if(nseHardPassEnabled && nseHardPassTags.includes(tagList[i].innerHTML.trim())) {
                 tagList[i].classList.remove("nseHiddenTag");
                 tagList[i].classList.remove("nseWhitelistedTag");
                 tagList[i].classList.add("nseHardPassTag");
-                tagList[i].title = "Filtered with NSE: Tag is in your Hard Pass list";
             } else if(nseWhitelistTags.includes(tagList[i].innerHTML.trim())) {
                 tagList[i].classList.remove("nseHiddenTag");
                 tagList[i].classList.remove("nseHardPassTag");
                 tagList[i].classList.add("nseWhitelistedTag");
-                tagList[i].title = "Unfiltered with NSE: Tag is in your whitelist";
             } else {
                 tagList[i].classList.remove("nseHiddenTag");
                 tagList[i].classList.remove("nseHardPassTag");
                 tagList[i].classList.remove("nseWhitelistedTag");
-                tagList[i].title = "";
             }
         }
     }
