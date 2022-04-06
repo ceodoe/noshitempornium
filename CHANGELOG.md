@@ -1,7 +1,7 @@
 # Latest changes
 ## v2.7.6
 ### Changes
-- Removed tooltips from tags on torrent details pages as they interfered with the native tooltipsame torrent. 
+- Removed tooltips from tags on torrent details pages as they interfered with the native tooltip
  
 ---
 
