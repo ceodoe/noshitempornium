@@ -2,6 +2,7 @@
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
 // @version      2.7.7
+// @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
