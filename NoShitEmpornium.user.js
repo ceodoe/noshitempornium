@@ -22,7 +22,7 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 //
-// Copyright © 2015-2021 ceodoe
+// Copyright © 2015-2022 ceodoe
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -886,7 +886,7 @@ htmlContent.innerHTML = `
             <section id="nseSettingsContent4">
                 <h3 class="nseH3">About</h3>
                 <p>
-                    Copyright &copy; 2015-2021 ceodoe. NoShitEmpornium v${GM_info.script.version} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a class="nseLink" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
+                    Copyright &copy; 2015-2022 ceodoe. NoShitEmpornium v${GM_info.script.version} was made with ${nseEmojiEnabled ? '💕' : 'love'} by <a class="nseLink" href="/user.php?id=508194">ceodoe</a> of Empornium, and its code is licensed under the <a class="nseLink" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GNU General Public License v3.0</a>.
                 </p>
 
                 <h3 class="nseH3">Statistics</h3>
