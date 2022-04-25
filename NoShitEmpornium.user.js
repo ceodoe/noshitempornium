@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.6
+// @version      2.7.7
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
@@ -94,6 +94,9 @@ GM_deleteValue("nseEnableGCDCompatibilityMode");
 let nseIndividualUploadHidingEnabled = GM_getValue("nseIndividualUploadHidingEnabled", true);
 let nseIndividualUploadHidingBlacklist = GM_getValue("nseIndividualUploadHidingBlacklist", new Array(0));
 let nseIndividualUploadHidingWhitelist = GM_getValue("nseIndividualUploadHidingWhitelist", new Array(0));
+
+// Filter all button
+let nseFilterAllButtonEnabled = GM_getValue("nseFilterAllButtonEnabled", true);
 
 //   Right-Click Management
 let nseRightClickManagementEnabled = GM_getValue("nseRightClickManagementEnabled", true);
@@ -595,12 +598,20 @@ htmlContent.innerHTML = `
                 <span class="nseExplanationSpan nseESOffset">(Click the eye icon next to the torrent name to blacklist/whitelist uploads</span><br />
                 <span class="nseExplanationSpan nseESOffset">individually, ignoring <b>all</b> other rules. These filters are automatically saved)</span><br /><br />
 
+                <input type="checkbox" id="nseCheckFilterAllButtonEnabled"${nseFilterAllButtonEnabled ? ' checked' : ''} />
+                <label for="nseCheckFilterAllButtonEnabled" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">👁️</span> Enable "Filter all unfiltered results" button
+                </label><br />
+                <span class="nseExplanationSpan nseESOffset">(Requires individual upload filtering to be enabled to function)</span>
+                <br /><br />
+
+
                 <b>List management</b><br />
                 <input type="checkbox" id="nseCheckRightClickManagementEnabled"${nseRightClickManagementEnabled ? ' checked' : ''} />
                 <label for="nseCheckRightClickManagementEnabled" class="nseSettingsCheckbox">
                     <span class="nseEmoji">🖱️</span> Enable Right-Click Management (RCM)
                 </label>
-                
+                                
                 <div id="nseRCMCustomizationDiv" ${nseRightClickManagementEnabled ? '' : 'class="hidden"'}>
                     <span class="nseESOffset">
                         <input type="checkbox" id="nseCheckRCMTagsEnabled"${nseRCMTagsEnabled ? ' checked' : ''} />
@@ -934,14 +945,28 @@ htmlContent.innerHTML = `
     </div>
 </div>
 
-${nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage) ? `
+${!nseUnfilteredPages.includes(currentPage) && (nseOpenAllButtonEnabled || (nseFilterAllButtonEnabled && nseIndividualUploadHidingEnabled)) ? `
     <div class="nseTopAiryDiv nseBtmAiryDiv nseCenterDiv">
-        <span class="nseNiceButton" id="nseOpenAllButton">
-            <span class="nseEmoji">📂</span>
-            Open all unfiltered results
-        </span>
+    ${nseOpenAllButtonEnabled ? `
+        <div style="display: inline;">
+            <span class="nseNiceButton" id="nseOpenAllButton">
+                <span class="nseEmoji">📂</span>
+                Open all unfiltered results
+            </span>
+        </div>
+    ` : ''}
+
+    ${nseFilterAllButtonEnabled && nseIndividualUploadHidingEnabled ? `
+        <div style="display: inline;">
+            <span class="nseNiceButton" id="nseFilterAllButton">
+                <span class="nseEmoji">👁</span>
+                Filter all unfiltered results
+            </span>
+        </div>
+    ` : ''}
     </div>
 ` : ''}
+
 
 <div id="nseRCMBox" class="hidden">
     <div id="nseRCMClose">${nseEmojiEnabled ? '❌' : '<span class="nseHiddenTag"><b><big>X</big></b></span>'}</div>
@@ -2028,6 +2053,18 @@ if(nseOpenAllButtonEnabled && !nseUnfilteredPages.includes(currentPage)) {
     };
 }
 
+if(nseFilterAllButtonEnabled && nseIndividualUploadHidingEnabled && !nseUnfilteredPages.includes(currentPage)) {
+    document.getElementById("nseFilterAllButton").onclick = function() {
+        if(confirm(`Are you sure you want to filter all unfiltered results on this page?\n\nThis cannot be automatically undone, and you will have to manually unhide each torrent to undo it.`)) {
+            for(let i = 0; i < torrents.length; i++) {
+                if(!torrents[i].getAttribute("isNSEHidden") || torrents[i].getAttribute("isNSEHidden") === "0") {
+                    torrents[i].querySelector(".nseToggleIcon").click();
+                }
+            }
+        }
+    };
+}
+
 // We like to have fun around here 😏
 {
     let now = new Date();
@@ -2703,6 +2740,7 @@ function saveData() {
         nseHideGrabbedEnabled: "nseCheckHideGrabbed",
         nseBypassWhitelistsEnabled: "nseCheckBypassWhitelists",
         nseIndividualUploadHidingEnabled: "nseCheckIndividualHide",
+        nseFilterAllButtonEnabled: "nseCheckFilterAllButtonEnabled",
         nseRightClickManagementEnabled: "nseCheckRightClickManagementEnabled",
         nseRCMTagsEnabled: "nseCheckRCMTagsEnabled",
         nseRCMTitlesEnabled: "nseCheckRCMTitlesEnabled",
@@ -2850,7 +2888,7 @@ section {
 }
 
 .nseSettingsCheckbox {
-    padding: 5px 10px;
+    padding: 5px;
 }
 
 a.nseLink, a.nseLink:visited {
@@ -3009,7 +3047,7 @@ a.nseLink, a.nseLink:visited {
 }
 
 .nseNiceButton, .nseRCMButton {
-    padding-top: 7px;
+    padding-top: 3px;
 }
 
 .nseBtmAiryDiv {

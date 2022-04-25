@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.7.6
+### Changes
+- Removed tooltips from tags on torrent details pages as they interfered with the native tooltip
+ 
+<p>&nbsp;</p>
+
 ## v2.7.5
 ### Features
 - Tag coloring based on filter lists now works on your own uploads page, but still won't filter anything on that page
