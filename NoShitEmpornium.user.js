@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.7
+// @version      2.7.8
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
@@ -116,6 +116,7 @@ let nseHideGrabbedEnabled = GM_getValue("nseHideGrabbedEnabled", false);
 let nseHideLeechingEnabled = GM_getValue("nseHideLeechingEnabled", false);
 let nseHideSeedingEnabled = GM_getValue("nseHideSeedingEnabled", false);
 let nseHideSnatchedEnabled = GM_getValue("nseHideSnatchedEnabled", false);
+let nseHideBookmarkedEnabled = GM_getValue("nseHideBookmarkedEnabled", false);
 let nseBypassWhitelistsEnabled = GM_getValue("nseBypassWhitelistsEnabled", false);
 
 //   Hard Pass
@@ -686,7 +687,13 @@ htmlContent.innerHTML = `
                 <label for="nseCheckHideSnatched" class="nseSettingsCheckbox">
                     <span class="nseEmoji">💽</span> Hide snatched uploads
                 </label>
-                <span class="nseExplanationSpan">(Hide torrents you have already downloaded/snatched)</span><br /><br />
+                <span class="nseExplanationSpan">(Hide torrents you have already downloaded/snatched)</span><br />
+
+                <input type="checkbox" id="nseCheckHideBookmarked"${nseHideBookmarkedEnabled ? ' checked' : ''} />
+                <label for="nseCheckHideBookmarked" class="nseSettingsCheckbox">
+                    <span class="nseEmoji">⭐</span> Hide bookmarked uploads
+                </label>
+                <span class="nseExplanationSpan">(Hide torrents you have previously bookmarked)</span><br /><br />
 
                 <input type="checkbox" id="nseCheckBypassWhitelists"${nseBypassWhitelistsEnabled ? ' checked' : ''} />
                 <label for="nseCheckBypassWhitelists" class="nseSettingsCheckbox">
@@ -1395,6 +1402,17 @@ if(torrents) {
                         if(nseBypassWhitelistsEnabled) {
                             currentBypassWhitelist = true;
                         }
+                    }
+                }
+            }
+
+            if(nseHideBookmarkedEnabled) {
+                let bmElement = torrents[i].querySelector("i.bookmarked");
+                if(bmElement) {
+                    currentHidden = true;
+                    
+                    if(nseBypassWhitelistsEnabled) {
+                        currentBypassWhitelist = true;
                     }
                 }
             }
@@ -2739,6 +2757,7 @@ function saveData() {
         nseHideSeedingEnabled: "nseCheckHideSeeding",
         nseHideLeechingEnabled: "nseCheckHideLeeching",
         nseHideGrabbedEnabled: "nseCheckHideGrabbed",
+        nseHideBookmarkedEnabled: "nseCheckHideBookmarked",
         nseBypassWhitelistsEnabled: "nseCheckBypassWhitelists",
         nseIndividualUploadHidingEnabled: "nseCheckIndividualHide",
         nseFilterAllButtonEnabled: "nseCheckFilterAllButtonEnabled",
