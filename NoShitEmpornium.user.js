@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.8
+// @version      2.7.9
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
@@ -50,38 +50,52 @@ let nseSavedVersion = GM_getValue("nseSavedVersion", nseVersionNum);
 GM_setValue("nseSavedVersion", nseSavedVersion);
 
 // Load and initialize saved filter lists
-let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.tags.here separated.by.spaces no.newlines scat puke blood").trim();
+let nseBlacklistTaglist = GM_getValue("nseTaglist", "enter.tags.here separated.by.spaces no.newlines").trim();
 let nseBlacklistTags = nseBlacklistTaglist.split(" ");
+nseBlacklistTags.sort();
+nseBlacklistTaglist = nseBlacklistTags.join(" ");
 if(nseBlacklistTags.length === 1 && nseBlacklistTags[0] === "") { nseBlacklistTags = new Array(0); }
 GM_setValue("nseTaglist", nseBlacklistTaglist);
 
 let nseHardPassTaglist = GM_getValue("nseHardPassTaglist", "enter.hard.pass.tags.here big.poopies gushing.blood").trim();
 let nseHardPassTags = nseHardPassTaglist.split(" ");
+nseHardPassTags.sort();
+nseHardPassTaglist = nseHardPassTags.join(" ");
 if(nseHardPassTags.length === 1 && nseHardPassTags[0] === "") { nseHardPassTags = new Array(0); }
 GM_setValue("nseHardPassTaglist", nseHardPassTaglist);
 
 let nseWhitelistTaglist = GM_getValue("nseWhitelist", "whitelist.tags go.here").trim();
 let nseWhitelistTags = nseWhitelistTaglist.split(" ");
+nseWhitelistTags.sort();
+nseWhitelistTaglist = nseWhitelistTags.join(" ");
 if(nseWhitelistTags.length === 1 && nseWhitelistTags[0] === "") { nseWhitelistTags = new Array(0); }
 GM_setValue("nseWhitelist", nseWhitelistTaglist);
 
 let nseBlacklistTitleList = GM_getValue("nseBlacklistTitles", "this is a title phrase;this is another title phrase").trim();
 let nseBlacklistTitlePhrases = nseBlacklistTitleList.split(";");
+nseBlacklistTitlePhrases.sort();
+nseBlacklistTitleList = nseBlacklistTitlePhrases.join(";");
 if(nseBlacklistTitlePhrases.length === 1 && nseBlacklistTitlePhrases[0] === "") { nseBlacklistTitlePhrases = new Array(0); }
 GM_setValue("nseBlacklistTitles", nseBlacklistTitleList);
 
 let nseWhitelistTitleList = GM_getValue("nseWhitelistTitles", "this is a title phrase;this is another title phrase").trim();
 let nseWhitelistTitlePhrases = nseWhitelistTitleList.split(";");
+nseWhitelistTitlePhrases.sort();
+nseWhitelistTitleList = nseWhitelistTitlePhrases.join(";");
 if(nseWhitelistTitlePhrases.length === 1 && nseWhitelistTitlePhrases[0] === "") { nseWhitelistTitlePhrases = new Array(0); }
 GM_setValue("nseWhitelistTitles", nseWhitelistTitleList);
 
 let nseBlacklistUploadersList = GM_getValue("nseUploaders", "PutUserNamesHere SeparatedBySpaces NoNewlines").trim();
 let nseBlacklistUploaders = nseBlacklistUploadersList.split(" ");
+nseBlacklistUploaders.sort();
+nseBlacklistUploadersList = nseBlacklistUploaders.join(" ");
 if(nseBlacklistUploaders.length === 1 && nseBlacklistUploaders[0] === "") { nseBlacklistUploaders = new Array(0); }
 GM_setValue("nseUploaders", nseBlacklistUploadersList);
 
 let nseWhitelistUploadersList = GM_getValue("nseWhitelistUploaders", "PutUserNamesHere SeparatedBySpaces NoNewlines").trim();
 let nseWhitelistUploaders = nseWhitelistUploadersList.split(" ");
+nseWhitelistUploaders.sort();
+nseWhitelistUploadersList = nseWhitelistUploaders.join(" ");
 if(nseWhitelistUploaders.length === 1 && nseWhitelistUploaders[0] === "") { nseWhitelistUploaders = new Array(0); }
 GM_setValue("nseWhitelistUploaders", nseWhitelistUploadersList);
 
@@ -1075,7 +1089,7 @@ if(torrents) {
                 titleElement = torrents[i].querySelector("td > a");
             }
     
-            let countMe = true;
+            let countMe = 1;
             let currentHidden = false;
             let currentWhitelisted = false;
             let currentBypassWhitelist = false;
@@ -1358,7 +1372,6 @@ if(torrents) {
                 if(seeders.classList.contains("r00")) {
                     currentHidden = true;
                     seeders.innerHTML = "(0)";
-                    seeders.title = "Filtered with NSE: Unseeded";
                 }
             }
     
@@ -1427,7 +1440,6 @@ if(torrents) {
                             currentHidden = true;
                             if(russianRouletteBulletInChamber == false) {
                                 anonName.classList.add("nseHiddenUploader");
-                                anonName.title = "Filtered with NSE: Anonymous upload";
                             }
                         }
                     }
@@ -1441,7 +1453,6 @@ if(torrents) {
                             currentHidden = true;
                             if(russianRouletteBulletInChamber == false) { 
                                 uploaderElement.classList.add("nseHiddenUploader"); 
-                                uploaderElement.title = "Filtered with NSE: Uploader is in your blacklist";
                             }
                             break;
                         }
@@ -1455,7 +1466,6 @@ if(torrents) {
                                 if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
                                     currentWhitelisted = true;
                                     uploaderElement.classList.add("nseWhitelistedUploader");
-                                    uploaderElement.title = "Unfiltered with NSE: Uploader is in your whitelist";
                                     break;
                                 }
                             }
@@ -1475,7 +1485,6 @@ if(torrents) {
                         currentHidden = true;
                         if(russianRouletteBulletInChamber == false) { 
                             titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`;
-                            titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
                         }
                     }
                 }
@@ -1492,7 +1501,6 @@ if(torrents) {
                         if(torrentTitle.includes(currentTWLPhrase)) {
                             currentWhitelisted = true;
                             titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
-                            titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
                         }
                     }
                 }
@@ -1511,9 +1519,7 @@ if(torrents) {
         
                                 if(nseRemoveHardPassResults) {
                                     torrents[i].classList.add("nseHardPassRemove");
-                                    countMe = false;
-                                } else {
-                                    tagList[k].title = "Filtered with NSE: Found in your Hard Pass list";
+                                    countMe = 0;
                                 }
                             }
                         }
@@ -1523,7 +1529,6 @@ if(torrents) {
                         currentHidden = true;
                         if(russianRouletteBulletInChamber == false) { 
                             tagList[k].classList.add("nseHiddenTag"); 
-                            tagList[k].title = "Filtered with NSE: Found in your blacklist";
                         }
                     }
         
@@ -1531,7 +1536,6 @@ if(torrents) {
                         if(nseWhitelistTags.includes(tagList[k].innerHTML) === true) {
                             currentWhitelisted = true;
                             tagList[k].classList.add("nseWhitelistedTag");
-                            tagList[k].title = "Unfiltered with NSE: Found in your whitelist";
                         }
                     }
                 }
@@ -1555,9 +1559,7 @@ if(torrents) {
                     torrents[i].classList.add("hidden");
                     torrents[i].setAttribute("isNSEHidden", "1");
     
-                    if(countMe) {
-                        count++;
-                    }
+                    count += countMe;
                 }
             }
         }
@@ -1572,9 +1574,6 @@ if(torrents) {
                 seedersElement.classList.add("nseBlacklistIdentifier");
                 seedersElement2.classList.add("nseBlacklistIdentifier");
 
-                seedersElement.title = "Filtered with NSE: Unseeded";
-                seedersElement2.title = "Filtered with NSE: Unseeded";
-
                 seedersElement.innerHTML = "(" + seedersElement.innerHTML + ")"; // This has a div element also
                 seedersElement2.innerHTML = "(0)";
             }
@@ -1586,7 +1585,6 @@ if(torrents) {
             if(nseHideAnonUploadsEnabled) {
                 for(let anon = 0; anon < anonName.length; anon++) {
                     anonName[anon].classList.add("nseHiddenUploader");
-                    anonName[anon].title = "Filtered with NSE: Anonymous upload";
                 }
             }
         // Highlight if uploader is any of the lists
@@ -1601,8 +1599,6 @@ if(torrents) {
                     if(uploader == nseBlacklistUploaders[l].trim().toLowerCase()) {
                         uploaderElement.classList.add("nseHiddenUploader"); 
                         uploaderElement2.classList.add("nseHiddenUploader"); 
-                        uploaderElement.title = "Filtered with NSE: Uploader is in your blacklist";
-                        uploaderElement2.title = "Filtered with NSE: Uploader is in your blacklist";
                         break;
                     }
                 }
@@ -1611,8 +1607,6 @@ if(torrents) {
                     if(uploader == nseWhitelistUploaders[m].trim().toLowerCase()) {
                         uploaderElement.classList.add("nseWhitelistedUploader");
                         uploaderElement2.classList.add("nseWhitelistedUploader");
-                        uploaderElement.title = "Unfiltered with NSE: Uploader is in your whitelist";
-                        uploaderElement2.title = "Unfiltered with NSE: Uploader is in your whitelist";
                         break;
                     }
                 }
@@ -1639,8 +1633,6 @@ if(torrents) {
                 if(torrentTitle.includes(currentTBLPhrase)) {
                     titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`;
                     titleElement2.innerHTML = titleElement2.innerHTML + ` <color class="nseHiddenTitle">(${currentTBLPhrase})</color>`;
-                    titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
-                    titleElement2.title = "Filtered with NSE: Phrase(s) found in your list(s)";
                 }
             }
         }
@@ -1655,8 +1647,6 @@ if(torrents) {
                 if(torrentTitle.includes(currentTWLPhrase)) {
                     titleElement.innerHTML = titleElement.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
                     titleElement2.innerHTML = titleElement2.innerHTML + ` <color class="nseWhitelistedTitle">(${currentTWLPhrase})</color>`;
-                    titleElement.title = "Filtered with NSE: Phrase(s) found in your list(s)";
-                    titleElement2.title = "Filtered with NSE: Phrase(s) found in your list(s)";
                 }
             }
         }
@@ -1928,15 +1918,12 @@ function recolorUploaders() {
             if(nseBlacklistUploaders.includes(uploaderElements[i].innerHTML.trim())) {
                 uploaderElements[i].classList.remove("nseWhitelistedUploader");
                 uploaderElements[i].classList.add("nseHiddenUploader");
-                uploaderElements[i].title = "Filtered with NSE: Uploader is in your blacklist";
             } else if(nseWhitelistUploaders.includes(uploaderElements[i].innerHTML.trim())) {
                 uploaderElements[i].classList.remove("nseHiddenUploader");
                 uploaderElements[i].classList.add("nseWhitelistedUploader");
-                uploaderElements[i].title = "Unfiltered with NSE: Uploader is in your whitelist";
             } else {
                 uploaderElements[i].classList.remove("nseHiddenUploader");
                 uploaderElements[i].classList.remove("nseWhitelistedUploader");
-                uploaderElements[i].title = "";
             }
         }
     }
@@ -2708,6 +2695,8 @@ function saveData() {
 
         // Turning it into a set and back into an array will automagically kill dupes
         storedList = [...new Set(storedList)];
+        storedList.sort();
+
         strList = storedList.join(delimiter);
         GM_setValue(setting, strList);
 

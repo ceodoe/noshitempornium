@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.7.8
+### Features
+- Added an option to hide bookmarked torrents
+
+<p>&nbsp;</p>
+
 ## v2.7.7
 ### Features
 - Added a button that lets you filter all unfiltered results on the page with a single click. This requires individual upload hiding to be enabled in order to function. The feature is enabled by default, but you can easily disable it in Options > Settings > Filtering > Enable "Filter all unfiltered results" button.
