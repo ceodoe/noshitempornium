@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.9
+// @version      2.7.10
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
@@ -11,7 +11,7 @@
 // @icon         https://www.google.com/s2/favicons?domain=empornium.is
 // @author       ceodoe
 // @include      /^https?://www\.empornium\.(me|sx|is)/torrents\.php*/
-// @include      /^https?://www\.empornium\.(me|sx|is)/collages\.php.*id=*/
+// @include      /^https?://www\.empornium\.(me|sx|is)/collage\/*
 // @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/user\.php\?action=notify/
 // @exclude      /^https?://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
@@ -275,7 +275,7 @@ if(window.location.href.includes("top10.php")) {
     currentPage = "Notifications";
 } else if(window.location.href.match(/torrents\.php.*(\?|&)(id=)/)) {
     currentPage = "Torrent details";
-} else if(window.location.href.includes("collages.php?")) {
+} else if(window.location.href.includes("/collage/")) {
     currentPage = "Collage";
 } else if(window.location.href.includes("type=uploaded")) {
     // Check if we are on our own uploaded page
