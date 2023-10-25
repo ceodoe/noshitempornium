@@ -1,8 +1,7 @@
 # Latest changes
-## v2.7.9
+## v2.7.10
 ### Miscellaneous
-- Your filter lists are now automatically sorted alphabetically upon loading or saving
-- Removed tooltips from native elements as they were interfering with native tooltips
+- Updated includes and code to support the new URL format of collage pages
  
 ---
 
