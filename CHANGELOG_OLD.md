@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.7.10
+### Miscellaneous
+- Updated includes and code to support the new URL format of collage
+
+<p>&nbsp;</p>
+
 ## v2.7.9
 ### Miscellaneous
 - Your filter lists are now automatically sorted alphabetically upon loading or saving

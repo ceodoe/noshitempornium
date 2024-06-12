@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.10
+// @version      2.7.11
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
@@ -14,6 +14,7 @@
 // @include      /^https?://www\.empornium\.(me|sx|is)/collage\/*
 // @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
 // @include      /^https?://www\.empornium\.(me|sx|is)/user\.php\?action=notify/
+// @include      /^https?://www\.empornium\.(me|sx|is)/requests\.php/
 // @exclude      /^https?://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
 // @run-at       document-end
 // @grant        GM_getValue
@@ -277,6 +278,8 @@ if(window.location.href.includes("top10.php")) {
     currentPage = "Torrent details";
 } else if(window.location.href.includes("/collage/")) {
     currentPage = "Collage";
+} else if(window.location.href.includes("/requests.php")) {
+    currentPage = "Requests";
 } else if(window.location.href.includes("type=uploaded")) {
     // Check if we are on our own uploaded page
     let myUserID = document.querySelector(".username").href.match(/id=([0-9]+)/)[1];
@@ -400,6 +403,8 @@ if(currentPage == "Top 10") {
     referenceNode = document.querySelector("div.thin > div.clear:nth-child(6)");
 } else if(currentPage == "Uploaded" || currentPage == "My uploaded") {
     referenceNode = document.querySelector(".submit");
+} else if(currentPage == "Requests") {
+    referenceNode = document.querySelector("#search_form");
 }
 
 // Die if we can't get a reference node, most likely the site is borked or changed its code
@@ -1057,6 +1062,10 @@ if(currentPage == "Notification filters") {
 // +---------------------+
 let count = 0;
 let torrents = document.querySelectorAll("tr.torrent");
+
+if(currentPage == "Requests") {
+    torrents = document.querySelectorAll("#request_table tr");
+}
 
 if(torrents) {
     if(!nseUnfilteredPages.includes(currentPage)) { // Skip filtering where it doesn't apply
