@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.11
+// @version      2.7.12
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
@@ -24,7 +24,7 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 //
-// Copyright © 2015-2022 ceodoe
+// Copyright © 2015-2024 ceodoe
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -154,6 +154,9 @@ let nseEmojiEnabled = GM_getValue("nseEmojiEnabled", true);
 
 //   Update toasts
 let nseUpdateToastsEnabled = GM_getValue("nseUpdateToastsEnabled", true);
+
+//   Floating toggle button
+let nseFloatingToggleButtonEnabled = GM_getValue("nseFloatingToggleButtonEnabled", true);
 
 //   Open all button
 let nseOpenAllButtonEnabled = GM_getValue("nseOpenAllButtonEnabled", true);
@@ -391,9 +394,7 @@ if(nseUpdateToastsEnabled) {
 // Set up reference node
 let referenceNode = document.querySelector("div#filter_slidetoggle"); // Torrents
 
-if(currentPage == "Top 10") {
-    referenceNode = document.querySelector("#content > div > form");
-} else if(currentPage == "Notification filters") {
+if(currentPage == "Top 10" || currentPage == "Notification filters") {
     referenceNode = document.querySelector("div.linkbox");
 } else if(currentPage == "Notifications") {
     referenceNode = document.querySelector("#content > div > h2");
@@ -769,7 +770,12 @@ htmlContent.innerHTML = `
                         <span class="nseEmoji">❗</span> Notify me when NSE is updated
                     </label>
                     <span class="nseExplanationSpan">(Get changelog info on update)</span><br />
-                    
+
+                    <input type="checkbox" id="nseCheckFloatingToggleButton"${nseFloatingToggleButtonEnabled ? ' checked' : ''} />
+                    <label for="nseCheckFloatingToggleButton" class="nseSettingsCheckbox">
+                        <span class="nseEmoji">🛟</span> Enable the floating toggle button on the bottom right of the page
+                    </label><br />
+
                     <input type="checkbox" id="nseCheckOpenAllButton"${nseOpenAllButtonEnabled ? ' checked' : ''} />
                     <label for="nseCheckOpenAllButton" class="nseSettingsCheckbox">
                         <span class="nseEmoji">📂</span> Enable the "Open all unfiltered results" button
@@ -1010,6 +1016,16 @@ referenceNode.after(htmlContent);
 // Do this before filtering in case it takes a while to filter the page
 if(nseScrollToNSEEnabled) {
     document.getElementById("nseOuter").scrollIntoView();
+}
+
+// Add floating toggle button if enabled
+if(nseFloatingToggleButtonEnabled) {
+    document.querySelector("body").insertAdjacentHTML("afterbegin", `
+        <div id="nseFloatyBoi">
+            <span class="nseEmoji" alt="Toggle hidden torrents" title="Toggle hidden torrents">👁️</span>
+        </div>
+    `);
+    document.querySelector("#nseFloatyBoi").addEventListener("click", function() { toggleTorrents(); });
 }
 
 // Set up elements for "Notification filters" page
@@ -2772,6 +2788,7 @@ function saveData() {
         nseHideCategoryIconsEnabled: "nseCheckHideCategoryIcons",
         nseArrowNavigationEnabled: "nseCheckArrowNavigation",
         nseUpdateToastsEnabled: "nseCheckUpdateToasts",
+        nseFloatingToggleButtonEnabled: "nseCheckFloatingToggleButton",
         nseOpenAllButtonEnabled: "nseCheckOpenAllButton",
         nseOpenAllGoNextEnabled: "nseCheckOpenAllGoNext",
         nseCustomCSSEnabled: "nseCheckCustomCSS"
@@ -3121,6 +3138,20 @@ h3.nseH3 {
 
 .nseSettingsControlDiv {
     text-align: center;
+}
+
+#nseFloatyBoi {
+    bottom: 2em;
+    right: 2em;
+    background-color: ${themes[nseSelectedTheme].backgroundColor} !important;
+    color: ${themes[nseSelectedTheme].foregroundColor} !important;
+    padding: 0.4em;
+    border-radius: 0.8em;
+    position: fixed;
+    float: right;
+    z-index: 1000;
+    user-select: none;
+    cursor: pointer;
 }
 
 ${nseCustomCSSEnabled ? nseCustomCSS : ''}

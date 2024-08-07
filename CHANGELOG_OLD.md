@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.7.11
+### Features
+- Now supports Requests. The only practically active filtering on Requests will be on tags and titles, since requests are not uploads and aren't formatted in the same way.
+
+<p>&nbsp;</p>
+
 ## v2.7.10
 ### Miscellaneous
 - Updated includes and code to support the new URL format of collage
@@ -62,7 +68,7 @@
 ## v2.7.2
 ### Features
 - Added a feature to renumber torrents on "Top X" pages after filtering, enabled by default. You can turn it off in Options > Settings > Interface > Extras.
-- Filtering a torrent with the eye icon on "Top X" pages will now filter all occurences of that same torrent across all lists shown on the page instead of only the one clicked
+- Filtering a torrent with the eye icon on "Top X" pages will now filter all occurrences of that same torrent across all lists shown on the page instead of only the one clicked
 
 ### Bugfixes
 - Clicking the "Open all" button on "Top X" pages will no longer open more than one tab of the same torrent if the torrent is listed several times in the top lists
