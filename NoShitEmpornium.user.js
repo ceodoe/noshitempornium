@@ -472,7 +472,7 @@ htmlContent.innerHTML = `
                 <textarea class="nseTextArea" id="nseBlacklistTaglistArea" rows=10>${nseBlacklistTaglist}</textarea>
             </div>
             <div class="nseFieldDiv${nseHardPassEnabled ? '' : ' hidden'}">
-                <span class="nseImageButton nseListHeader" id="nseTagHardPassHeader"><span class="nseEmoji">🚫</span> Hard Pass blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseHPEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTagHardPassHeader"><span class="nseEmoji">🚫</span> Hard Pass tag blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseHPEToggler">[?]</sup><br />
                 <div id="nseHPE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If any of these tags exist, hide the torrent <b>no matter what</b></i>
@@ -546,7 +546,7 @@ htmlContent.innerHTML = `
                 <textarea class="nseTextArea" id="nseBlacklistTitleListArea" rows=10>${nseBlacklistTitleList}</textarea>
             </div>
             <div class="nseFieldDiv${nseHardPassEnabled ? '' : ' hidden'}">
-                <span class="nseImageButton nseListHeader" id="nseTitleHardPassHeader"><span class="nseEmoji">🚫</span> Hard Pass title blacklist <small>(space-separated)</small></span><sup class="nseExplanationToggler" id="nseHPTEToggler">[?]</sup><br />
+                <span class="nseImageButton nseListHeader" id="nseTitleHardPassHeader"><span class="nseEmoji">🚫</span> Hard Pass title blacklist <small>(semicolon-separated)</small></span><sup class="nseExplanationToggler" id="nseHPTEToggler">[?]</sup><br />
                 <div id="nseHPTE" class="nseExplanationBox hidden">
                     <div class="nseExplanationNode">
                         <b>TL;DR</b>: <i>If any of these phrases exist in the title, hide the torrent <b>no matter what</b></i>
