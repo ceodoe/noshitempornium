@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.7.12
+// @version      2.8.0
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
@@ -10,11 +10,18 @@
 // @homepageURL  https://github.com/ceodoe/noshitempornium/
 // @icon         https://www.google.com/s2/favicons?domain=empornium.is
 // @author       ceodoe
-// @include      /^https?://www\.empornium\.(me|sx|is)/torrents\.php*/
-// @include      /^https?://www\.empornium\.(me|sx|is)/collage\/*
-// @include      /^https?://www\.empornium\.(me|sx|is)/top10\.php*/
-// @include      /^https?://www\.empornium\.(me|sx|is)/user\.php\?action=notify/
-// @exclude      /^https?://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
+// @include      /^https://www\.empornium\.(me|sx|is)/torrents\.php*/
+// @include      /^https://www\.empornium\.(me|sx|is)/collage\/*
+// @include      /^https://www\.empornium\.(me|sx|is)/top10\.php*/
+// @include      /^https://www\.empornium\.(me|sx|is)/user\.php\?action=notify/
+// @include      /^https://www\.empornium\.(me|sx|is)/requests\.php/
+// @exclude      /^https://www\.empornium\.(me|sx|is)/top10\.php.*(\?|&)(type=(users|tags|taggers))/
+// @include      /^https://www\.emparadise\.rs/torrents\.php*/
+// @include      /^https://www\.emparadise\.rs/collage\/*
+// @include      /^https://www\.emparadise\.rs/top10\.php*/
+// @include      /^https://www\.emparadise\.rs/user\.php\?action=notify/
+// @include      /^https://www\.emparadise\.rs/requests\.php/
+// @exclude      /^https://www\.emparadise\.rs/top10\.php.*(\?|&)(type=(users|tags|taggers))/
 // @run-at       document-end
 // @grant        GM_getValue
 // @grant        GM_setValue
