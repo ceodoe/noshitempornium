@@ -1,13 +1,25 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.8
+### Features
+- Added a Hard Pass filter list for titles. Hard Pass must be enabled for this list to show up under the "Titles" tab. Adjusted help texts to reflect this
+
+### Bugfixes
+- Fixed a bug that wouldn't clear out old individually hidden torrents if the user imported a data file that doesn't include any individually hidden torrents. Now all data is cleared before importing the new data file.
+- Fixed a bug that made the floating toggle button appear on pages that don't have filtering functionality enabled
+ 
+### Misc
+- Added support for the new .rs domain
+- Removed support for non-HTTPS domains
+
+<p>&nbsp;</p>
+
 ## v2.7.12
 ### Features
 - Added a floating button to toggle hidden torrents to the bottom right of applicable pages. This is enabled by default, but can be turned off in Options > Settings > Interface > "Enable the floating toggle button".
 
 ### Bugfixes
 - Fixed a most likely long-standing bug where NSE would fail to appear on Top 10 pages for some users. This seems to be related to lower user classes who don't yet have access to the search form on those pages. The search form was used as a CSS selector for placement of the NSE configuration area and would fail if it wasn't present. The NSE config area will now appear underneath the linkbox, above the search form if present, for all users on Top 10 pages.
-
-<p>&nbsp;</p>
 
 ## v2.7.11
 ### Features

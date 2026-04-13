@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         NoShitEmpornium
 // @namespace    http://www.empornium.me/
-// @version      2.8.0
+// @version      2.8.1
 // @license      GPLv3
 // @description  Fully featured torrent filtering solution for Empornium
 // @updateURL    https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.meta.js
 // @downloadURL  https://github.com/ceodoe/noshitempornium/raw/master/NoShitEmpornium.user.js
 // @supportURL   https://github.com/ceodoe/noshitempornium/issues
 // @homepageURL  https://github.com/ceodoe/noshitempornium/
-// @icon         https://www.google.com/s2/favicons?domain=empornium.is
+// @icon         https://www.google.com/s2/favicons?domain=empornium.sx
 // @author       ceodoe
 // @include      /^https://www\.empornium\.(me|sx|is)/torrents\.php*/
 // @include      /^https://www\.empornium\.(me|sx|is)/collage\/*
