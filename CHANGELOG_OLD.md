@@ -1,5 +1,11 @@
 # Older versions
 [(Latest changes)](https://github.com/ceodoe/noshitempornium/blob/master/CHANGELOG.md#latest-changes)
+## v2.8.1
+### Misc
+- Updated icon source to .sx domain
+
+<p>&nbsp;</p>
+
 ## v2.8
 ### Features
 - Added a Hard Pass filter list for titles. Hard Pass must be enabled for this list to show up under the "Titles" tab. Adjusted help texts to reflect this

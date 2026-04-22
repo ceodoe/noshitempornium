@@ -1,7 +1,7 @@
 # Latest changes
-## v2.8.1
+## v2.8.2
 ### Misc
-- Updated icon source to .sx domain
+- Updated includes to match new domain
 
 ---
 
